@@ -1,0 +1,11 @@
+SERVER_STARTED = "Server started"
+SERVER_STOPPED = "Server stopped"
+
+USERS_GET = "ALL USERS REQUEST BY USER {user_id}"
+USER_GET_BY_ID = "USER {resource_id} REQUEST BY USER {user_id}"
+USER_CREATE = "CREATE USER {resource_id} REQUEST BY USER {user_id}"
+USER_UPDATE = "UPDATE USER {resource_id} REQUEST BY USER {user_id}"
+USER_DELETE = "DELETE USER {resource_id} REQUEST BY USER {user_id}"
+
+USER_LOGIN = "LOGIN REQUEST BY USER {user_id}"
+USER_TOKEN_RENEW = "TOKEN RENEW REQUEST BY USER {user_id}"
