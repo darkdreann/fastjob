@@ -1,19 +1,7 @@
 from enum import Enum
 import logging
 
-class CandidateField(str,Enum):
-    """Enum que representa los campos de la tabla candidate.
-    
-                WIP: Work In Progress
-    """
-
-    user  = "user"
-    skills  = "skills"
-    availability = "availability"
-    experiences = "experiences"
-    education = "education"
-    language = "language"
-    applied_jobs = "applied_jobs"
+# ENUMS MODELS #
 
 class WorkSchedule(str, Enum):
     """Enum que representa las posibles jornadas de trabajo."""
@@ -34,6 +22,9 @@ class UserType(str, Enum):
     CANDIDATE = "CANDIDATE"
     COMPANY = "COMPANY"
     ADMIN = "ADMIN"
+
+
+# ENUMS UTILS #
 
 class LogLevel(Enum):
     """Enum que representa los niveles de log."""

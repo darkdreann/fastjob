@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from pydantic.networks import EmailStr
-from api.models.enums import WorkSchedule
+from api.models.enums.models import WorkSchedule
 from api.models.metadata import *
 from api.models.functions.validate_functions import *
 
@@ -147,7 +147,7 @@ class BaseJob(BaseModel):
     description: str = Field(description=JobDescription.DESC, max_length=JobValidators.MAX_LENGHT_DESC)
     skills: list[str] = Field(description=JobDescription.SKILLS, max_length=JobValidators.MAX_ITEMS_SKILLS)
     work_schedule: WorkSchedule = Field(description=JobDescription.WORK_SHEDULE)
-    required_experience_months: int = Field(description=JobDescription.REQUIRED_EXP, ge=JobValidators.MIN_REQUIRED_EXP)
+    required_months_of_experience: int = Field(description=JobDescription.REQUIRED_EXP, ge=JobValidators.MIN_REQUIRED_EXP)
     active: bool = Field(description=JobDescription.ACTIVE)
 
     @field_validator('skills')

@@ -1,6 +1,6 @@
 from platform import system
 from pydantic_settings import BaseSettings
-from api.utils.constants.error_strings import ENV_FILE_NOT_FOUND, ENV_VARS_NOT_FOUND, ENV_UNEXPECTED_ERROR
+from api.utils.constants.error_strings import ENV_FILE_NOT_FOUND, ENV_UNEXPECTED_ERROR
 from dotenv import load_dotenv
 
 # Valores por defecto en caso de que no se encuentren en el archivo .env

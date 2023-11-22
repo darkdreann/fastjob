@@ -4,13 +4,13 @@ from uuid import uuid4
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 from api.tests.test_utils.db_manage_test import get_database_record
-from api.models.enums import UserType
-from api.utils.constants.http_exceptions import USER_NOT_FOUND_EXCEPTION, INTEGRATION_EXCEPTION, FORBIDDEN_EXCEPTION
+from api.models.enums.models import UserType
+from api.utils.constants.http_exceptions import RESOURCE_NOT_FOUND_EXCEPTION, INTEGRATION_EXCEPTION, FORBIDDEN_EXCEPTION
 from api.database.database_models.models import User
 from api.database.database_models.metadata.constraint_name import UserConstraint
 from api.tests.test_utils.result_tests import check_request_data_saved, check_request_with_response
 from api.security.security import generate_token
-from api.models.enums import UserType
+from api.models.enums.models import UserType
 from api.tests.test_utils.db_manage_test import DATA
 
 @pytest.fixture(scope="module")
@@ -297,8 +297,8 @@ async def test_update_user_not_found(client: AsyncClient, test_consts: dict):
 
     response_json = response.json()
 
-    assert response.status_code == USER_NOT_FOUND_EXCEPTION["status_code"]
-    assert response_json["detail"] == USER_NOT_FOUND_EXCEPTION["detail"]
+    assert response.status_code == RESOURCE_NOT_FOUND_EXCEPTION["status_code"]
+    assert response_json["detail"] == RESOURCE_NOT_FOUND_EXCEPTION["detail"]
 
 @pytest.mark.anyio
 async def test_delete_user_not_found(client: AsyncClient, test_consts: dict):
@@ -312,5 +312,5 @@ async def test_delete_user_not_found(client: AsyncClient, test_consts: dict):
 
     response_json = response.json()
 
-    assert response.status_code == USER_NOT_FOUND_EXCEPTION["status_code"]
-    assert response_json["detail"] == USER_NOT_FOUND_EXCEPTION["detail"]
+    assert response.status_code == RESOURCE_NOT_FOUND_EXCEPTION["status_code"]
+    assert response_json["detail"] == RESOURCE_NOT_FOUND_EXCEPTION["detail"]

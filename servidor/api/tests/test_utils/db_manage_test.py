@@ -6,32 +6,39 @@ async def create_test_data() -> None:
     """Crea los datos de prueba en la base de datos."""
 
     async for session in get_session():
+        try:
+            globales = globals()
+            
+            # recorre los modelos a ser creados
+            for cls in DATA.keys():
 
-        globales = globals()
-        
-        # recorre los modelos a ser creados
-        for cls in DATA.keys():
+                clase = globales[cls]
 
-            clase = globales[cls]
 
-            if clase == User:
-                for user_type in DATA[cls].keys():
-                    for new_data in DATA[cls][user_type]:
+                if clase == User:
+                    for user_type in DATA[cls].keys():
+                        for new_data in DATA[cls][user_type]:
+                            new_record = clase(**new_data)
+                            session.add(new_record)
+
+                else:
+                    # recorre los diferentes registros a ser creados
+                    for new_data in DATA[cls]:
+
                         new_record = clase(**new_data)
                         session.add(new_record)
-            else:
-                # recorre los diferentes registros a ser creados
-                for new_data in DATA[cls]:
-                    new_record = clase(**new_data)
-                    session.add(new_record)
-
-        try:
-            await session.commit()
 
         except Exception as exc:
-            await session.rollback()
-            
-            print(f"Error: Test data commit failed. Rolling back.\n{exc}")
+            print(f"Error: Test data creation failed.\n{exc}")
+
+        else:
+            try:
+                await session.commit()
+
+            except Exception as exc:
+                await session.rollback()
+                
+                print(f"Error: Test data commit failed. Rolling back.\n{exc}")
 
 
 async def get_database_record(query, only_one: bool = False) -> Base | None:

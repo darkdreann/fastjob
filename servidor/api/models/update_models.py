@@ -82,7 +82,8 @@ class UpdateEducation(CreateEducation):
 
         Atributos:
             qualification: Titulo de la formacion
-            level_id: Nivel de la formacion"""
+            level_id: Nivel de la formacion
+            sector_id: Sector de la formacion si lo tiene"""
     
 
 class UpdateLevel(CreateLevel):

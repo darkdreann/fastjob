@@ -1,9 +1,10 @@
 from pydantic import BaseModel, Field, field_validator
 from pydantic.networks import EmailStr
-from api.models.enums import WorkSchedule
+from api.models.enums.models import WorkSchedule
 from api.models.metadata import *
 from api.models.functions.validate_functions import *
 from typing import Optional
+from uuid import UUID
 
 class PartialUpdateAdress(BaseModel):
     """Modelo para actualizar parcialmente una direccion 
@@ -91,15 +92,6 @@ class PartialUpdateCompany(PartialUpdateUser):
     tin: Optional[str] = Field(description=CompanyDescription.TIN, pattern=CompanyValidators.REGEX_TIN, default=None)
     company_name: Optional[str] = Field(description=CompanyDescription.COMPANY_NAME, max_length=CompanyValidators.MAX_LENGHT_COMPANY_NAME, default=None)
 
-class PartialUpdateLanguage(BaseModel):
-    """Modelo para actualizar parcialmente un idioma
-
-    Atributos:
-        name: Nombre del idioma"""
-    
-    name: Optional[str] = Field(description=LanguageDescription.NAME, max_length=LanguageValidators.MAX_LENGHT_NAME, default=None)
-
-
 class PartialUpdateSector(BaseModel):
     """Modelo para actualizar parcialmente un sector
 
@@ -126,7 +118,7 @@ class PartialUpdateExperience(BaseModel):
     position_description: Optional[str] = Field(description=ExperienceDescription.POSITION_DESC, max_length=ExperienceValidators.MAX_LENGHT_POSITION_DESC, default=None)
     start_date: Optional[date] = Field(description=ExperienceDescription.START_DATE, default=None)
     end_date: Optional[date] = Field(description=ExperienceDescription.END_DATE, default=None)
-    sector_id: Optional[int] = Field(description=ExperienceDescription.SECTOR_ID, default=None)
+    sector_id: Optional[UUID] = Field(description=ExperienceDescription.SECTOR_ID, default=None)
 
     @field_validator("start_date","end_date")
     def dates_validate(cls, date):
@@ -146,10 +138,12 @@ class PartialUpdateEducation(BaseModel):
 
         Atributos:
             qualification: Titulo de la formacion
-            level_id: Nivel de la formacion"""
+            level_id: Nivel de la formacion
+            sector_id: Sector de la formacion si lo tiene"""
     
     qualification: Optional[str] = Field(description=EducationDescription.QUALIFICATION, max_length=EducationValidators.MAX_LENGHT_QUALIFICATION, default=None)
-    level_id: Optional[int] = Field(description=EducationDescription.LEVEL_ID, default=None)
+    level_id: Optional[UUID] = Field(description=EducationDescription.LEVEL_ID, default=None)
+    sector_id: Optional[UUID] = Field(description=EducationDescription.SECTOR_ID, default=None)
     
 
 class PartialUpdateLevel(BaseModel):
@@ -184,6 +178,6 @@ class PartialUpdateJob(BaseModel):
     required_experience_months: Optional[int] = Field(description=JobDescription.REQUIRED_EXP, ge=JobValidators.MIN_REQUIRED_EXP, default=None)
     active: Optional[bool] = Field(description=JobDescription.ACTIVE, default=None)
     adress: Optional[PartialUpdateAdress] = Field(description=JobDescription.ADRESS, default=None)
-    required_education_level_id: Optional[int] = Field(description=JobDescription.REQUIRED_EDUCATION_LEVEL_ID, default=None)
-    sector_id: Optional[int] = Field(description=JobDescription.SECTOR_ID, default=None)
-    company_id: Optional[int] = Field(description=JobDescription.COMPANY_ID, default=None)
+    required_education_level_id: Optional[UUID] = Field(description=JobDescription.REQUIRED_EDUCATION_LEVEL_ID, default=None)
+    sector_id: Optional[UUID] = Field(description=JobDescription.SECTOR_ID, default=None)
+    company_id: Optional[UUID] = Field(description=JobDescription.COMPANY_ID, default=None)

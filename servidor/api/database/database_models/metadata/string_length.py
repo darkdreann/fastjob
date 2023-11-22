@@ -25,7 +25,7 @@ class ExperienceStringLen:
     position_description = 200
 
 class EducationStringLen:
-    qualification = 30
+    qualification = 50
 
 class EducationLevelStringLen:
     name = 30

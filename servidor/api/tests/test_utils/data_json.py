@@ -1,9 +1,10 @@
 from json import load
-from api.models.enums import UserType
+from datetime import date
+from api.models.enums.models import UserType
 
 _JSON_PATH = "test_data.json"
 
-with open(_JSON_PATH) as file:
+with open(_JSON_PATH, encoding="utf-8") as file:
     _DATA = load(file)
 
 
@@ -25,6 +26,11 @@ def _get_test_datas() -> dict:
             
             # recorre los diferentes registros a ser creados
             for new_data in _DATA[cls]:
+                if cls in ["CandidateEducation", "Experience"]:
+                    
+                    if cls == "CandidateEducation": new_data["completion_date"] = date(**new_data["completion_date"])
+                    if cls == "Experience": new_data["start_date"] = date(**new_data["start_date"]) ; new_data["end_date"] = date(**new_data["end_date"])
+
 
                 test_datas[cls].append(new_data) if cls != "User" else test_datas[cls][new_data["user_type"]].append(new_data)
        
@@ -32,7 +38,7 @@ def _get_test_datas() -> dict:
             print(f"Error: {exc} class does not exist.")
 
         except TypeError as exc:
-            print(exc)
+            print(f"Error: {exc}")
 
     return test_datas
     

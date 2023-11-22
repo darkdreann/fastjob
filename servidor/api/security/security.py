@@ -12,7 +12,7 @@ from api.database.connection import get_session
 from api.models.base_models import Token
 from api.utils.constants.http_exceptions import CREDENTIALS_EXCEPTION
 from api.database.database_models.models import User
-from api.models.enums import LogLevel
+from api.models.enums.models import LogLevel
 from api.utils.functions.management_utils import print_log, create_http_exception
 from api.utils.constants.error_strings import PERMISSION_USER_NOT_FOUND, INVALID_TOKEN, INVALID_CREDENTIALS
 from api.utils.functions.env_config import CONFIG
@@ -55,8 +55,6 @@ async def get_user_from_token(session:Annotated[AsyncSession, Depends(get_sessio
             
         Raises:
             HTTPException: No se ha podido autenticar el usuario."""
-    
-    print_log("ejecucion de get user token", log_level=LogLevel.INFO)
     
     try:
         payload = jwt.decode(token, CONFIG.SECRET_KEY, algorithms=[CONFIG.ALGORITHM])

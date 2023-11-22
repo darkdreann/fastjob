@@ -1,3 +1,5 @@
+from typing import Optional
+from uuid import UUID
 from api.models.base_models import *
 
 
@@ -86,16 +88,18 @@ class CreateExperience(BaseExperience):
             end_date: Fecha de finalizacion
             sector_id: Sector de la experiencia"""
     
-    sector_id: int = Field(description=ExperienceDescription.SECTOR_ID)
+    sector_id: UUID = Field(description=ExperienceDescription.SECTOR_ID)
 
 class CreateEducation(BaseEducation):
     """Modelo para crear una formacion
 
         Atributos:
             qualification: Titulo de la formacion
-            level_id: Nivel de la formacion"""
+            level_id: Nivel de la formacion
+            sector_id: Sector de la formacion si lo tiene"""
     
-    level_id: int = Field(description=EducationDescription.LEVEL_ID)
+    level_id: UUID = Field(description=EducationDescription.LEVEL_ID)
+    sector_id: Optional[UUID] = Field(description=EducationDescription.SECTOR_ID, default=None)
 
 class CreateLevel(BaseLevel):
     """Modelo para crear un nivel de formacion o idioma
@@ -120,9 +124,9 @@ class CreateJob(BaseJob):
             company_id: Empresa que publica la oferta"""
     
     adress: CreateAdress = Field(description=JobDescription.ADRESS)
-    required_education_level_id: int = Field(description=JobDescription.REQUIRED_EDUCATION_LEVEL_ID)
-    sector_id: int = Field(description=JobDescription.SECTOR_ID)
-    company_id: int = Field(description=JobDescription.COMPANY_ID)
+    required_education_level_id: UUID = Field(description=JobDescription.REQUIRED_EDUCATION_LEVEL_ID)
+    sector_id: UUID = Field(description=JobDescription.SECTOR_ID)
+    company_id: UUID = Field(description=JobDescription.COMPANY_ID)
     
 
     

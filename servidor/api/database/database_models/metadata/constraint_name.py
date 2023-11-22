@@ -7,6 +7,7 @@ class SectorEducationConstraint:
     SECTOR_EDUCATION_PK = "sector_education_pk"
     SECTOR_FK = "sector_education_sector_id_fk"
     EDUCATION_FK = "sector_education_education_id_fk"
+    DUPLICATE_EDUCATION_ID = "sector_education_duplicate_education_id"
 
 class CandidateEducationConstraint:
     CANDIDATE_EDUCATION_PK = "candidate_education_pk"

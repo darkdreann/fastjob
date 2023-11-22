@@ -1,4 +1,4 @@
-from api.models.enums import WorkSchedule
+from api.models.enums.models import WorkSchedule
 from datetime import date
 from dateutil.relativedelta import relativedelta
 
@@ -42,7 +42,7 @@ class ExperienceValidators:
 
 #-------------------EDUCATION---------------------------------
 class EducationValidators:
-    MAX_LENGHT_QUALIFICATION = 25
+    MAX_LENGHT_QUALIFICATION = 50
 
 
 #-------------------LEVEL--------------------------------------

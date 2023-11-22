@@ -1,14 +1,14 @@
 from typing import Optional, Self
 from uuid import uuid4, UUID
-from sqlalchemy.dialects.postgresql import UUID as SQL_UUID
+from sqlalchemy.dialects.postgresql import UUID as SQL_UUID, ARRAY
 from datetime import date
-from sqlalchemy import ForeignKey, PrimaryKeyConstraint, Enum, String, Integer, ARRAY, CheckConstraint, UniqueConstraint, text, select
-from sqlalchemy.orm import Mapped, DeclarativeBase, relationship, mapped_column
+from sqlalchemy import ForeignKey, PrimaryKeyConstraint, Enum, String, Integer, CheckConstraint, UniqueConstraint, text, select, Date
+from sqlalchemy.orm import Mapped, DeclarativeBase, relationship, mapped_column, deferred
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.database_models.metadata.table_name import *
 from api.database.database_models.metadata.constraint_name import *
 from api.database.database_models.metadata.string_length import *
-from api.models.enums import UserType, WorkSchedule
+from api.models.enums.models import UserType, WorkSchedule
 from api.models.create_models import CreateAdress
 from api.security.hash_crypt import encrypt_string
 
@@ -30,8 +30,8 @@ class JobCandidate(Base):
     job_id: Mapped[UUID] = mapped_column(ForeignKey(f"{JOB}.id", name=JobCandidateConstraint.JOB_FK))
     compatibility: Mapped[float]
 
-    candidate: Mapped["Candidate"] = relationship(back_populates="applied_jobs_list")
-    job: Mapped["Job"] = relationship(back_populates="candidates_list")
+    candidate: Mapped["Candidate"] = relationship(back_populates="applied_jobs_list", lazy="joined")
+    job: Mapped["Job"] = relationship(back_populates="candidates_list", lazy="joined")
 
     __table_args__ = (
         PrimaryKeyConstraint(candidate_id, job_id, name=JobCandidateConstraint.JOB_CANDIDATE_PK),
@@ -49,14 +49,15 @@ class SectorEducation(Base):
 
     __tablename__ = SECTOR_EDUCATION
 
-    education_id: Mapped[UUID] = mapped_column(ForeignKey(f"{EDUCATION}.id", name=SectorEducationConstraint.EDUCATION_FK))
+    education_id: Mapped[UUID] = mapped_column(ForeignKey(f"{EDUCATION}.id", name=SectorEducationConstraint.EDUCATION_FK, ondelete="CASCADE"))
     sector_id: Mapped[UUID] = mapped_column(ForeignKey(f"{SECTOR}.id", name=SectorEducationConstraint.SECTOR_FK))
 
-    sector: Mapped["Sector"] = relationship(back_populates="education_list")
-    education: Mapped["Education"] = relationship(back_populates="sector")
+    sector: Mapped["Sector"] = relationship(back_populates="education_list", lazy="joined")
+    education: Mapped["Education"] = relationship(back_populates="sector", lazy="joined")
 
     __table_args__ = (
         PrimaryKeyConstraint(education_id, sector_id, name=SectorEducationConstraint.SECTOR_EDUCATION_PK),
+        UniqueConstraint(education_id, name=SectorEducationConstraint.DUPLICATE_EDUCATION_ID),
     )
 
 
@@ -80,8 +81,8 @@ class CandidateEducation(Base):
     education_id: Mapped[UUID] = mapped_column(ForeignKey(f"{EDUCATION}.id", name=CandidateEducationConstraint.EDUCATION_FK))
     completion_date: Mapped[date]
 
-    candidate: Mapped["Candidate"] = relationship(back_populates="education_list")
-    education: Mapped["Education"] = relationship(back_populates="candidates_list")
+    candidate: Mapped["Candidate"] = relationship(back_populates="education_list", lazy="joined")
+    education: Mapped["Education"] = relationship(back_populates="candidates_list", lazy="joined")
 
     __table_args__ = (
         PrimaryKeyConstraint(candidate_id, education_id, name=CandidateEducationConstraint.CANDIDATE_EDUCATION_PK),
@@ -109,9 +110,9 @@ class CandidateLanguage(Base):
     language_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE}.id", name=CandidateLanguageConstraint.LANGUAGE_FK))
     language_level_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE_LEVEL}.id", name=CandidateLanguageConstraint.LANGUAGE_LEVEL_FK))
 
-    candidate: Mapped["Candidate"] = relationship(back_populates="language_list")
-    language: Mapped["Language"] = relationship(back_populates="candidates_list")
-    language_level: Mapped["LanguageLevel"] = relationship(back_populates="candidates_language_list")
+    candidate: Mapped["Candidate"] = relationship(back_populates="language_list", lazy="joined")
+    language: Mapped["Language"] = relationship(back_populates="candidates_list", lazy="joined")
+    language_level: Mapped["LanguageLevel"] = relationship(back_populates="candidates_language_list", lazy="joined")
 
     __table_args__ = (
         PrimaryKeyConstraint(candidate_id, language_id, name=CandidateLanguageConstraint.CANDIDATE_LANGUAGE_PK),
@@ -138,9 +139,9 @@ class JobLanguage(Base):
     language_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE}.id", name=JobLanguageConstraint.LANGUAGE_FK))
     language_level_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE_LEVEL}.id", name=JobLanguageConstraint.LANGUAGE_LEVEL_FK))
 
-    job: Mapped["Job"] = relationship(back_populates="language_list")
-    language: Mapped["Language"] = relationship(back_populates="jobs_list")
-    language_level: Mapped["LanguageLevel"] = relationship(back_populates="jobs_language_list")
+    job: Mapped["Job"] = relationship(back_populates="language_list", lazy="joined")
+    language: Mapped["Language"] = relationship(back_populates="jobs_list", lazy="joined")
+    language_level: Mapped["LanguageLevel"] = relationship(back_populates="jobs_language_list", lazy="joined")
 
     __table_args__ = (
         PrimaryKeyConstraint(job_id, language_id, name=JobLanguageConstraint.JOB_LANGUAGE_PK),
@@ -182,8 +183,8 @@ class User(Base):
     adress_id: Mapped[UUID] = mapped_column(ForeignKey(f"{ADRESS}.id", name=UserConstraint.ADRESS_FK))
     
     adress: Mapped["Adress"] = relationship(back_populates="users_list")
-    candidate: Mapped["Candidate"] = relationship(back_populates="user", uselist=False)
-    company: Mapped["Company"] = relationship(back_populates="user", uselist=False)
+    candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="user", uselist=False)
+    company: Mapped[Optional["Company"]] = relationship(back_populates="user", uselist=False)
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name=UserConstraint.USER_PK),
@@ -238,13 +239,13 @@ class Candidate(Base):
     user_id: Mapped[UUID] = mapped_column(ForeignKey(f"{USER}.id", name=CandidateConstraint.USER_FK, ondelete="CASCADE"))
     skills: Mapped[list[str]] = mapped_column(ARRAY(String(CandidateStringLen.skills)))
     availability: Mapped[list[WorkSchedule]] = mapped_column(ARRAY(Enum(WorkSchedule)))
-    curriculum: Mapped[Optional[bytes]]
+    curriculum: Mapped[Optional[bytes]] = deferred(mapped_column)
 
-    user: Mapped["User"] = relationship(back_populates="candidate", uselist=False)
-    education_list: Mapped[list["CandidateEducation"]] = relationship(back_populates="candidate")
-    language_list: Mapped[list["CandidateLanguage"]] = relationship(back_populates="candidate")
-    experience_list: Mapped[list["Experience"]] = relationship(back_populates="candidate")
-    applied_jobs_list: Mapped[list["JobCandidate"]] = relationship(back_populates="candidate")
+    user: Mapped["User"] = relationship(back_populates="candidate", uselist=False, lazy="joined")
+    education_list: Mapped[list["CandidateEducation"]] = relationship(back_populates="candidate", lazy="noload")
+    language_list: Mapped[list["CandidateLanguage"]] = relationship(back_populates="candidate", lazy="noload")
+    experience_list: Mapped[list["Experience"]] = relationship(back_populates="candidate", lazy="noload")
+    applied_jobs_list: Mapped[list["JobCandidate"]] = relationship(back_populates="candidate", lazy="noload")
 
     __table_args__ = (
         PrimaryKeyConstraint(user_id, name=CandidateConstraint.CANDIDATE_PK),
@@ -275,8 +276,8 @@ class Company(Base):
     tin: Mapped[str] = mapped_column(String(CompanyStringLen.tin))
     company_name: Mapped[str] = mapped_column(String(CompanyStringLen.company_name))
 
-    user: Mapped["User"] = relationship(back_populates="company", uselist=False)
-    job_list: Mapped[list["Job"]] = relationship(back_populates="company")
+    user: Mapped["User"] = relationship(back_populates="company", uselist=False, lazy="joined")
+    job_list: Mapped[list["Job"]] = relationship(back_populates="company", lazy="noload")
 
     __table_args__ = (
         PrimaryKeyConstraint(user_id, name=CompanyConstraint.COMPANY_PK),
@@ -306,8 +307,8 @@ class Language(Base):
     id: Mapped[Optional[UUID]] = mapped_column(SQL_UUID, default=uuid4)
     name: Mapped[str] = mapped_column(String(LanguageStringLen.name))
     
-    candidates_list: Mapped[list["CandidateLanguage"]] = relationship(back_populates="language")
-    jobs_list: Mapped[list["JobLanguage"]] = relationship(back_populates="language")
+    candidates_list: Mapped[list["CandidateLanguage"]] = relationship(back_populates="language", lazy="noload")
+    jobs_list: Mapped[list["JobLanguage"]] = relationship(back_populates="language", lazy="noload")
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name=LanguageConstraint.LANGUAGE_PK),
@@ -334,11 +335,10 @@ class Sector(Base):
     category: Mapped[str] = mapped_column(String(SectorStringLen.category), index=True)
     subcategory: Mapped[str] = mapped_column(String(SectorStringLen.subcategory))
 
-    education_list: Mapped[list["SectorEducation"]] = relationship(back_populates="sector")
-    experience_list: Mapped[list["Experience"]] = relationship(back_populates="sector")
-    job_list: Mapped[list["Job"]] = relationship(back_populates="sector")
+    education_list: Mapped[list["SectorEducation"]] = relationship(back_populates="sector", lazy="noload")
+    experience_list: Mapped[list["Experience"]] = relationship(back_populates="sector", lazy="noload")
+    job_list: Mapped[list["Job"]] = relationship(back_populates="sector", lazy="noload")
     
-
     __table_args__ = (
         PrimaryKeyConstraint("id", name=SectorConstraint.SECTOR_PK),
         UniqueConstraint(category, subcategory, name=SectorConstraint.DUPLICATE_CATEGORY_SUBCATEGORY),
@@ -374,8 +374,8 @@ class Experience(Base):
     candidate_id: Mapped[UUID] = mapped_column(ForeignKey(f"{CANDIDATE}.user_id", name=ExperienceConstraint.CANDIDATE_FK, ondelete="CASCADE"))
     sector_id: Mapped[UUID] = mapped_column(ForeignKey(f"{SECTOR}.id", name=ExperienceConstraint.SECTOR_FK))
 
-    candidate: Mapped["Candidate"] = relationship(back_populates="experience_list")
-    sector: Mapped["Sector"] = relationship(back_populates="experience_list")
+    candidate: Mapped["Candidate"] = relationship(back_populates="experience_list", lazy="noload")
+    sector: Mapped["Sector"] = relationship(back_populates="experience_list", lazy="joined")
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name=ExperienceConstraint.EXPERIENCE_PK),
@@ -403,9 +403,9 @@ class Education(Base):
     qualification: Mapped[str] = mapped_column(String(EducationStringLen.qualification))
     level_id: Mapped[UUID] = mapped_column(ForeignKey(f"{EDUCATION_LEVEL}.id", name=EducationConstraint.LEVEL_FK))
 
-    sector: Mapped[Optional["SectorEducation"]] = relationship(back_populates="education")
-    level: Mapped["EducationLevel"] = relationship(back_populates="education_list")
-    candidates_list: Mapped[list["CandidateEducation"]] = relationship(back_populates="education")
+    sector: Mapped[Optional["SectorEducation"]] = relationship(back_populates="education", lazy="joined")
+    level: Mapped["EducationLevel"] = relationship(back_populates="education_list", lazy="joined", order_by="EducationLevel.value")
+    candidates_list: Mapped[list["CandidateEducation"]] = relationship(back_populates="education", lazy="noload")
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name=EducationConstraint.EDUCATION_PK),
@@ -429,11 +429,11 @@ class EducationLevel(Base):
     __tablename__ = EDUCATION_LEVEL
 
     id: Mapped[Optional[UUID]] = mapped_column(SQL_UUID, default=uuid4)
-    value: Mapped[int]
     name: Mapped[str] = mapped_column(String(EducationLevelStringLen.name))
+    value: Mapped[int]
 
-    education_list: Mapped[list["Education"]] = relationship(back_populates="level")
-    jobs_list: Mapped[list["Job"]] = relationship(back_populates="education_level")
+    education_list: Mapped[list["Education"]] = relationship(back_populates="level", lazy="noload")
+    jobs_list: Mapped[list["Job"]] = relationship(back_populates="education_level", lazy="noload")
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name=EducationLevelConstraint.EDUCATION_LEVEL_PK),
@@ -462,8 +462,8 @@ class LanguageLevel(Base):
     value: Mapped[int]
     name: Mapped[str] = mapped_column(String(LanguageLevelStringLen.name))
 
-    candidates_language_list: Mapped[list["CandidateLanguage"]] = relationship(back_populates="language_level")
-    jobs_language_list: Mapped[list["JobLanguage"]] = relationship(back_populates="language_level")
+    candidates_language_list: Mapped[list["CandidateLanguage"]] = relationship(back_populates="language_level", lazy="noload")
+    jobs_language_list: Mapped[list["JobLanguage"]] = relationship(back_populates="language_level", lazy="noload")
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name=LanguageLevelConstraint.LANGUAGE_LEVEL_PK),
@@ -495,8 +495,8 @@ class Adress(Base):
     city: Mapped[str] = mapped_column(String(AdressStringLen.city))
     province: Mapped[str] = mapped_column(String(AdressStringLen.province))
 
-    users_list: Mapped[list["User"]] = relationship(back_populates="adress")
-    jobs_list: Mapped[list["Job"]] = relationship(back_populates="adress")
+    users_list: Mapped[list["User"]] = relationship(back_populates="adress", lazy="noload")
+    jobs_list: Mapped[list["Job"]] = relationship(back_populates="adress", lazy="noload")
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name=AdressConstraint.ADRESS_PK),
@@ -559,18 +559,18 @@ class Job(Base):
     work_schedule: Mapped[WorkSchedule] = mapped_column(Enum(WorkSchedule))
     skills: Mapped[list[str]] = mapped_column(ARRAY(String(JobStringLen.skills)))
     active: Mapped[bool]
-    publication_date: Mapped[date]
+    publication_date: Mapped[Optional[date]] = mapped_column(Date, server_default=text("CURRENT_DATE"))
     adress_id: Mapped[UUID] = mapped_column(ForeignKey(f"{ADRESS}.id", name=JobConstraint.ADRESS_FK))
     company_id: Mapped[UUID] = mapped_column(ForeignKey(f"{COMPANY}.user_id", name=JobConstraint.COMPANY_FK, ondelete="CASCADE"))
     education_level_id: Mapped[UUID] = mapped_column(ForeignKey(f"{EDUCATION_LEVEL}.id", name=JobConstraint.LEVEL_EDUCATION_FK))
     sector_id: Mapped[UUID] = mapped_column(ForeignKey(f"{SECTOR}.id", name=JobConstraint.SECTOR_FK))
     
-    company: Mapped["Company"] = relationship(back_populates="job_list")
-    education_level: Mapped["EducationLevel"] = relationship(back_populates="jobs_list")
-    adress: Mapped["Adress"] = relationship(back_populates="jobs_list")
-    language_list: Mapped[list["JobLanguage"]] = relationship(back_populates="job")
-    candidates_list: Mapped[list["JobCandidate"]] = relationship(back_populates="job")
-    sector: Mapped["Sector"] = relationship(back_populates="job_list")
+    company: Mapped["Company"] = relationship(back_populates="job_list", lazy="noload")
+    education_level: Mapped["EducationLevel"] = relationship(back_populates="jobs_list", lazy="noload")
+    adress: Mapped["Adress"] = relationship(back_populates="jobs_list", lazy="noload")
+    language_list: Mapped[list["JobLanguage"]] = relationship(back_populates="job", lazy="noload")
+    candidates_list: Mapped[list["JobCandidate"]] = relationship(back_populates="job", lazy="noload")
+    sector: Mapped["Sector"] = relationship(back_populates="job_list", lazy="noload")
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name=JobConstraint.JOB_PK),

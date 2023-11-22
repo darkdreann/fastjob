@@ -1,69 +1,62 @@
-from typing import Annotated, Self
-from fastapi import Depends
-from enum import Enum
+from typing import Annotated
+from fastapi import Depends, Request
 from starlette.background import BackgroundTask
-from uuid import UUID
 from api.database.database_models.models import User
 from api.security.security import get_user_from_token
-from api.models.enums import UserType
-from api.models.enums import LogLevel
+from api.models.enums.models import UserType
+from api.models.enums.models import LogLevel
 from api.utils.functions.management_utils import print_log, create_http_exception
-from api.utils.constants.error_strings import PERMISSION_DENIED, PERMISSION_USER_NOT_FOUND
+from api.utils.constants.error_strings import PERMISSION_DENIED
 from api.utils.constants.http_exceptions import FORBIDDEN_EXCEPTION
-
 
 class PermissionsManager:
     """Clase que maneja los permisos de los usuarios. Si no recibe parametros, comprueba por defecto si el usuario es admin."""
 
-    class Permission(Enum):
-        """Enum que contiene los permisos."""
-
-        IS_CANDIDATE = lambda **param : param["user"].user_type == UserType.CANDIDATE
-        IS_COMPANY = lambda **param : param["user"].user_type == UserType.COMPANY
-        IS_OWNER = lambda **param : param["user"].id == param["resource_id"]
+    @staticmethod
+    async def _raise_exception(ERROR: str, **kwargs):
+        """
+        Método que lanza una excepción de tipo HTTPException. Crea un background task para imprimir el log del error con el mensaje de error y los argumentos que se le pasan.
         
+        Args:
+            ERROR (str): El mensaje de error.
+            **kwargs: Los argumentos que se pasan al mensaje de error.
+        """
 
-        IS_JOB_OWNER = lambda **param : NotImplementedError("Not implemented yet")
+        background = BackgroundTask(print_log, ERROR, log_level=LogLevel.ERROR, **kwargs)
+        raise create_http_exception(**FORBIDDEN_EXCEPTION, background_task=background)
 
 
-    def __init__(self, permission: Permission = None) -> Self:
-        """Crea una instancia de PermissionsManager. Para ser usado como dependencia en los endpoints. Recibe un permiso a comprobar.
-           Puede no recibir un permiso, ya que por defecto comprueba si el usuario es admin. En ese caso seria un endpoint solo para admin.
-            
-            Args:
-                permission Permission | None: Lista con los permisos que se quieren comprobar. Por defecto None.
-                
-            Returns:
-                PermissionsManager: Instancia de PermissionsManager."""
+    @classmethod
+    async def is_admin(cls, request: Request, user: Annotated[User, Depends(get_user_from_token)]) -> None:
+        """
+        Método que comprueba si el usuario es admin. Si no lo es, lanza una excepción de tipo HTTPException.	
 
-        self.permission = permission
+        Args:
+            request (Request): informacion de la petición.
+            user (User): El usuario que hace la petición.	
+        """
+
+        if user.user_type != UserType.ADMIN:
+            await cls._raise_exception(PERMISSION_DENIED, user_id=user.id, resource=request.url)
+
+    @classmethod
+    async def is_logged(cls, request: Request, user: Annotated[User, Depends(get_user_from_token)]) -> None:
+        """
+        Verifica si el usuario está autenticado.
+
+        Args:
+            request (Request): La solicitud HTTP entrante.
+            user (User): El usuario autenticado.
+
+        Raises:
+            HTTPException: Si el usuario no está autenticado.
+        """
         
-
-    def __call__(self, user: Annotated[User, Depends(get_user_from_token)], user_id: UUID | None = None) -> None:
-        """Comprueba si el usuario tiene permiso para acceder a un recurso. 
-            Siempre comprueba si el usuario es admin, en caso que lo sea no sigue comprobando permisos.
-        
-            Args:
-                user (UserDB): Usuario.
-                user_id (UUID, optional): Id del usuario duenio del recurso. None por defecto.
-                
-            Raises:
-                HTTPException: Excepción si el usuario no tiene permiso para acceder al recurso."""
-        
-        def rais_exception(ERROR: str, **kwargs):
-            background = BackgroundTask(print_log, ERROR, log_level=LogLevel.ERROR, **kwargs)
-            raise create_http_exception(**FORBIDDEN_EXCEPTION, background_task=background)
-
         if not user:
-            rais_exception(PERMISSION_USER_NOT_FOUND)
-        
-        if user.user_type == UserType.ADMIN: return
+            await cls._raise_exception(PERMISSION_DENIED, user_id="No Auth", resource=request.url)
 
-        if self.permission is None:
-            rais_exception(PERMISSION_DENIED, user_id=user.id, resource_id=user_id)
 
-        if not self.permission(user=user, resource_id=user_id):
-            rais_exception(PERMISSION_DENIED, user_id=user.id, resource_id=user_id)
+
 
         
         

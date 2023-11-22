@@ -1,13 +1,14 @@
-from fastapi import status
-from api.models.enums import LogLevel
+from fastapi import BackgroundTasks, Depends, Request
+from typing import Annotated
+from api.models.enums.models import LogLevel
 from api.logging.logging_error import ERROR_LOGGER 
 from api.logging.logging_info import INFO_LOGGER
-from api.models.enums import LogLevel
+from api.models.enums.models import LogLevel
 from api.utils.constants.error_strings import LOG_FORMAT_ERROR
-from api.utils.exceptions.http_exception_background import HTTPExceptionWithBackgroundTask
-from api.utils.constants.http_exceptions import _DEFAULT_ERROR_MESSAGE
-
-
+from api.utils.constants.info_strings import RESOURCE_REQUEST
+from api.utils.exceptions import HTTPExceptionWithBackgroundTask
+from api.utils.constants.http_exceptions import DEFAULT_EXCEPTION
+from api.database.database_models.models import User
 
 def print_log(message: str, log_level: LogLevel, recursive: bool = False, **extra_message_info) -> None:
     """Guarda un mensaje en un archivo de log. Puede recibir un usuario para guardar su id en el log.
@@ -37,10 +38,13 @@ def create_http_exception(**kwargs) -> HTTPExceptionWithBackgroundTask:
             status_code (int, optional): Código de estado de la excepción. Por defecto 500.
             detail (str, optional): Detalle de la excepción. Por defecto "Something unexpected has happened on the server, please contact the system administrator.".
             headers (dict, optional): Cabeceras de la excepción. Por defecto None.
-            background_task (BackgroundTask, optional): Tarea en segundo plano. Por defecto None."""
+            background_task (BackgroundTask, optional): Tarea en segundo plano. Por defecto None.
+            
+        Returns:
+            HTTPExceptionWithBackgroundTask: Excepción HTTP."""
 
-    status_code = kwargs.get("status_code", status.HTTP_500_INTERNAL_SERVER_ERROR)
-    detail = kwargs.get("detail", _DEFAULT_ERROR_MESSAGE)
+    status_code = kwargs.get("status_code", DEFAULT_EXCEPTION["status_code"])
+    detail = kwargs.get("detail", DEFAULT_EXCEPTION["detail"])
     headers = kwargs.get("headers", None)
     background_task = kwargs.get("background_task", None)
 
@@ -50,3 +54,22 @@ def create_http_exception(**kwargs) -> HTTPExceptionWithBackgroundTask:
         headers=headers,
         background=background_task
     )
+
+# import en esta linea para evitar circular imports
+from api.security.security import get_user_from_token
+
+async def endpoint_request_log(request: Request, background_tasks: BackgroundTasks, logged_user: Annotated[User, Depends(get_user_from_token)]) -> None:
+    """
+    Crea una tarea en segundo plano para guardar en un log la petición a un endpoint.
+
+    Args:
+        request (Request): Petición HTTP.
+        background_tasks (BackgroundTasks): Tareas en segundo plano.
+        logged_user (User): Usuario loggeado.
+    """
+
+    METHOD = request.method
+    URL = request.url.path
+    USER_ID = logged_user.id
+
+    background_tasks.add_task(print_log, RESOURCE_REQUEST, LogLevel.INFO, user_id=USER_ID, http_method=METHOD, resource_url=URL)

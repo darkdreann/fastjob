@@ -84,6 +84,7 @@ class EducationDescription:
     SECTOR = "El sector que pertenece la formación. Puede no tener sector como por ejemplo la ESO."
     CANDIDATES = "Los candidatos que tienen la formación."
     LEVEL_ID = DESCRIPTIONS_ID["LEVEL_ID"]
+    SECTOR_ID = DESCRIPTIONS_ID["SECTOR_ID"]
 
 #-------------------LEVEL--------------------------------------
 class LevelDescription:
@@ -184,3 +185,9 @@ class CandidateJobDescriptions:
     CANDIDATE = "El candidato que se ha inscrito en la oferta."
     JOB = "La oferta en la que se ha inscrito el candidato."
     COMPATIBILITY = "La compatibilidad del candidato con la oferta."
+
+
+#-------------------EDUCATION SECTOR----------------------------
+class SectorEducationDescriptions:
+    SECTOR = "El sector al que pertenece la formación."
+    EDUCATION = "La formación que pertenece al sector."

@@ -2,9 +2,13 @@ from fastapi import status
 from api.database.database_models.metadata.constraint_name import *
 
 # constantes para las excepciones de integridad
-_DEFAULT_ERROR_MESSAGE = "Something unexpected has happened on the server, please contact the system administrator."
 _NULL_IN_RELATION_ERROR = "null value in column of relation violates not-null constraint"
 
+
+PARAMS_EXCEPTION = {
+    "status_code":status.HTTP_400_BAD_REQUEST,
+    "detail":"Invalid parameters."
+}
 
 # constantes para las excepciones
 CREDENTIALS_EXCEPTION = {
@@ -19,11 +23,10 @@ FORBIDDEN_EXCEPTION = {
     "detail":"Permission denied."
 }
 
-USER_NOT_FOUND_EXCEPTION = {
+RESOURCE_NOT_FOUND_EXCEPTION = {
     "status_code":status.HTTP_404_NOT_FOUND,
-    "detail":"User not found."
+    "detail":"Resource not found."
 }
-
 
 INTEGRATION_EXCEPTION = {
     JobCandidateConstraint.JOB_CANDIDATE_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Job_candidate primary key already exists."},
@@ -33,6 +36,7 @@ INTEGRATION_EXCEPTION = {
     SectorEducationConstraint.SECTOR_EDUCATION_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Sector_education primary key already exists."},
     SectorEducationConstraint.SECTOR_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the sector foreign key."},
     SectorEducationConstraint.EDUCATION_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the education foreign key."},
+    SectorEducationConstraint.DUPLICATE_EDUCATION_ID: {"status_code":status.HTTP_409_CONFLICT, "detail":"Education can only have one sector."},
 
     CandidateEducationConstraint.CANDIDATE_EDUCATION_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Candidate_education primary key already exists."},
     CandidateEducationConstraint.CANDIDATE_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the candidate foreign key."},
@@ -98,6 +102,12 @@ INTEGRATION_EXCEPTION = {
     JobConstraint.ADRESS_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the adress foreign key."},
     JobConstraint.LEVEL_EDUCATION_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the education_level foreign key."},
 
-    _NULL_IN_RELATION_ERROR: {"status_code":status.HTTP_409_CONFLICT, "detail":"The resource cannot be deleted because it is being used by another resource."}
+    _NULL_IN_RELATION_ERROR: {"status_code":status.HTTP_409_CONFLICT, "detail":"The relation cannot be null."},
+}
+
+
+DEFAULT_EXCEPTION = {
+    "status_code":status.HTTP_500_INTERNAL_SERVER_ERROR,
+    "detail": "Something unexpected has happened on the server, please contact the system administrator."
 }
 

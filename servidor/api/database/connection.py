@@ -1,4 +1,4 @@
-from sqlalchemy import text
+from sqlalchemy import text, create_engine
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.exc import OperationalError, ArgumentError
 from api.database.database_functions import get_database_functions
