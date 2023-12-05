@@ -1,7 +1,8 @@
-SERVER_STARTED = "Server started"
-SERVER_STOPPED = "Server stopped"
+SERVER_STARTED = "Servidor iniciado"
+SERVER_STOPPED = "Servidor detenido"
 
-USER_LOGIN = "LOGIN REQUEST BY USER {user_id}"
-USER_TOKEN_RENEW = "TOKEN RENEW REQUEST BY USER {user_id}"
+USER_LOGIN = "SOLICITUD DE INICIO DE SESIÓN POR EL USUARIO {user_id}"
+USER_TOKEN_RENEW = "SOLICITUD DE RENOVACIÓN DE TOKEN POR EL USUARIO {user_id}"
 
-RESOURCE_REQUEST = "{http_method} IN {resource_url} REQUESTED BY USER {user_id}"
+RESOURCE_REQUEST = "{http_method} EN {resource_url} SOLICITADO POR EL USUARIO {user_id}"
+

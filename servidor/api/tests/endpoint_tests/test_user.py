@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 from api.tests.test_utils.db_manage_test import get_database_record
 from api.models.enums.models import UserType
-from api.utils.constants.http_exceptions import RESOURCE_NOT_FOUND_EXCEPTION, INTEGRATION_EXCEPTION, FORBIDDEN_EXCEPTION
+from api.utils.constants.http_exceptions import RESOURCE_NOT_FOUND_EXCEPTION, INTEGRATION_EXCEPTION, FORBIDDEN_EXCEPTION, CREDENTIALS_EXCEPTION
 from api.database.database_models.models import User
 from api.database.database_models.metadata.constraint_name import UserConstraint
 from api.tests.test_utils.result_tests import check_request_data_saved, check_request_with_response
@@ -17,7 +17,7 @@ from api.tests.test_utils.db_manage_test import DATA
 async def test_consts():
     """Devuelve las constantes de prueba."""	
 
-    adress = DATA["Adress"][0]
+    address = DATA["Address"][0]
     admin = DATA["User"][UserType.ADMIN.value][0]
     delete_user = DATA["User"][UserType.CANDIDATE.value].pop(random.randrange(len(DATA["User"][UserType.CANDIDATE.value])))
     candidate = random.choice(DATA["User"][UserType.CANDIDATE.value])
@@ -33,7 +33,7 @@ async def test_consts():
         "DELETE_USER": delete_user,
         "CANDIDATE": candidate,
         "ADMIN": admin,
-        "ADRESS": adress,
+        "ADRESS": address,
         "ALL_USERS": all_users
     }
     
@@ -47,7 +47,7 @@ async def test_login_admin(client: AsyncClient, test_consts: dict):
     admin: User = test_consts["ADMIN"]
     data={"username": admin["username"], "password": admin["password"]}
 
-    response = await client.post(f"/users/login/", data=data)
+    response = await client.post(f"/login/", data=data)
     json = response.json()
 
     assert response.status_code == 200
@@ -62,7 +62,7 @@ async def test_login_normal_user(client: AsyncClient, test_consts: dict):
     candidate: User = test_consts["CANDIDATE"]
     data={"username": candidate["username"], "password": candidate["password"]}
 
-    response = await client.post(f"/users/login/", data=data)
+    response = await client.post(f"/login/", data=data)
     json = response.json()
 
     assert response.status_code == 200
@@ -75,7 +75,7 @@ async def test_renew_token(client: AsyncClient, test_consts: dict):
 
     headers={"Authorization": f"Bearer {test_consts['ADMIN_TOKEN']}"}
 
-    response = await client.post("/users/login/renew/", headers=headers)
+    response = await client.post("/login/renew/", headers=headers)
 
     json = response.json()
     assert response.status_code == 200
@@ -98,7 +98,7 @@ async def test_create_user_admin(client: AsyncClient, test_consts: dict):
             698128745
         ],
         "password": "Admin1234.",
-        "adress": {
+        "address": {
             "postal_code": 19999,
             "street": "calle falsa",
             "city": "vigo",
@@ -112,7 +112,7 @@ async def test_create_user_admin(client: AsyncClient, test_consts: dict):
     assert response.status_code == 201
 
     check_request_with_response(new_user_data, user_response)
-    database_user = await get_database_record(select(User).where(User.username == new_user_data["username"]).options(joinedload(User.adress)), only_one=True)
+    database_user = await get_database_record(select(User).where(User.username == new_user_data["username"]).options(joinedload(User.address)), only_one=True)
     await check_request_data_saved(new_user_data, data=database_user, user_type=UserType.ADMIN)
 
 
@@ -139,7 +139,7 @@ async def test_update_user(client: AsyncClient, test_consts: dict):
     headers={"Authorization": f"Bearer {test_consts['ADMIN_TOKEN']}"}
 
     user: dict = test_consts["CANDIDATE"]
-    adress: dict = test_consts["ADRESS"]
+    address: dict = test_consts["ADRESS"]
     user_id = user["id"]
 
     user["username"] = "juan40"
@@ -147,7 +147,7 @@ async def test_update_user(client: AsyncClient, test_consts: dict):
     user["name"] = "Juan"
     user["password"] = "Juan4090*"
 
-    user["adress"] = adress
+    user["address"] = address
     
 
 
@@ -157,7 +157,7 @@ async def test_update_user(client: AsyncClient, test_consts: dict):
 
     assert response.status_code == 200
     check_request_with_response(user, user_response)
-    database_user = await get_database_record(select(User).where(User.username == user["username"]).options(joinedload(User.adress)), only_one=True)
+    database_user = await get_database_record(select(User).where(User.username == user["username"]).options(joinedload(User.address)), only_one=True)
     await check_request_data_saved(user, data=database_user, user_type=user["user_type"])
 
 
@@ -184,7 +184,7 @@ async def test_partial_update_user(client: AsyncClient, test_consts: dict):
 
     assert response.status_code == 200
     check_request_with_response(user, user_response)
-    database_user = await get_database_record(select(User).where(User.username == user["username"]).options(joinedload(User.adress)), only_one=True)
+    database_user = await get_database_record(select(User).where(User.username == user["username"]).options(joinedload(User.address)), only_one=True)
     await check_request_data_saved(user, data=database_user, user_type=user["user_type"])
 
 @pytest.mark.anyio
@@ -234,7 +234,7 @@ async def test_create_user_unauthorized(client: AsyncClient, test_consts: dict):
     response_json = response.json()
     
     assert response.status_code == 401
-    assert response_json["detail"] == "Not authenticated"
+    assert response_json["detail"] == CREDENTIALS_EXCEPTION["detail"]
 
 @pytest.mark.anyio
 async def test_create_user_forbidden(client: AsyncClient, test_consts: dict):

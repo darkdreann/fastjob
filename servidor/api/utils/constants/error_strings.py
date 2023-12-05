@@ -1,48 +1,56 @@
-ENV_FILE_NOT_FOUND = "File .env not found"
-ENV_UNEXPECTED_ERROR = "Error: Something went wrong reading .env file:\n {exc}"
+ENV_FILE_NOT_FOUND = "Archivo .env no encontrado"
+ENV_UNEXPECTED_ERROR = "Error: Algo salió mal al leer el archivo .env:\n {exc}"
 
-DATABASE_ERROR = "Error: Database error: {exc}."
-TABLES_AND_FUNCTIONS_FAILED = "Error: Tables and functions creation failed\n {exc}"	
+DATABASE_ERROR = "Error: Error de base de datos: {exc}."
+TABLES_AND_FUNCTIONS_FAILED = "Error: Falló la creación de tablas y funciones\n {exc}"	
 
-UNKNOWN_QUERY_ERROR = "Error: Something went wrong in query:\n {exc}"
+UNKNOWN_QUERY_ERROR = "Error: Algo salió mal en la consulta:\n {exc}"
 
-RESOURCE_NOT_FOUND = "Error: Resource {resource_id} type {resource_type} requested not found"
+RESOURCE_NOT_FOUND = "Error: Recurso {resource_id} tipo {resource_type} solicitado no encontrado"
 
-RESOURCES_NOT_FOUND = "Error: Resources type {resource_type} not found query:\n {query}"
+RESOURCES_NOT_FOUND = "Error: Recursos tipo {resource_type} no encontrados en la consulta:\n {query}"
 
-PERMISSION_USER_NOT_FOUND = "Error: Permission denied user not found"
+PERMISSION_USER_NOT_FOUND = "Error: Permiso denegado, usuario no encontrado"
 
-PERMISSION_DENIED = "Error: Permission denied user {user_id} not allowed to access resource {resource}"
+PERMISSION_DENIED = "Error: Permiso denegado, usuario {user_id} no tiene acceso al recurso {resource}"
 
-INVALID_TOKEN = "Error: Invalid token provided:\n {exc}"
+PERMISSION_DENIED_RESOURCE_NOT_VALID = "Error: Permiso denegado {user_id}, recurso {resource} no es un {resource_type} válido"
 
-INVALID_CREDENTIALS = "Error: Could not validate credentials for {username}"
+INVALID_TOKEN = "Error: Token inválido proporcionado:\n {exc}"
 
-INVALID_PARAMS_ERROR = "Error: Invalid params provided:\n {exc}"
+INVALID_CREDENTIALS = "Error: No se pudieron validar las credenciales para {username}"
 
-LOG_FOLDER_CREATE_PERMISSION_DENIED = "Error: Permission denied creating log folder"
+LOG_FOLDER_CREATE_PERMISSION_DENIED = "Error: Permiso denegado para crear la carpeta de registros"
 
-LOG_FORMAT_ERROR = "Error: Cannot format log message:\n {exc}"
+LOG_FORMAT_ERROR = "Error: No se puede formatear el mensaje de registro:\n {exc}"
 
-ERROR_RESPONSE_UNEXPECTED_ERROR = "Error: Something went wrong. Please try again later."
+ERROR_RESPONSE_UNEXPECTED_ERROR = "Error: Algo salió mal. Por favor, inténtelo de nuevo más tarde."
 
-SECTOR_GET_PARAMS = "category_name and only_categories params cannot be used at the same time."
+SECTOR_GET_PARAMS = "No se pueden usar los parámetros category_name y only_categories al mismo tiempo."
 
-INVALID_EXTRA_FIELDS = "Error: Extra fields params not valid:\n {field}"
+INVALID_EXTRA_FIELDS = "Error: Parámetros de campos adicionales no válidos:\n {field}"
+
+INVALID_CANDIDATE_DIR_PARAMS = "Error: No se pueden usar los parámetros postal_code y province al mismo tiempo."
+
+INVALID_CANDIDATE_LANGUAGE_PARAMS = "Error: No se pueden usar el parámetro language_level sin el parámetro language."
+
+INVALID_EDUCATION_PARAMS = "Error: No se pueden usar los parámetros name con los parámetros level y sector."
+
+INVALID_CONTENT_TYPE = "Error: Tipo de contenido no válido. URL: {url}"
+
+INVALID_FILE_TYPE = "Error: Tipo de archivo no válido. El archivo debe ser un PDF."
 
 
-# EXCEPTION HANDLERS MESSAGES
+# MENSAJES DE MANEJADORES DE EXCEPCIONES
 LOG_INVALID_PARAMS = """
-Invalid params:
+Parámetros inválidos:
   params: {params},
-  Request:
+  Solicitud:
     url: {url},
-    method: {method}"""
+    método: {method}"""
 
 LOG_UNEXPECTED_ERROR = """
 Error: {exc},
-Request:
+Solicitud:
   url: {url},
-  method: {method}"""
-
-
+  método: {method}"""

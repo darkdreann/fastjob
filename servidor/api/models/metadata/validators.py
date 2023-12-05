@@ -52,7 +52,7 @@ class LevelValidators:
 
 
 #-------------------ADRESS--------------------------------------
-class AdressValidators:
+class AddressValidators:
     MIN_POSTAL_CODE = 9999
     MAX_POSTAL_CODE = 100000
     MAX_LENGHT_STREET = 30
@@ -70,22 +70,22 @@ class JobValidators:
 #-------------------VALIDATE FUCTIONS--------------------------------------
 class ValidatePhoneNumbers:
     PHONE_NUMBERS_LENGHT = 9
-    ERROR_MSG = f"Phone number must contain {PHONE_NUMBERS_LENGHT} numbers."
+    ERROR_MSG = f"El número de teléfono debe contener {PHONE_NUMBERS_LENGHT} números."
 
 class ValidateSkills:
     MAX_LENGHT_SKILLS = 20
-    ERROR_MSG = f"Max lenght of skills is {MAX_LENGHT_SKILLS} characters."
+    ERROR_MSG = f"La longitud máxima de las habilidades es de {MAX_LENGHT_SKILLS} caracteres."
 
 class ValidateDates:
     MIN_DATE = date.today() - relativedelta(years=80)
     MAX_DATE = date.today()
-    ERROR_MSG = "Date is not valid."
+    ERROR_MSG = "La fecha no es válida."
 
 class ValidateEndDate:
-    ERROR_MSG = "End date must be after start date."
+    ERROR_MSG = "La fecha de finalización debe ser posterior a la fecha de inicio."
 
 class ValidatePassword:
-    ERROR_MSG = "Password must contain at least 8 characters, one uppercase, one lowercase, one number and one special character."
+    ERROR_MSG = "La contraseña debe contener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial."
     PASSWORD_SPECIAL_CHAR = '@$!%*?&.'
 
 

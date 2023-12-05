@@ -13,16 +13,16 @@ from api.models.update_models import UpdateSector
 from api.models.partial_update_models import PartialUpdateSector
 from api.utils.constants.error_strings import SECTOR_GET_PARAMS
 from api.utils.functions.management_utils import endpoint_request_log
-from api.utils.functions.database_utils import update_model, secure_commit, get_database_records, get_record_by_id
+from api.utils.functions.database_utils import secure_commit, get_database_records, get_record_by_id
+from api.utils.functions.models_utils import update_model
 from api.models.enums.endpoints import SectorExtraField
 
 
-sectorRoute = APIRouter(prefix="/sectors", tags=["sectors"], dependencies=[Depends(endpoint_request_log)])
+sector_route = APIRouter(prefix="/sectors", tags=["sectors"], dependencies=[Depends(endpoint_request_log)])
 
 
-async def _get_sector_params(request: Request,
-                            only_categories: Annotated[bool | None, ONLY_CATEGORY] = False,
-                            category_name: Annotated[str | None, SECTOR_CATEGORY] = None) -> dict:
+async def _get_sector_params(only_categories: Annotated[bool | None, ONLY_CATEGORY] = False,
+                             category_name: Annotated[str | None, SECTOR_CATEGORY] = None) -> dict:
     """Función que valida los parámetros de la ruta /sectors. Si se especifica el parámetro 'only_category' se devolverán solo las categorías de los sectores.	
         Si se especifica el parámetro 'category' se devolverán las subcategorías de ese sector. No se pueden usar ambos parámetros a la vez.
 
@@ -38,18 +38,18 @@ async def _get_sector_params(request: Request,
             dict: Los parámetros de la ruta."""
             
     if category_name and only_categories:
-        raise RequestValidationError([SECTOR_GET_PARAMS], body= await request.body())
+        raise RequestValidationError([SECTOR_GET_PARAMS])
     
     if category_name:
         return {"category_name": category_name}
     return {"only_categories": only_categories}
 
 
-@sectorRoute.get("/", response_model=list[ReadSector], response_model_exclude_unset=True, dependencies=[Depends(PermissionsManager.is_logged)])
+@sector_route.get("/", response_model=list[ReadSector], response_model_exclude_unset=True, dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_sectors(*, 
                     session: Annotated[AsyncSession, Depends(get_session)], 
-                    limit: Annotated[int | None, LIMIT] = DEFAULT_LIMIT,
-                    offset: Annotated[int | None, OFFSET] = DEFAULT_OFFSET,
+                    limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                    offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
                     extra_params: dict = Depends(_get_sector_params)) -> list[Sector]:
     """Devuelve todos los sectores o las subcategorías de un sector en específico. Si se especifica el parámetro 'only_category' se devolverán solo las categorías de los sectores.
         Si se especifica el parámetro 'category' se devolverán las subcategorías de ese sector. No se pueden usar ambos parámetros a la vez.
@@ -86,11 +86,11 @@ async def get_sectors(*,
     return sectors
 
 
-@sectorRoute.get("/admin/", response_model=list[ReadSectorComplete], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
+@sector_route.get("/admin/", response_model=list[ReadSectorComplete], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_sectors_complete(*,
                                 session: Annotated[AsyncSession, Depends(get_session)], 
-                                limit: Annotated[int | None, LIMIT] = DEFAULT_LIMIT,
-                                offset: Annotated[int | None, OFFSET] = DEFAULT_OFFSET,
+                                limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                                offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
                                 extra_fields: Annotated[set[SectorExtraField], SECTOR_EXTRA_FIELD] = ()) -> list[Sector]:
     """Devuelve todos los sectores con todos sus campos. Solo accesible por administradores. Se pueden especificar los campos extra que se quieren obtener de las tablas relacionadas.
 
@@ -109,7 +109,7 @@ async def get_sectors_complete(*,
     return sectors
 
 
-@sectorRoute.get("/admin/{sector_id}/", response_model=ReadSectorComplete, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
+@sector_route.get("/admin/{sector_id}/", response_model=ReadSectorComplete, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_sector_complete(*,
                     session: Annotated[AsyncSession, Depends(get_session)], 
                     sector_id: Annotated[UUID, SECTOR_ID], 
@@ -127,7 +127,7 @@ async def get_sector_complete(*,
     return sector
 
 
-@sectorRoute.get("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_logged)])
+@sector_route.get("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_sector(*,
                     session: Annotated[AsyncSession, Depends(get_session)], 
                     sector_id: Annotated[UUID, SECTOR_ID]) -> Sector:
@@ -144,7 +144,7 @@ async def get_sector(*,
 
 
 
-@sectorRoute.post("/", status_code=status.HTTP_201_CREATED, response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
+@sector_route.post("/", status_code=status.HTTP_201_CREATED, response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
 async def create_sector(*,
                         session: Annotated[AsyncSession, Depends(get_session)], 
                         new_sector: CreateSector) -> Sector:
@@ -164,7 +164,7 @@ async def create_sector(*,
     return db_new_sector
 
 
-@sectorRoute.put("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
+@sector_route.put("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
 async def update_sector(*,
                     session: Annotated[AsyncSession, Depends(get_session)], 
                     sector_id: Annotated[UUID, SECTOR_ID],
@@ -187,7 +187,7 @@ async def update_sector(*,
 
     return sector_to_update
 
-@sectorRoute.patch("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
+@sector_route.patch("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
 async def partial_update_sector(*,
                         session: Annotated[AsyncSession, Depends(get_session)], 
                         sector_id: Annotated[UUID, SECTOR_ID],
@@ -211,7 +211,7 @@ async def partial_update_sector(*,
     return sector_to_update
 
 
-@sectorRoute.delete("/{sector_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])
+@sector_route.delete("/{sector_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])
 async def delete_sector(*,
                         session: Annotated[AsyncSession, Depends(get_session)], 
                         sector_id: Annotated[UUID, SECTOR_ID]) -> None:

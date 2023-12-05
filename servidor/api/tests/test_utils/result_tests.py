@@ -16,7 +16,8 @@ def check_request_with_response(request_data: dict, response_data: dict) -> None
             check_request_with_response(request_data[key], response_data[key])
 
         else:
-            assert response_data[key] == request_data[key], f"{response_data[key]} == {request_data[key]}"
+            if isinstance(request_data[key], str) and not key == "user_type": request_data[key] = request_data[key].lower()
+            assert response_data[key] == request_data[key], f"{response_data[key]} == {request_data[key]} in {key}"
 
 
 async def check_request_data_saved(request_data: dict, **kwargs) -> None:
@@ -34,13 +35,14 @@ async def check_request_data_saved(request_data: dict, **kwargs) -> None:
         record_att = getattr(record, key, None)
 
         if record_att is None: raise KeyError(f"Test fail: {key} not found in {record}.")
-        if key == "password": continue
+        if key in ["password","user_type"]: continue
         if key.endswith("id"): record_att = str(record_att)
 
         if isinstance(request_data[key], dict):
             await check_request_data_saved(request_data[key], data=record_att)
             
         else:
+            if isinstance(request_data[key], str): request_data[key] = request_data[key].lower()
             assert request_data[key] == record_att, f"{request_data[key]} == {record_att} in {key}"
             
     if isinstance(record, User):

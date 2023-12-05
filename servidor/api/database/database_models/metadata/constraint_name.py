@@ -33,7 +33,7 @@ class UserConstraint:
     ADMIN_HAS_TABLE = "check_admin_has_candidate_or_company_table"
     CANDIDATE_HAS_COMPANY_TABLE = "check_candidate_has_company_table"
     COMPANY_HAS_CANDIDATE_TABLE = "check_company_has_candidate_table"
-    ADRESS_FK = "user_adress_id_fk"
+    ADRESS_FK = "user_address_id_fk"
 
 class CandidateConstraint:
     CANDIDATE_PK = "candidate_pk"
@@ -77,14 +77,14 @@ class LanguageLevelConstraint:
     DUPLICATE_NAME = "unique_language_level_name"
     DUPLICATE_VALUE = "unique_language_level_value"
 
-class AdressConstraint:
-    ADRESS_PK = "adress_pk"
+class AddressConstraint:
+    ADRESS_PK = "address_pk"
     DUPLICATE_POSTAL_CODE = "unique_postal_code"
     DUPLICATE_ADRESS = "unique_street"
 
 class JobConstraint:
     JOB_PK = "job_pk"
-    ADRESS_FK = "job_adress_id_fk"
+    ADRESS_FK = "job_address_id_fk"
     COMPANY_FK = "job_company_id_fk"
     SECTOR_FK = "job_sector_id_fk"
     LEVEL_EDUCATION_FK = "job_education_level_id_fk"

@@ -104,7 +104,7 @@ class LanguageLevelDescription:
 
 #-------------------ADRESS--------------------------------------
 
-class AdressDescription:
+class AddressDescription:
     POSTAL_CODE = "Código postal de la dirección. Es un número de 5 digitos."
     STREET = "Nombre de la calle de la dirección."
     CITY = "Ciudad a la que pertenece la dirección."
@@ -185,6 +185,7 @@ class CandidateJobDescriptions:
     CANDIDATE = "El candidato que se ha inscrito en la oferta."
     JOB = "La oferta en la que se ha inscrito el candidato."
     COMPATIBILITY = "La compatibilidad del candidato con la oferta."
+    INCRIPTION_DATE = "La fecha de inscripción del candidato en la oferta."
 
 
 #-------------------EDUCATION SECTOR----------------------------

@@ -29,7 +29,8 @@ def _get_test_datas() -> dict:
                 if cls in ["CandidateEducation", "Experience"]:
                     
                     if cls == "CandidateEducation": new_data["completion_date"] = date(**new_data["completion_date"])
-                    if cls == "Experience": new_data["start_date"] = date(**new_data["start_date"]) ; new_data["end_date"] = date(**new_data["end_date"])
+                    if cls == "Experience": new_data["start_date"] = date(**new_data["start_date"])
+                    if cls == "Experience" and "end_date" in new_data: new_data["end_date"] = date(**new_data["end_date"])
 
 
                 test_datas[cls].append(new_data) if cls != "User" else test_datas[cls][new_data["user_type"]].append(new_data)

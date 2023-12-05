@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Optional, Self
 from uuid import UUID
 from api.models.base_models import *
 
 
-class CreateAdress(BaseAdress):
+class CreateAddress(BaseAddress):
     """Modelo para crear una direccion
 
         Atributos:
@@ -23,19 +23,20 @@ class CreateUser(BaseUser):
             surname: Apellido del usuario
             phone_numbers: Lista de numeros de telefono
             password: Contraseña del usuario
-            adress: Direccion del usuario"""
+            address: Direccion del usuario"""
 
     password: str = Field(description=UserDescriptions.PASSWORD, max_length=UserValidators.MAX_LENGHT_PASSWORD)
-    adress: CreateAdress = Field(description=UserDescriptions.ADRESS)
+    address: CreateAddress = Field(description=UserDescriptions.ADRESS, exclude=True)
 
     @field_validator('password')
+    @classmethod
     def password_validate(cls, password):
         """Valida que la contraseña cumpla los requisitos de seguridad."""
 
         return validate_password(password)
 
 
-class CreateCandidate(BaseCandidate, CreateUser):
+class CreateCandidate(BaseCandidate):
     """Modelo para crear un candidato
 
         Atributos:
@@ -45,11 +46,13 @@ class CreateCandidate(BaseCandidate, CreateUser):
             surname: Apellido del usuario
             phone_numbers: Lista de numeros de telefono
             password: Contraseña del usuario
-            adress: Direccion del usuario
+            address: Direccion del usuario
             skills: Lista de habilidades del candidato
             availability: Lista de disponibilidad de jornada laboral del candidato"""
     
-class CreateCompany(BaseCompany, CreateUser):
+    user: CreateUser = Field(description=CandidateDescription.USER)
+    
+class CreateCompany(BaseCompany):
     """Modelo para crear una empresa
 
         Atributos:
@@ -59,9 +62,11 @@ class CreateCompany(BaseCompany, CreateUser):
             surname: Apellido del usuario
             phone_numbers: Lista de numeros de telefono
             password: Contraseña del usuario
-            adress: Direccion del usuario
+            address: Direccion del usuario
             tin: Numero de identificacion de la empresa
             company_name: Nombre de la empresa"""
+    
+    user: CreateUser = Field(description=CandidateDescription.USER)
 
 class CreateLanguage(BaseLanguage):
     """Modelo para crear un idioma
@@ -118,12 +123,12 @@ class CreateJob(BaseJob):
             work_schedule: Disponibilidad de jornada laboral requerida
             required_experience_months: Experiencia requerida en meses
             active: Estado de la oferta de trabajo (abierta o cerrada))
-            adress: Direccion de la oferta
+            address: Direccion de la oferta
             required_education_level_id: Nivel de formacion requerido
             sector_id: Sector de la oferta
             company_id: Empresa que publica la oferta"""
     
-    adress: CreateAdress = Field(description=JobDescription.ADRESS)
+    address: CreateAddress = Field(description=JobDescription.ADRESS)
     required_education_level_id: UUID = Field(description=JobDescription.REQUIRED_EDUCATION_LEVEL_ID)
     sector_id: UUID = Field(description=JobDescription.SECTOR_ID)
     company_id: UUID = Field(description=JobDescription.COMPANY_ID)

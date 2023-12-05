@@ -4,110 +4,113 @@ from api.database.database_models.metadata.constraint_name import *
 # constantes para las excepciones de integridad
 _NULL_IN_RELATION_ERROR = "null value in column of relation violates not-null constraint"
 
-
 PARAMS_EXCEPTION = {
-    "status_code":status.HTTP_400_BAD_REQUEST,
-    "detail":"Invalid parameters."
+    "status_code": status.HTTP_400_BAD_REQUEST,
+    "detail": "Parámetros inválidos."
+}
+
+INCORRECT_RESOURCE_EXCEPTION = {
+    "status_code": status.HTTP_400_BAD_REQUEST,
+    "detail": "El tipo de recurso no es válido para este endpoint."
 }
 
 # constantes para las excepciones
 CREDENTIALS_EXCEPTION = {
-    "status_code":status.HTTP_401_UNAUTHORIZED,
-    "headers":{"WWW-Authenticate": "Bearer"},
-    "detail":"Could not validate user.",
+    "status_code": status.HTTP_401_UNAUTHORIZED,
+    "headers": {"WWW-Authenticate": "Bearer"},
+    "detail": "No se pudo validar el usuario.",
 }
 
 FORBIDDEN_EXCEPTION = {
-    "status_code":status.HTTP_403_FORBIDDEN,
-    "headers":{"WWW-Authenticate": "Bearer"},
-    "detail":"Permission denied."
+    "status_code": status.HTTP_403_FORBIDDEN,
+    "headers": {"WWW-Authenticate": "Bearer"},
+    "detail": "Permiso denegado."
 }
 
 RESOURCE_NOT_FOUND_EXCEPTION = {
-    "status_code":status.HTTP_404_NOT_FOUND,
-    "detail":"Resource not found."
+    "status_code": status.HTTP_404_NOT_FOUND,
+    "detail": "Recurso no encontrado."
 }
 
 INTEGRATION_EXCEPTION = {
-    JobCandidateConstraint.JOB_CANDIDATE_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Job_candidate primary key already exists."},
-    JobCandidateConstraint.CANDIDATE_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the candidate foreign key."},
-    JobCandidateConstraint.JOB_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the job foreign key."},
+    JobCandidateConstraint.JOB_CANDIDATE_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Job_candidate ya existe."},
+    JobCandidateConstraint.CANDIDATE_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de candidate."},
+    JobCandidateConstraint.JOB_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de job."},
 
-    SectorEducationConstraint.SECTOR_EDUCATION_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Sector_education primary key already exists."},
-    SectorEducationConstraint.SECTOR_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the sector foreign key."},
-    SectorEducationConstraint.EDUCATION_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the education foreign key."},
-    SectorEducationConstraint.DUPLICATE_EDUCATION_ID: {"status_code":status.HTTP_409_CONFLICT, "detail":"Education can only have one sector."},
+    SectorEducationConstraint.SECTOR_EDUCATION_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Sector_education ya existe."},
+    SectorEducationConstraint.SECTOR_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de sector."},
+    SectorEducationConstraint.EDUCATION_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de education."},
+    SectorEducationConstraint.DUPLICATE_EDUCATION_ID: {"status_code": status.HTTP_409_CONFLICT, "detail": "La educación solo puede tener un sector."},
 
-    CandidateEducationConstraint.CANDIDATE_EDUCATION_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Candidate_education primary key already exists."},
-    CandidateEducationConstraint.CANDIDATE_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the candidate foreign key."},
-    CandidateEducationConstraint.EDUCATION_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the education foreign key."},
+    CandidateEducationConstraint.CANDIDATE_EDUCATION_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Candidate_education ya existe."},
+    CandidateEducationConstraint.CANDIDATE_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de candidate."},
+    CandidateEducationConstraint.EDUCATION_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de education."},
 
-    CandidateLanguageConstraint.CANDIDATE_LANGUAGE_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Candidate_language primary key already exists."},
-    CandidateLanguageConstraint.CANDIDATE_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the candidate foreign key."},
-    CandidateLanguageConstraint.LANGUAGE_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the language foreign key."},
-    CandidateLanguageConstraint.LANGUAGE_LEVEL_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the language_level foreign key."},
+    CandidateLanguageConstraint.CANDIDATE_LANGUAGE_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Candidate_language ya existe."},
+    CandidateLanguageConstraint.CANDIDATE_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de candidate."},
+    CandidateLanguageConstraint.LANGUAGE_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de language."},
+    CandidateLanguageConstraint.LANGUAGE_LEVEL_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de language_level."},
 
-    JobLanguageConstraint.JOB_LANGUAGE_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Job_language primary key already exists."},
-    JobLanguageConstraint.JOB_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the job foreign key."},
-    JobLanguageConstraint.LANGUAGE_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the language foreign key."},
-    JobLanguageConstraint.LANGUAGE_LEVEL_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the language_level foreign key."},
+    JobLanguageConstraint.JOB_LANGUAGE_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Job_language ya existe."},
+    JobLanguageConstraint.JOB_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de job."},
+    JobLanguageConstraint.LANGUAGE_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de language."},
+    JobLanguageConstraint.LANGUAGE_LEVEL_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de language_level."},
 
-    UserConstraint.USER_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"User primary key already exists."},
-    UserConstraint.DUPLICATE_USERNAME: {"status_code":status.HTTP_409_CONFLICT, "detail":"Username already exists."},
-    UserConstraint.DUPLICATE_EMAIL: {"status_code":status.HTTP_409_CONFLICT, "detail":"Email already exists."},
-    UserConstraint.ADMIN_HAS_TABLE: {"status_code":status.HTTP_409_CONFLICT, "detail":"Admin user cannot have a candidate or company table."},
-    UserConstraint.CANDIDATE_HAS_COMPANY_TABLE: {"status_code":status.HTTP_409_CONFLICT, "detail":"Company user cannot have a candidate table."},
-    UserConstraint.COMPANY_HAS_CANDIDATE_TABLE: {"status_code":status.HTTP_409_CONFLICT, "detail":"Candidate user cannot have a company table."},
-    UserConstraint.ADRESS_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the adress foreign key."},
+    UserConstraint.USER_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de User ya existe."},
+    UserConstraint.DUPLICATE_USERNAME: {"status_code": status.HTTP_409_CONFLICT, "detail": "El nombre de usuario ya existe."},
+    UserConstraint.DUPLICATE_EMAIL: {"status_code": status.HTTP_409_CONFLICT, "detail": "El correo electrónico ya existe."},
+    UserConstraint.ADMIN_HAS_TABLE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario administrador no puede tener una tabla de candidato o empresa."},
+    UserConstraint.CANDIDATE_HAS_COMPANY_TABLE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario de empresa no puede tener una tabla de candidato."},
+    UserConstraint.COMPANY_HAS_CANDIDATE_TABLE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario de candidato no puede tener una tabla de empresa."},
+    UserConstraint.ADRESS_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de address."},
 
-    CandidateConstraint.CANDIDATE_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Candidate primary key already exists."},
-    CandidateConstraint.USER_NOT_CANDIDATE: {"status_code":status.HTTP_409_CONFLICT, "detail":"User is not a candidate."},
-    CandidateConstraint.USER_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the user foreign key."},
+    CandidateConstraint.CANDIDATE_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Candidate ya existe."},
+    CandidateConstraint.USER_NOT_CANDIDATE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario no es un candidato."},
+    CandidateConstraint.USER_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de user."},
 
-    CompanyConstraint.COMPANY_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Company primary key already exists."},
-    CompanyConstraint.USER_NOT_COMPANY: {"status_code":status.HTTP_409_CONFLICT, "detail":"User is not a company."},
-    CompanyConstraint.DUPLICATE_TIN: {"status_code":status.HTTP_409_CONFLICT, "detail":"TIN already exists."},
-    CompanyConstraint.DUPLICATE_COMPANY_NAME: {"status_code":status.HTTP_409_CONFLICT, "detail":"Company name already exists."},
-    CompanyConstraint.USER_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the user foreign key."},
+    CompanyConstraint.COMPANY_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Company ya existe."},
+    CompanyConstraint.USER_NOT_COMPANY: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario no es una empresa."},
+    CompanyConstraint.DUPLICATE_TIN: {"status_code": status.HTTP_409_CONFLICT, "detail": "El NIF ya existe."},
+    CompanyConstraint.DUPLICATE_COMPANY_NAME: {"status_code": status.HTTP_409_CONFLICT, "detail": "El nombre de la empresa ya existe."},
+    CompanyConstraint.USER_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de user."},
 
-    LanguageConstraint.LANGUAGE_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Language primary key already exists."},
-    LanguageConstraint.DUPLICATE_LANGUAGE_NAME: {"status_code":status.HTTP_409_CONFLICT, "detail":"Language name already exists."},
+    LanguageConstraint.LANGUAGE_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Language ya existe."},
+    LanguageConstraint.DUPLICATE_LANGUAGE_NAME: {"status_code": status.HTTP_409_CONFLICT, "detail": "El nombre del idioma ya existe."},
 
-    SectorConstraint.SECTOR_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Sector primary key already exists."},
-    SectorConstraint.DUPLICATE_CATEGORY_SUBCATEGORY: {"status_code":status.HTTP_409_CONFLICT, "detail":"Sector already exists."},
+    SectorConstraint.SECTOR_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Sector ya existe."},
+    SectorConstraint.DUPLICATE_CATEGORY_SUBCATEGORY: {"status_code": status.HTTP_409_CONFLICT, "detail": "El sector ya existe."},
 
-    ExperienceConstraint.EXPERIENCE_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Experience primary key already exists."},
-    ExperienceConstraint.CANDIDATE_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the candidate foreign key."},
-    ExperienceConstraint.SECTOR_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the sector foreign key."},
+    ExperienceConstraint.EXPERIENCE_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Experience ya existe."},
+    ExperienceConstraint.CANDIDATE_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de candidate."},
+    ExperienceConstraint.SECTOR_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de sector."},
 
-    EducationConstraint.EDUCATION_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Education primary key already exists."},
-    EducationConstraint.DUPLICATE_QUALIFICATION: {"status_code":status.HTTP_409_CONFLICT, "detail":"Education qualification already exists"},
-    EducationConstraint.LEVEL_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the education_level foreign key."},
+    EducationConstraint.EDUCATION_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Education ya existe."},
+    EducationConstraint.DUPLICATE_QUALIFICATION: {"status_code": status.HTTP_409_CONFLICT, "detail": "La calificación de la educación ya existe."},
+    EducationConstraint.LEVEL_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de education_level."},
 
-    EducationLevelConstraint.EDUCATION_LEVEL_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Education_level primary key already exists."},
-    EducationLevelConstraint.DUPLICATE_VALUE: {"status_code":status.HTTP_409_CONFLICT, "detail":"Education_level value already exists."},
-    EducationLevelConstraint.DUPLICATE_NAME: {"status_code":status.HTTP_409_CONFLICT, "detail":"Education_level name already exists."},
+    EducationLevelConstraint.EDUCATION_LEVEL_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Education_level ya existe."},
+    EducationLevelConstraint.DUPLICATE_VALUE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El valor de education_level ya existe."},
+    EducationLevelConstraint.DUPLICATE_NAME: {"status_code": status.HTTP_409_CONFLICT, "detail": "El nombre de education_level ya existe."},
 
-    LanguageLevelConstraint.LANGUAGE_LEVEL_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Language_level primary key already exists."},
-    LanguageLevelConstraint.DUPLICATE_VALUE: {"status_code":status.HTTP_409_CONFLICT, "detail":"Language_level value already exists."},
-    LanguageLevelConstraint.DUPLICATE_NAME: {"status_code":status.HTTP_409_CONFLICT, "detail":"Language_level name already exists."},
+    LanguageLevelConstraint.LANGUAGE_LEVEL_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Language_level ya existe."},
+    LanguageLevelConstraint.DUPLICATE_VALUE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El valor de language_level ya existe."},
+    LanguageLevelConstraint.DUPLICATE_NAME: {"status_code": status.HTTP_409_CONFLICT, "detail": "El nombre de language_level ya existe."},
 
-    AdressConstraint.ADRESS_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Adress primary key already exists."},
-    AdressConstraint.DUPLICATE_ADRESS: {"status_code":status.HTTP_409_CONFLICT, "detail":"Adress already exists."},
-    AdressConstraint.DUPLICATE_POSTAL_CODE: {"status_code":status.HTTP_409_CONFLICT, "detail":"Postal code already exists."},
+    AddressConstraint.ADRESS_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Address ya existe."},
+    AddressConstraint.DUPLICATE_ADRESS: {"status_code": status.HTTP_409_CONFLICT, "detail": "La dirección ya existe."},
+    AddressConstraint.DUPLICATE_POSTAL_CODE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El código postal ya existe."},
 
-    JobConstraint.JOB_PK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Job primary key already exists."},
-    JobConstraint.COMPANY_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the company foreign key."},
-    JobConstraint.SECTOR_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the sector foreign key."},
-    JobConstraint.ADRESS_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the adress foreign key."},
-    JobConstraint.LEVEL_EDUCATION_FK: {"status_code":status.HTTP_409_CONFLICT, "detail":"Problem occurred with the education_level foreign key."},
+    JobConstraint.JOB_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Job ya existe."},
+    JobConstraint.COMPANY_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de company."},
+    JobConstraint.SECTOR_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de sector."},
+    JobConstraint.ADRESS_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de address."},
+    JobConstraint.LEVEL_EDUCATION_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de education_level."},
 
-    _NULL_IN_RELATION_ERROR: {"status_code":status.HTTP_409_CONFLICT, "detail":"The relation cannot be null."},
+    _NULL_IN_RELATION_ERROR: {"status_code": status.HTTP_409_CONFLICT, "detail": "La columna no puede ser nula."},
 }
 
 
 DEFAULT_EXCEPTION = {
-    "status_code":status.HTTP_500_INTERNAL_SERVER_ERROR,
-    "detail": "Something unexpected has happened on the server, please contact the system administrator."
+    "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+    "detail": "Ha ocurrido algo inesperado en el servidor, por favor contacta al administrador del sistema."
 }
-

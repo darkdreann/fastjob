@@ -23,20 +23,24 @@ def validate_skills_len(skill_list: list) -> list:
             raise ValueError(ERROR_MSG)
     return skill_list
 
-def validate_dates(testDate: date) -> date:
+def validate_dates(test_date: date) -> date:
     """Valida que la fecha no supera la fecha actual ni sea demasiado antigua."""
+
+    if test_date is None: return
 
     MIN_DATE = ValidateDates.MIN_DATE
     MAX_DATE = ValidateDates.MAX_DATE
     ERROR_MSG = ValidateDates.ERROR_MSG
     
-    if testDate > MAX_DATE or testDate < MIN_DATE:
+    if test_date > MAX_DATE or test_date < MIN_DATE:
         raise ValueError(ERROR_MSG)
     
-    return testDate
+    return test_date
 
 def validate_end_date(start_date: date, end_date: date) -> date:
     """Valida que la fecha de finalizacion sea posterior a la de inicio"""
+
+    if start_date is None or end_date is None: return
 
     ERROR_MSG = ValidateEndDate.ERROR_MSG
 

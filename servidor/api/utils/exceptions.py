@@ -45,3 +45,12 @@ class DatabaseException(Exception):
 
 class ResourceNotFoundException(DatabaseException):
     """Excepción que se lanza cuando no se encuentra un recurso en la base de datos."""
+
+class RequestContentTypeError(Exception):
+    """Excepción que se lanza cuando el tipo de contenido de un archivo no es el correcto."""
+
+    def __init__(self, error_message) -> Self:
+        self.error_message = error_message
+
+    def __repr__(self) -> str:
+        return self.error_message

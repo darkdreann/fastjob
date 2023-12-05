@@ -1,6 +1,6 @@
 from api.models.create_models import *
 
-class UpdateAdress(CreateAdress):
+class UpdateAddress(CreateAddress):
     """Modelo para actualizar una direccion
 
         Atributos:
@@ -20,10 +20,10 @@ class UpdateUser(CreateUser):
             surname: Apellido del usuario
             phone_numbers: Lista de numeros de telefono
             password: Contraseña del usuario
-            adress: Direccion del usuario"""
+            address: Direccion del usuario"""
 
 
-class UpdateCandidate(CreateCandidate, CreateUser):
+class UpdateCandidate(CreateCandidate):
     """Modelo para actualizar un candidato
 
         Atributos:
@@ -33,11 +33,11 @@ class UpdateCandidate(CreateCandidate, CreateUser):
             surname: Apellido del usuario
             phone_numbers: Lista de numeros de telefono
             password: Contraseña del usuario
-            adress: Direccion del usuario
+            address: Direccion del usuario
             skills: Lista de habilidades del candidato
             availability: Lista de disponibilidad de jornada laboral del candidato"""
     
-class UpdateCompany(CreateCompany, CreateUser):
+class UpdateCompany(CreateCompany):
     """Modelo para actualizar una empresa
 
         Atributos:
@@ -47,7 +47,7 @@ class UpdateCompany(CreateCompany, CreateUser):
             surname: Apellido del usuario
             phone_numbers: Lista de numeros de telefono
             password: Contraseña del usuario
-            adress: Direccion del usuario
+            address: Direccion del usuario
             tin: Numero de identificacion de la empresa
             company_name: Nombre de la empresa"""
 
@@ -103,7 +103,7 @@ class UpdateJob(CreateJob):
             work_schedule: Disponibilidad de jornada laboral requerida
             required_experience_months: Experiencia requerida en meses
             active: Estado de la oferta de trabajo (abierta o cerrada))
-            adress: Direccion de la oferta
+            address: Direccion de la oferta
             required_education_level_id: Nivel de formacion requerido
             sector_id: Sector de la oferta
             company_id: Empresa que publica la oferta"""

@@ -56,9 +56,9 @@ def create_http_exception(**kwargs) -> HTTPExceptionWithBackgroundTask:
     )
 
 # import en esta linea para evitar circular imports
-from api.security.security import get_user_from_token
+from api.security.security import get_user_from_token_or_none
 
-async def endpoint_request_log(request: Request, background_tasks: BackgroundTasks, logged_user: Annotated[User, Depends(get_user_from_token)]) -> None:
+async def endpoint_request_log(request: Request, background_tasks: BackgroundTasks, logged_user: Annotated[User, Depends(get_user_from_token_or_none)]) -> None:
     """
     Crea una tarea en segundo plano para guardar en un log la petición a un endpoint.
 
@@ -70,6 +70,9 @@ async def endpoint_request_log(request: Request, background_tasks: BackgroundTas
 
     METHOD = request.method
     URL = request.url.path
-    USER_ID = logged_user.id
+    USER_ID = "No Auth"
+
+    if logged_user:
+        USER_ID = logged_user.id
 
     background_tasks.add_task(print_log, RESOURCE_REQUEST, LogLevel.INFO, user_id=USER_ID, http_method=METHOD, resource_url=URL)

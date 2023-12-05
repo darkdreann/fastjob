@@ -1,4 +1,4 @@
-from sqlalchemy import text, create_engine
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.exc import OperationalError, ArgumentError
 from api.database.database_functions import get_database_functions
@@ -13,7 +13,7 @@ DATABASE_URL = f"postgresql+asyncpg://{CONFIG.DATABASE_USERNAME}:{CONFIG.DATABAS
 
 try:
     engine = create_async_engine(DATABASE_URL, echo=CONFIG.DEVELOPMENT, pool_size=CONFIG.POOL_SIZE, max_overflow=CONFIG.MAX_OVERFLOW)
-    session_maker = async_sessionmaker(engine, expire_on_commit=False)
+    session_maker = async_sessionmaker(engine, expire_on_commit=False, autoflush=False)
     
 except (OperationalError, ArgumentError) as exc:
     raise ConnectionError(DATABASE_ERROR.format(exc=exc))

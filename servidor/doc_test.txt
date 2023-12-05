@@ -1,0 +1,10 @@
+============================= test session starts =============================
+platform win32 -- Python 3.11.4, pytest-7.4.2, pluggy-1.3.0
+rootdir: C:\Users\RuiJorge\Documents\proyecto_dam\servidor
+plugins: anyio-3.7.1, asyncio-0.21.1, cov-4.1.0
+asyncio: mode=Mode.STRICT
+collected 15 items
+
+api\tests\endpoint_tests\test_user.py ...............                    [100%]
+
+============================= 15 passed in 6.88s ==============================

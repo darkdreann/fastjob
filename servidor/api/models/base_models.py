@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field, field_validator
+from typing import Optional
+from pydantic import BaseModel, Field, field_validator, model_validator
 from pydantic.networks import EmailStr
 from api.models.enums.models import WorkSchedule
 from api.models.metadata import *
@@ -22,6 +23,7 @@ class BaseUser(BaseModel):
     phone_numbers: list[int] = Field(description=UserDescriptions.PHONE_NUMBER, max_length=UserValidators.MAX_ITEMS_PHONE_NUMBERS)
 
     @field_validator('phone_numbers')
+    @classmethod
     def phone_validate(cls, list):
         return validate_phone_numbers(list)
     
@@ -37,6 +39,7 @@ class BaseCandidate(BaseModel):
     availability: list[WorkSchedule] = Field(description=CandidateDescription.AVAILABILITY, max_length=CandidateValidators.MAX_ITEMS_AVAILABILITY)
 
     @field_validator('skills')
+    @classmethod
     def validate(cls, list):
             return validate_skills_len(list)
     
@@ -80,22 +83,22 @@ class BaseExperience(BaseModel):
             end_date: Fecha de finalizacion"""
      
     company_name: str = Field(description=ExperienceDescription.COMPANY_NAME, max_length=ExperienceValidators.MAX_LENGHT_COMPANY_NAME)
-    position: str = Field(description=ExperienceDescription.POSITION, max_length=ExperienceValidators.MAX_LENGHT_POSITION)
-    position_description: str = Field(description=ExperienceDescription.POSITION_DESC, max_length=ExperienceValidators.MAX_LENGHT_POSITION_DESC)
+    job_position: str = Field(description=ExperienceDescription.POSITION, max_length=ExperienceValidators.MAX_LENGHT_POSITION)
+    job_position_description: str = Field(description=ExperienceDescription.POSITION_DESC, max_length=ExperienceValidators.MAX_LENGHT_POSITION_DESC)
     start_date: date = Field(description=ExperienceDescription.START_DATE)
-    end_date: date = Field(description=ExperienceDescription.END_DATE)
+    end_date: Optional[date] = Field(description=ExperienceDescription.END_DATE, default=None)
 
-    @field_validator("start_date","end_date")
-    def dates_validate(cls, date):
-        """Valida que las fechas no sean futuras ni muy antiguas"""
+    @model_validator(mode='after')
+    def end_date_validate(self):
+        """Valida que las fechas"""
 
-        validate_dates(date)
+        validate_dates(self.start_date)
+        if self.end_date is not None:
+            validate_dates(self.end_date)
+            validate_end_date(self.start_date, self.end_date)
 
-    @field_validator("end_date")
-    def end_date_validate(cls, date, values):
-        """Valida que la fecha de finalizacion sea posterior a la de inicio"""
-
-        validate_end_date(date, values["start_date"])
+        return self
+        
 
 
 class BaseEducation(BaseModel):
@@ -117,7 +120,7 @@ class BaseLevel(BaseModel):
     name: str = Field(description=LevelDescription.NAME, max_length=LevelValidators.MAX_LENGHT_NAME)
     value: int = Field(description=LevelDescription.VALUE, ge=LevelValidators.MIN_VALUE)
 
-class BaseAdress(BaseModel):
+class BaseAddress(BaseModel):
     """Modelo base para las direcciones
     
         Atributos:
@@ -126,10 +129,10 @@ class BaseAdress(BaseModel):
             city: Ciudad
             province: Provincia"""
 
-    postal_code: int = Field(description=AdressDescription.POSTAL_CODE, ge=AdressValidators.MIN_POSTAL_CODE, le=AdressValidators.MAX_POSTAL_CODE)
-    street: str = Field(description=AdressDescription.STREET, max_length=AdressValidators.MAX_LENGHT_STREET)
-    city: str = Field(description=AdressDescription.CITY, max_length=AdressValidators.MAX_LENGHT_CITY)
-    province: str = Field(description=AdressDescription.PROVINCE, max_length=AdressValidators.MAX_LENGHT_PROVINCE)
+    postal_code: int = Field(description=AddressDescription.POSTAL_CODE, ge=AddressValidators.MIN_POSTAL_CODE, le=AddressValidators.MAX_POSTAL_CODE)
+    street: str = Field(description=AddressDescription.STREET, max_length=AddressValidators.MAX_LENGHT_STREET)
+    city: str = Field(description=AddressDescription.CITY, max_length=AddressValidators.MAX_LENGHT_CITY)
+    province: str = Field(description=AddressDescription.PROVINCE, max_length=AddressValidators.MAX_LENGHT_PROVINCE)
 
 
 class BaseJob(BaseModel):
@@ -151,6 +154,7 @@ class BaseJob(BaseModel):
     active: bool = Field(description=JobDescription.ACTIVE)
 
     @field_validator('skills')
+    @classmethod
     def validate(cls, list):
         return validate_skills_len(list)
 

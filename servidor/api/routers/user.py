@@ -5,10 +5,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from api.database.connection import get_session
-from api.utils.functions.database_utils import secure_commit, update_model, get_database_records, get_user_by_id
+from api.utils.functions.database_utils import secure_commit, get_database_records, get_user_by_id
+from api.utils.functions.models_utils import update_model, get_address_from_db
 from api.security.security import TOKEN_URL, get_user_from_token, generate_token, authenticate_user
 from api.security.permissions import PermissionsManager
-from api.database.database_models.models import User, Adress
+from api.database.database_models.models import User, Address
 from api.models.base_models import Token
 from api.models.read_models import ReadUserComplete
 from api.models.create_models import CreateUser
@@ -19,14 +20,14 @@ from api.utils.constants.endpoints_params import LIMIT, OFFSET, USER_ID, DEFAULT
 from api.utils.functions.management_utils import print_log, endpoint_request_log
 from api.utils.constants.info_strings import USER_LOGIN, USER_TOKEN_RENEW
 
-userRoute = APIRouter(prefix="/users", tags=["users"], dependencies=[Depends(PermissionsManager.is_admin), Depends(endpoint_request_log)])
-loginRoute = APIRouter(tags=["login", "users"])
+user_route = APIRouter(prefix="/users", tags=["users"], dependencies=[Depends(PermissionsManager.is_admin), Depends(endpoint_request_log)])
+login_route = APIRouter(tags=["login", "users"])
 
-@userRoute.get("/",response_model=list[ReadUserComplete])
+@user_route.get("/",response_model=list[ReadUserComplete])
 async def get_users(*, 
                     session: Annotated[AsyncSession, Depends(get_session)], 
-                    limit: Annotated[int | None, LIMIT] = DEFAULT_LIMIT,
-                    offset: Annotated[int | None, OFFSET] = DEFAULT_OFFSET) -> list[User]:
+                    limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                    offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[User]:
     """Devuelve todos los usuarios registrados en la base de datos. Solo los administradores pueden acceder a este endpoint. 
         Permite elegir la cantidad de usuarios devueltos y el offset para paginar los resultados.
     
@@ -39,13 +40,13 @@ async def get_users(*,
             list[ReadUser]: Lista de usuarios registrados en la base de datos."""
 
     # se obtienen los usuarios
-    list_user: list[User] = await get_database_records(session, User, options=joinedload(User.adress), limit=limit, offset=offset)
+    list_user: list[User] = await get_database_records(session, User, options=joinedload(User.address), limit=limit, offset=offset)
 
     return list_user
 
 
 
-@userRoute.get("/{user_id}/", response_model=ReadUserComplete)
+@user_route.get("/{user_id}/", response_model=ReadUserComplete)
 async def get_user(*, 
                    session:Annotated[AsyncSession, Depends(get_session)],
                    logged_user: Annotated[User, Depends(get_user_from_token)],
@@ -60,11 +61,11 @@ async def get_user(*,
         Returns:
             ReadUser: Usuario que se quiere obtener."""
     
-    user: User = await get_user_by_id(session, logged_user, User, user_id, extra_fields=joinedload(User.adress))
+    user: User = await get_user_by_id(session, logged_user, user_id, extra_fields=joinedload(User.address))
 
     return user
 
-@userRoute.post("/admin/",response_model=ReadUserComplete, status_code=status.HTTP_201_CREATED)
+@user_route.post("/admin/",response_model=ReadUserComplete, status_code=status.HTTP_201_CREATED)
 async def create_user(*, 
                       session:Annotated[AsyncSession, Depends(get_session)], 
                       new_user: CreateUser) -> User:
@@ -76,13 +77,10 @@ async def create_user(*,
             
         Returns:
             ReadUser: Usuario que se ha creado."""
+    
+    address = await get_address_from_db(session, new_user.address)
         
-    new_database_user = User(**new_user.model_dump(exclude=["adress"]))
-
-    # se comprueba si la direccion ya existe en la base de datos, si existe se devuelve la direccion que ya existe
-    new_database_user.adress = await Adress.get_adress(session, new_user.adress)
-
-    new_database_user.user_type = UserType.ADMIN
+    new_database_user = User(**new_user.model_dump(), user_type=UserType.ADMIN, address=address)
 
     session.add(new_database_user)
     await secure_commit(session)
@@ -90,7 +88,7 @@ async def create_user(*,
     return new_database_user
 
 
-@userRoute.put("/{user_id}/", response_model=ReadUserComplete)
+@user_route.put("/{user_id}/", response_model=ReadUserComplete)
 async def update_user(*, 
                       session:Annotated[AsyncSession, Depends(get_session)],
                       logged_user: Annotated[User, Depends(get_user_from_token)],
@@ -107,13 +105,13 @@ async def update_user(*,
         Returns:
             ReadUser: Usuario que se ha actualizado."""
     
-    user_to_update = await get_user_by_id(session, logged_user, User, user_id, extra_fields=joinedload(User.adress))
+    user_to_update = await get_user_by_id(session, logged_user, user_id, extra_fields=joinedload(User.address))
     
     # se actualiza el usuario
-    update_model(user_to_update, update_user.model_dump(exclude=["adress"]))
+    update_model(user_to_update, update_user.model_dump())
 
     # se comprueba si la direccion ya existe en la base de datos, si existe se devuelve la direccion que ya existe
-    user_to_update.adress = await Adress.get_adress(session, update_user.adress)
+    user_to_update.address = await get_address_from_db(session, update_user.address)
 
     await secure_commit(session)
     await session.refresh(user_to_update)
@@ -121,7 +119,7 @@ async def update_user(*,
     return user_to_update
 
 
-@userRoute.patch("/{user_id}/", response_model=ReadUserComplete)
+@user_route.patch("/{user_id}/", response_model=ReadUserComplete)
 async def partial_update_user(*, 
                               session:Annotated[AsyncSession, Depends(get_session)],
                               logged_user: Annotated[User, Depends(get_user_from_token)],
@@ -138,17 +136,17 @@ async def partial_update_user(*,
         Returns:
             ReadUser: Usuario que se ha actualizado."""
     
-    user_to_update = await get_user_by_id(session, logged_user, User, user_id, extra_fields=joinedload(User.adress))
+    user_to_update = await get_user_by_id(session, logged_user, user_id, extra_fields=joinedload(User.address))
     
     # se quita los parametros que no se quieren actualizar
-    new_user_data_no_unset = update_user.model_dump(exclude=["adress"],exclude_unset=True)
+    new_user_data_no_unset = update_user.model_dump(exclude_unset=True)
     
     # se actualiza el usuario
     update_model(user_to_update, new_user_data_no_unset)
 
     # si se quiere actualizar la direccion se comprueba si la direccion ya existe en la base de datos, si existe se devuelve la direccion que ya existe
-    if update_user.adress:	
-        user_to_update.adress = await Adress.get_adress(session, update_user.adress)
+    if update_user.address:	
+        user_to_update.address = await get_address_from_db(session, update_user.address)
 
     await secure_commit(session)
     await session.refresh(user_to_update)
@@ -156,7 +154,7 @@ async def partial_update_user(*,
     return user_to_update
 
 
-@userRoute.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)
+@user_route.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(*, 
                       session:Annotated[AsyncSession, Depends(get_session)], 
                       logged_user: Annotated[User, Depends(get_user_from_token)],
@@ -168,12 +166,12 @@ async def delete_user(*,
             logged_user (UserDB): Usuario que realiza la peticion.
             user_id (int): Id del usuario que se quiere eliminar."""
     
-    user_to_delete = await get_user_by_id(session, logged_user, User, user_id)
+    user_to_delete = await get_user_by_id(session, logged_user, user_id)
 
     await session.delete(user_to_delete)
     await secure_commit(session)
 
-@loginRoute.post(f"/{TOKEN_URL}/",response_model=Token)
+@login_route.post(f"/{TOKEN_URL}/",response_model=Token)
 async def login_user(*, 
                      session: Annotated[AsyncSession, Depends(get_session)],
                      background_tasks: BackgroundTasks,
@@ -199,7 +197,7 @@ async def login_user(*,
 
 
 
-@loginRoute.post(f"/{TOKEN_URL}/renew/", response_model=Token)
+@login_route.post(f"/{TOKEN_URL}/renew/", response_model=Token)
 async def renew_token(*, 
                       background_tasks: BackgroundTasks,
                       logged_user: Annotated[User, Depends(get_user_from_token)]) -> Token:

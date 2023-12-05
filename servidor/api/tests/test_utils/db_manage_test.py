@@ -7,25 +7,42 @@ async def create_test_data() -> None:
 
     async for session in get_session():
         try:
-            globales = globals()
-            
+            models = {
+                "User": User,
+                "Sector": Sector,
+                "Address": Address,
+                "Education": Education,
+                "Language": Language,
+                "Candidate": Candidate,
+                "LanguageLevel": LanguageLevel,
+                "EducationLevel": EducationLevel,
+                "JobLanguage": JobLanguage,
+                "Company": Company,
+                "Experience": Experience,
+                "Job": Job,
+                "JobCandidate": JobCandidate,
+                "SectorEducation": SectorEducation,
+                "CandidateEducation": CandidateEducation,
+                "CandidateLanguage": CandidateLanguage,
+            }
+
             # recorre los modelos a ser creados
             for cls in DATA.keys():
 
-                clase = globales[cls]
+                model = models[cls]
 
 
-                if clase == User:
+                if model == User:
                     for user_type in DATA[cls].keys():
                         for new_data in DATA[cls][user_type]:
-                            new_record = clase(**new_data)
+                            new_record = model(**new_data)
                             session.add(new_record)
 
                 else:
                     # recorre los diferentes registros a ser creados
                     for new_data in DATA[cls]:
 
-                        new_record = clase(**new_data)
+                        new_record = model(**new_data)
                         session.add(new_record)
 
         except Exception as exc:

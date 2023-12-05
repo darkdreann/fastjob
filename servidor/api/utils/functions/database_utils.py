@@ -1,13 +1,13 @@
 from re import sub
 from uuid import UUID
+from typing import Any, Sequence
 from sqlalchemy import select, Row
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.base import ExecutableOption
-from sqlalchemy.sql._typing import _ColumnsClauseArgument as ColumnsClauseArgument, _ColumnExpressionOrStrLabelArgument as ColumnOrderArgument
+from sqlalchemy.sql._typing import _ColumnsClauseArgument as ColumnsClauseArgument, _ColumnExpressionOrStrLabelArgument as ColumnArgument
 from starlette.background import BackgroundTask
-from typing import Any, Sequence
-from pydantic import BaseModel
+from collections.abc import Iterable
 from api.utils.constants.http_exceptions import INTEGRATION_EXCEPTION, RESOURCE_NOT_FOUND_EXCEPTION, DEFAULT_EXCEPTION
 from api.utils.functions.management_utils import print_log
 from api.models.enums.models import LogLevel
@@ -16,9 +16,10 @@ from api.utils.constants.error_strings import RESOURCE_NOT_FOUND, UNKNOWN_QUERY_
 from api.utils.exceptions import DatabaseException, ResourceNotFoundException
 
 
+
 def _sequence_param(param):
     """
-    Convierte el parámetro en una tupla si no es una secuencia y si no es None. De lo contrario devuelve el parámetro sin cambios.
+    Convierte el parámetro en una tupla si no es iterable y si no es None. De lo contrario devuelve el parámetro sin cambios.
 
     Args:
         param: El parámetro a convertir.
@@ -26,8 +27,8 @@ def _sequence_param(param):
     Returns:
         Una tupla que contiene el parámetro si no es una secuencia, de lo contrario devuelve el parámetro sin cambios.
     """
-  
-    if param is not None and not isinstance(param, Sequence):
+
+    if param is not None and (not isinstance(param, Iterable) or isinstance(param, dict)):
         return (param,)
     return param
 
@@ -60,20 +61,6 @@ def _raise_not_found(log_message: str, **kwargs) -> None:
     raise ResourceNotFoundException(error_message=log_message, http_response=RESOURCE_NOT_FOUND_EXCEPTION, background_task=background)
 
 
-
-def update_model(model_to_update: BaseModel, new_data: dict) -> None:
-    """Actualiza los atributos de un modelo con los datos de otro modelo o diccionario.
-    
-        Args:
-            model_to_update (BaseModel): Modelo a actualizar.
-            new_data (dict): Diccionario con los datos a actualizar."""
-
-    new_data_dict = vars(new_data) if not isinstance(new_data, dict) else new_data
-
-    for atribute in new_data_dict.keys():
-        setattr(model_to_update, atribute, new_data_dict[atribute])
-
-
 async def secure_commit(session: AsyncSession) -> None:
     """Realiza un commit de la sesión, si se produce una excepción de integridad, hace rollback y lanza una excepción.
     
@@ -97,6 +84,7 @@ async def secure_commit(session: AsyncSession) -> None:
                     
                 Returns:
                     str: Índice del error."""
+            print("error_info",error_info)
 
             if "constraint_name" in error_info.keys():
                 return error_info['constraint_name']
@@ -108,7 +96,7 @@ async def secure_commit(session: AsyncSession) -> None:
     
         error_index = get_error_index(e.orig.__cause__.__dict__)
 
-        http_exception = INTEGRATION_EXCEPTION[error_index] if error_index in INTEGRATION_EXCEPTION.keys() else {}
+        http_exception = INTEGRATION_EXCEPTION[error_index] if error_index in INTEGRATION_EXCEPTION.keys() else DEFAULT_EXCEPTION
         background = BackgroundTask(print_log, e, LogLevel.ERROR)
 
         raise DatabaseException(error_message=e.detail, http_response=http_exception, background_task=background)
@@ -123,37 +111,54 @@ async def secure_commit(session: AsyncSession) -> None:
 
 
 async def get_database_records(session: AsyncSession, 
-                               *fields: ColumnsClauseArgument, 
+                               *fields: ColumnsClauseArgument,
+                               froms: Sequence[Base] | Base = None,
+                               joins: Sequence[dict] | dict = None,
                                options: Sequence[ExecutableOption] | ExecutableOption = None, 
-                               where: Sequence[bool] | bool = None, 
-                               order: Sequence[ColumnOrderArgument] | ColumnOrderArgument = None, 
+                               where: Sequence[bool] | bool = None,
+                               group_by: Sequence[ColumnArgument] | ColumnArgument = None,
+                               having: Sequence[bool] | bool = None,
+                               order: Sequence[ColumnArgument] | ColumnArgument = None, 
                                **kwargs) -> Sequence[Row[Any]] | Sequence[Any] | Row[Any] | Any | None:
     """
     Obtiene registros de una tabla de la base de datos.
 
     Args:
-        session (AsyncSession): Sesión de la base de datos.
-        model (Base): Modelo que representa la tabla de la base de datos.
-        options (Sequence, optional): Lista de campos a cargar. Defaults to None.
-        where (Sequence, optional): Lista de condiciones para filtrar los registros. Defaults to None.
-        order (Sequence, optional): Lista de campos para ordenar los registros. Defaults to None.
-        **kwargs: Argumentos adicionales.
-            limit (int, optional): Límite de registros a obtener. Defaults to None.
-            offset (int, optional): Desplazamiento de registros a obtener. Defaults to None.
-            unique (bool, optional): Indica si se deben obtener registros únicos. Defaults to False.
-            scalar (bool, optional): Indica si se deben devolver los registros como escalares. Defaults to True.
-            result_list (bool, optional): Indica si se deben devolver los registros como una lista. Defaults to True. En caso de ser False, se devolverá un único registro.
+    - session (AsyncSession): Sesión de la base de datos.
+    - model (Base): Modelo que representa la tabla de la base de datos.
+    - fields (ColumnsClauseArgument): Campos a obtener.
+    - joins (Sequence[dict], optional): Lista de joins. Defaults to None:
+        - target (Base): Modelo que representa la tabla de la base de datos.
+        - onclause (bool): Condición de unión. Defaults to None.
+        - isouter (bool): Indica si es un join externo. Defaults to False.
+        - full (bool): Indica si es un join completo. Defaults to False.
+    - options (Sequence, optional): Lista de campos a cargar. Defaults to None.
+    - where (Sequence, optional): Lista de condiciones para filtrar los registros. Defaults to None.
+    - group_by (Sequence | optional): Lista de campos para agrupar los registros.
+    - having (Sequence | optional): Lista de condiciones para filtrar los registros agrupados.
+    - order (Sequence, optional): Lista de campos para ordenar los registros. Defaults to None.
+    - **kwargs: Argumentos adicionales.
+        - limit (int, optional): Límite de registros a obtener. Defaults to None.
+        - offset (int, optional): Desplazamiento de registros a obtener. Defaults to None.
+        - unique (bool, optional): Indica si se deben obtener registros únicos. Defaults to False.
+        - scalar (bool, optional): Indica si se deben devolver los registros como escalares. Defaults to True.
+        - result_list (bool, optional): Indica si se deben devolver los registros como una lista. Defaults to True. En caso de ser False, se devolverá un único registro.
 
     Returns:
-        Sequence[Row[Any]] | Sequence[Any] | Row[Any] | Any | None: Registros obtenidos.
+    - Sequence[Row[Any]] | Sequence[Any] | Row[Any] | Any | None: Registros obtenidos.
 
     Raises:
-        DatabaseException: Excepción de recurso no encontrado.
+    - DatabaseException: Excepción de recurso no encontrado.
     """
 
     try:
+        # Se convierten los parámetros en tuplas si no lo son.
+        froms = _sequence_param(froms)
+        joins = _sequence_param(joins)
         options = _sequence_param(options)
         where = _sequence_param(where)
+        group_by = _sequence_param(group_by)
+        having = _sequence_param(having)
         order = _sequence_param(order)
 
         # Se obtienen los kwargs.
@@ -165,6 +170,14 @@ async def get_database_records(session: AsyncSession,
 
         statement = select(*fields)
 
+        # Se añaden los joins.
+        if joins:
+            for join in joins:
+                statement = statement.join(**join)
+
+        if froms:
+            statement = statement.select_from(*froms)
+    
         # Se añaden las opciones.
         if options:
             statement = statement.options(*options)
@@ -181,8 +194,13 @@ async def get_database_records(session: AsyncSession,
         if offset:
             statement = statement.offset(offset)
 
+        if group_by:
+            statement = statement.group_by(*group_by)
+
+        if having:
+            statement = statement.having(*having)
+
         if order:
-            print(f"cerdo: {order}")
             statement = statement.order_by(*order)
 
         # Se ejecuta la consulta.
@@ -247,7 +265,7 @@ async def get_record_by_id(session: AsyncSession, model: Base, record_id: UUID |
 
 
 
-async def get_user_by_id(session: AsyncSession, logged_user: User, model: Base, user_id: UUID, extra_fields: Sequence[ExecutableOption] | ExecutableOption = ()) -> User:
+async def get_user_by_id(session: AsyncSession, logged_user: User, user_id: UUID, extra_fields: Sequence[ExecutableOption] | ExecutableOption = ()) -> User:
     """
     Obtiene un usuario de la base de datos por su id.
 
@@ -266,8 +284,6 @@ async def get_user_by_id(session: AsyncSession, logged_user: User, model: Base, 
         DatabaseException: Si el registro no existe.
     """
 
-    
-
     if user_id == logged_user.id: return logged_user
 
-    return await get_record_by_id(session, model, user_id, extra_fields)
+    return await get_record_by_id(session, User, user_id, extra_fields)

@@ -12,13 +12,14 @@ from api.models.create_models import CreateLanguage, CreateLevel
 from api.models.update_models import UpdateLanguage, UpdateLevel
 from api.models.partial_update_models import PartialUpdateLevel
 from api.utils.functions.management_utils import endpoint_request_log
-from api.utils.functions.database_utils import update_model, secure_commit, get_record_by_id, get_database_records
+from api.utils.functions.database_utils import secure_commit, get_record_by_id, get_database_records
+from api.utils.functions.models_utils import update_model
 from api.models.enums.endpoints import LanguageExtraField, LanguageLevelExtraField
 
-languageRoute = APIRouter(prefix="/languages", tags=["Language"], dependencies=[Depends(endpoint_request_log)])
+language_route = APIRouter(prefix="/languages", tags=["languages"], dependencies=[Depends(endpoint_request_log)])
 
 # GET METHODS #
-@languageRoute.get("/", response_model=list[ReadLanguage], dependencies=[Depends(PermissionsManager.is_logged)])
+@language_route.get("/", response_model=list[ReadLanguage], dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_languages(*,
                         session: AsyncSession = Depends(get_session),
                         limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
@@ -39,7 +40,7 @@ async def get_languages(*,
 
     return languages
 
-@languageRoute.get("/language-levels/", response_model=list[ReadLevel], dependencies=[Depends(PermissionsManager.is_logged)])
+@language_route.get("/language-levels/", response_model=list[ReadLevel], dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_language_levels(*,
                                 session: AsyncSession = Depends(get_session),
                                 limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
@@ -61,7 +62,7 @@ async def get_language_levels(*,
     return levels
 
 
-@languageRoute.get("/admin/", response_model=list[ReadLanguageComplete], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.get("/admin/", response_model=list[ReadLanguageComplete], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_languages_complete(*,
                                 session: AsyncSession = Depends(get_session),
                                 limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
@@ -83,7 +84,7 @@ async def get_languages_complete(*,
 
     return languages
 
-@languageRoute.get("/admin/language-levels/", response_model=list[ReadLevelLanguage], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.get("/admin/language-levels/", response_model=list[ReadLevelLanguage], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_language_levels_complete(*,
                                         session: AsyncSession = Depends(get_session),
                                         limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
@@ -108,7 +109,7 @@ async def get_language_levels_complete(*,
 
 
 
-@languageRoute.get("/admin/{language_id}/", response_model=ReadLanguageComplete, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.get("/admin/{language_id}/", response_model=ReadLanguageComplete, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_language_complete(*,
                                 session: AsyncSession = Depends(get_session),
                                 language_id: Annotated[UUID, LANGUAGE_ID],
@@ -129,7 +130,7 @@ async def get_language_complete(*,
 
     return language
 
-@languageRoute.get("/admin/language-levels/{language_level_id}/", response_model=ReadLevelLanguage, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.get("/admin/language-levels/{language_level_id}/", response_model=ReadLevelLanguage, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_language_level_complete(*,
                                     session: AsyncSession = Depends(get_session),
                                     language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID],
@@ -152,7 +153,7 @@ async def get_language_level_complete(*,
 
 
 
-@languageRoute.get("/language-levels/{language_level_id}/", response_model=ReadLevel, dependencies=[Depends(PermissionsManager.is_logged)])
+@language_route.get("/language-levels/{language_level_id}/", response_model=ReadLevel, dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_language_level(*,
                             session: AsyncSession = Depends(get_session),
                             language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID]) -> LanguageLevel:
@@ -171,7 +172,7 @@ async def get_language_level(*,
 
     return level
 
-@languageRoute.get("/{language_id}/", response_model=ReadLanguage, dependencies=[Depends(PermissionsManager.is_logged)])
+@language_route.get("/{language_id}/", response_model=ReadLanguage, dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_language(*,
                         session: AsyncSession = Depends(get_session),
                         language_id: Annotated[UUID, LANGUAGE_ID]) -> Language:
@@ -193,7 +194,7 @@ async def get_language(*,
 
 # POST METHODS #
 
-@languageRoute.post("/", response_model=ReadLanguage, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.post("/", response_model=ReadLanguage, dependencies=[Depends(PermissionsManager.is_admin)])
 async def create_language(*,
                         session: AsyncSession = Depends(get_session),
                         new_language: CreateLanguage) -> Language:
@@ -216,7 +217,7 @@ async def create_language(*,
 
     return new_db_language
 
-@languageRoute.post("/language-levels/", response_model=ReadLevel, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.post("/language-levels/", response_model=ReadLevel, dependencies=[Depends(PermissionsManager.is_admin)])
 async def create_language_level(*,
                                 session: AsyncSession = Depends(get_session),
                                 new_language_level: CreateLevel) -> LanguageLevel:
@@ -241,7 +242,7 @@ async def create_language_level(*,
 
 # PUT METHODS #
 
-@languageRoute.put("/language-levels/{language_level_id}/", response_model=ReadLevel, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.put("/language-levels/{language_level_id}/", response_model=ReadLevel, dependencies=[Depends(PermissionsManager.is_admin)])
 async def update_language_level(*,
                                 session: AsyncSession = Depends(get_session),
                                 language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID],
@@ -268,7 +269,7 @@ async def update_language_level(*,
 
 
 
-@languageRoute.put("/{language_id}/", response_model=ReadLanguage, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.put("/{language_id}/", response_model=ReadLanguage, dependencies=[Depends(PermissionsManager.is_admin)])
 async def update_language(*,
                             session: AsyncSession = Depends(get_session),
                             language_id: Annotated[UUID, LANGUAGE_ID],
@@ -296,7 +297,7 @@ async def update_language(*,
 # PATCH METHODS #
 
 
-@languageRoute.patch("/language-levels/{language_level_id}/", response_model=ReadLevel, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.patch("/language-levels/{language_level_id}/", response_model=ReadLevel, dependencies=[Depends(PermissionsManager.is_admin)])
 async def partial_update_language_level(*,
                                 session: AsyncSession = Depends(get_session),
                                 language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID],
@@ -323,7 +324,7 @@ async def partial_update_language_level(*,
 
 # DELETE METHODS #
 
-@languageRoute.delete("/language-levels/{language_level_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.delete("/language-levels/{language_level_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])
 async def delete_language_level(*,
                                 session: AsyncSession = Depends(get_session),
                                 language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID]) -> None:
@@ -342,7 +343,7 @@ async def delete_language_level(*,
     await secure_commit(session)
 
 
-@languageRoute.delete("/{language_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.delete("/{language_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])
 async def partial_update_language(*,
                             session: AsyncSession = Depends(get_session),
                             language_id: Annotated[UUID, LANGUAGE_ID]) -> None:

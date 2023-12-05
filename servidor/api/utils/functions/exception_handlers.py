@@ -6,8 +6,8 @@ from fastapi.exceptions import RequestValidationError
 from starlette.requests import Request
 from starlette.background import BackgroundTask
 from api.utils.functions.management_utils import print_log
-from api.utils.constants.error_strings import ERROR_RESPONSE_UNEXPECTED_ERROR, LOG_UNEXPECTED_ERROR, LOG_INVALID_PARAMS
-from api.utils.exceptions import HTTPExceptionWithBackgroundTask, DatabaseException, ResourceNotFoundException
+from api.utils.constants.error_strings import ERROR_RESPONSE_UNEXPECTED_ERROR, LOG_UNEXPECTED_ERROR, LOG_INVALID_PARAMS, INVALID_CONTENT_TYPE
+from api.utils.exceptions import HTTPExceptionWithBackgroundTask, DatabaseException, ResourceNotFoundException, RequestContentTypeError
 from api.models.enums.models import LogLevel
 
 
@@ -46,6 +46,26 @@ async def request_validation_exception_handler(request: Request, exc: RequestVal
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detail": jsonable_encoder(errors)},
+        background=background
+    )
+
+
+async def request_content_type_exception_handler(request: Request, exc: RequestContentTypeError) -> JSONResponse:
+    """Función que maneja las excepciones relacionadas con la validación de los parámetros de una request. Registra el error en un archivo de log y cierra el servidor.
+
+    Args:
+        request (Request): Request que generó la excepción.
+        exc (RequestValidationError): Excepción relacionada con la validación de los parámetros de una request.
+    
+    Returns:
+        JSONResponse: Respuesta HTTP.
+    """
+
+    background = BackgroundTask(print_log, INVALID_CONTENT_TYPE, LogLevel.WARNING, url=request.url)
+
+    return JSONResponse(
+        status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        content={"detail": exc.error_message},
         background=background
     )
 

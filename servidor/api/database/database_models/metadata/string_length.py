@@ -33,7 +33,7 @@ class EducationLevelStringLen:
 class LanguageLevelStringLen:
     name = 30
 
-class AdressStringLen:
+class AddressStringLen:
     street = 50
     city = 50
     province = 50
