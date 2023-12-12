@@ -138,6 +138,7 @@ async def get_database_records(session: AsyncSession,
     - having (Sequence | optional): Lista de condiciones para filtrar los registros agrupados.
     - order (Sequence, optional): Lista de campos para ordenar los registros. Defaults to None.
     - **kwargs: Argumentos adicionales.
+        - distinct (bool, optional): Indica si se deben obtener registros únicos. Defaults to False.
         - limit (int, optional): Límite de registros a obtener. Defaults to None.
         - offset (int, optional): Desplazamiento de registros a obtener. Defaults to None.
         - unique (bool, optional): Indica si se deben obtener registros únicos. Defaults to False.
@@ -167,6 +168,7 @@ async def get_database_records(session: AsyncSession,
         unique = kwargs.get('unique', False)
         scalar = kwargs.get('scalar', True)
         result_list = kwargs.get('result_list', True)
+        distinct = kwargs.get('distinct', False)
 
         statement = select(*fields)
 
@@ -174,6 +176,9 @@ async def get_database_records(session: AsyncSession,
         if joins:
             for join in joins:
                 statement = statement.join(**join)
+
+        if distinct:
+            statement = statement.distinct()
 
         if froms:
             statement = statement.select_from(*froms)
@@ -233,7 +238,7 @@ async def get_database_records(session: AsyncSession,
     except Exception as e:
         _raise_exception(e)
 
-async def get_record_by_id(session: AsyncSession, model: Base, record_id: UUID | tuple[UUID], options: Sequence[ExecutableOption] | ExecutableOption = None) -> Base:
+async def get_record_by_id(session: AsyncSession, model: Base, record_id: UUID, options: Sequence[ExecutableOption] | ExecutableOption = None) -> Base:
     """
     Obtiene un registro de la base de datos por su id.
 

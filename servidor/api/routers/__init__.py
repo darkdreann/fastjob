@@ -8,3 +8,5 @@ from .experience import candidate_experience_route
 from .candidate_language import candidate_language_route
 from .candidate_education import candidate_education_route
 from .company import company_route
+from .job import job_route
+from .job_candidate import job_candidate_route

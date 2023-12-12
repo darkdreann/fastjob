@@ -24,8 +24,7 @@ user_route = APIRouter(prefix="/users", tags=["users"], dependencies=[Depends(Pe
 login_route = APIRouter(tags=["login", "users"])
 
 @user_route.get("/",response_model=list[ReadUserComplete])
-async def get_users(*, 
-                    session: Annotated[AsyncSession, Depends(get_session)], 
+async def get_users(session: Annotated[AsyncSession, Depends(get_session)], 
                     limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                     offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[User]:
     """Devuelve todos los usuarios registrados en la base de datos. Solo los administradores pueden acceder a este endpoint. 
@@ -47,8 +46,7 @@ async def get_users(*,
 
 
 @user_route.get("/{user_id}/", response_model=ReadUserComplete)
-async def get_user(*, 
-                   session:Annotated[AsyncSession, Depends(get_session)],
+async def get_user(session:Annotated[AsyncSession, Depends(get_session)],
                    logged_user: Annotated[User, Depends(get_user_from_token)],
                    user_id: Annotated[UUID, USER_ID]) -> User:
     """Devuelve un usuario por su id. Solo los administradores pueden acceder a este endpoint.
@@ -66,8 +64,7 @@ async def get_user(*,
     return user
 
 @user_route.post("/admin/",response_model=ReadUserComplete, status_code=status.HTTP_201_CREATED)
-async def create_user(*, 
-                      session:Annotated[AsyncSession, Depends(get_session)], 
+async def create_user(session:Annotated[AsyncSession, Depends(get_session)], 
                       new_user: CreateUser) -> User:
     """Crea un usuario administrador. Solo los administradores pueden acceder a este endpoint.
     
@@ -89,8 +86,7 @@ async def create_user(*,
 
 
 @user_route.put("/{user_id}/", response_model=ReadUserComplete)
-async def update_user(*, 
-                      session:Annotated[AsyncSession, Depends(get_session)],
+async def update_user(session:Annotated[AsyncSession, Depends(get_session)],
                       logged_user: Annotated[User, Depends(get_user_from_token)],
                       update_user: UpdateUser, 
                       user_id: Annotated[UUID, USER_ID]) -> User:
@@ -120,8 +116,7 @@ async def update_user(*,
 
 
 @user_route.patch("/{user_id}/", response_model=ReadUserComplete)
-async def partial_update_user(*, 
-                              session:Annotated[AsyncSession, Depends(get_session)],
+async def partial_update_user(session:Annotated[AsyncSession, Depends(get_session)],
                               logged_user: Annotated[User, Depends(get_user_from_token)],
                               update_user: PartialUpdateUser, 
                               user_id: Annotated[UUID, USER_ID]) -> User:
@@ -155,8 +150,7 @@ async def partial_update_user(*,
 
 
 @user_route.delete("/{user_id}/", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_user(*, 
-                      session:Annotated[AsyncSession, Depends(get_session)], 
+async def delete_user(session:Annotated[AsyncSession, Depends(get_session)], 
                       logged_user: Annotated[User, Depends(get_user_from_token)],
                       user_id: Annotated[UUID, USER_ID]) -> None:
     """Elimina un usuario. Solo los administradores pueden acceder a este endpoint.	
@@ -172,8 +166,7 @@ async def delete_user(*,
     await secure_commit(session)
 
 @login_route.post(f"/{TOKEN_URL}/",response_model=Token)
-async def login_user(*, 
-                     session: Annotated[AsyncSession, Depends(get_session)],
+async def login_user(session: Annotated[AsyncSession, Depends(get_session)],
                      background_tasks: BackgroundTasks,
                      form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
     """Creación de token de autenticación para el usuario. Si el usuario no existe o la contraseña es incorrecta devuelve un error.
@@ -198,8 +191,7 @@ async def login_user(*,
 
 
 @login_route.post(f"/{TOKEN_URL}/renew/", response_model=Token)
-async def renew_token(*, 
-                      background_tasks: BackgroundTasks,
+async def renew_token(background_tasks: BackgroundTasks,
                       logged_user: Annotated[User, Depends(get_user_from_token)]) -> Token:
     """Renueva el token de autenticación del usuario. Si el usuario no esta autenticado devuelve un error.
     

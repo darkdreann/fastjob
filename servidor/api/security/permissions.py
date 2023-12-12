@@ -1,16 +1,16 @@
 from typing import Annotated
 from uuid import UUID
 from fastapi import Depends, Request
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.background import BackgroundTask
-from api.database.database_models.models import User, Candidate
+from api.database.database_models.models import User, Job
+from api.models.create_models import CreateJob
 from api.security.security import get_user_from_token
 from api.models.enums.models import UserType
 from api.models.enums.models import LogLevel
+from api.utils.functions.models_utils import GetJob
 from api.utils.functions.management_utils import print_log, create_http_exception
-from api.utils.constants.error_strings import PERMISSION_DENIED, PERMISSION_DENIED_RESOURCE_NOT_VALID
-from api.utils.constants.http_exceptions import FORBIDDEN_EXCEPTION, INCORRECT_RESOURCE_EXCEPTION
-from api.database.connection import get_session
+from api.utils.constants.error_strings import PERMISSION_DENIED
+from api.utils.constants.http_exceptions import FORBIDDEN_EXCEPTION
 
 class PermissionsManager:
     """Clase que maneja los permisos de los usuarios. Si no recibe parametros, comprueba por defecto si el usuario es admin."""
@@ -56,6 +56,7 @@ class PermissionsManager:
         if user.user_type != UserType.ADMIN:
             await cls._raise_exception(PERMISSION_DENIED, user_id=user.id, resource=request.url)
 
+
     @classmethod
     async def is_candidate_resource_owner(cls, request: Request, logged_user: Annotated[User, Depends(get_user_from_token)], candidate_id: UUID) -> None:
         """
@@ -84,6 +85,48 @@ class PermissionsManager:
         """
 
         await cls._is_owner(request, logged_user, company_id)
+
+    @classmethod
+    async def is_job_resource_owner(cls, request: Request, logged_user: Annotated[User, Depends(get_user_from_token)], job: Annotated[Job, Depends(GetJob())]) -> None:
+        """
+        Método que comprueba si el usuario tipo empresa es el dueño del recurso. Si no lo es, lanza una excepción de tipo HTTPException.
+        Si el usuario es admin, no se comprueba si es el dueño del recurso.
+
+        Args:
+            request (Request): informacion de la petición.
+            user (User): El usuario que hace la petición.	
+            candidate_id (UUID): El id del candidato que se quiere obtener.
+        """
+
+        await cls._is_owner(request, logged_user, job.company_id)
+
+    @classmethod
+    async def is_job_resource_owner_noload(cls, request: Request, logged_user: Annotated[User, Depends(get_user_from_token)], job: Annotated[Job, Depends(GetJob(False))]) -> None:
+        """
+        Método que comprueba si el usuario tipo empresa es el dueño del recurso. Si no lo es, lanza una excepción de tipo HTTPException.
+        Si el usuario es admin, no se comprueba si es el dueño del recurso.
+
+        Args:
+            request (Request): informacion de la petición.
+            user (User): El usuario que hace la petición.	
+            candidate_id (UUID): El id del candidato que se quiere obtener.
+        """
+
+        await cls._is_owner(request, logged_user, job.company_id)
+
+    @classmethod
+    async def is_new_job_resource_owner(cls, request: Request, logged_user: Annotated[User, Depends(get_user_from_token)], job: CreateJob) -> None:
+        """
+        Método que comprueba si el usuario tipo empresa es el dueño del recurso. Si no lo es, lanza una excepción de tipo HTTPException.
+        Si el usuario es admin, no se comprueba si es el dueño del recurso.
+
+        Args:
+            request (Request): informacion de la petición.
+            user (User): El usuario que hace la petición.	
+            candidate_id (UUID): El id del candidato que se quiere obtener.
+        """
+
+        await cls._is_owner(request, logged_user, job.company_id)
 
 
     @classmethod

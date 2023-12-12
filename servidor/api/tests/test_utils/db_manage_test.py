@@ -24,6 +24,7 @@ async def create_test_data() -> None:
                 "SectorEducation": SectorEducation,
                 "CandidateEducation": CandidateEducation,
                 "CandidateLanguage": CandidateLanguage,
+                "JobEducation": JobEducation
             }
 
             # recorre los modelos a ser creados

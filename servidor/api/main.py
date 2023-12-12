@@ -54,6 +54,8 @@ app.include_router(experience.candidate_experience_route)
 app.include_router(candidate_language.candidate_language_route)
 app.include_router(candidate_education.candidate_education_route)
 app.include_router(company.company_route)
+app.include_router(job.job_route)
+app.include_router(job_candidate.job_candidate_route)
 
 app.add_exception_handler(HTTPExceptionWithBackgroundTask, http_exception_backgroud_task_handler)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)

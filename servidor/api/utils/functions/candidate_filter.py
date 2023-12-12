@@ -3,11 +3,14 @@ from fastapi import Depends
 from uuid import UUID
 from pydantic import BaseModel, Field
 from sqlalchemy import func, text, select
-from sqlalchemy.orm import contains_eager
+from sqlalchemy.orm import contains_eager, defaultload
 from fastapi.exceptions import RequestValidationError
-from api.database.database_models.models import Candidate, Address, Experience, Sector, User, Language, LanguageLevel, CandidateLanguage, CandidateEducation, Education, EducationLevel, SectorEducation
-from api.models.enums.endpoints import CandidateExtraField
-from api.utils.constants.endpoints_params import ADRESS_POSTAL_CODE_QUERY, ADRESS_PROVINCE, EXPERIENCE_MONTHS, RESOURCE_SECTOR, CANDIDATE_EXTRA_FIELD, LANGUAGE_CANDIDATE, LANGUAGE_LEVEL_VALUE, EDUCATION_NAME_PARAM, EDUCATION_LEVEL_PARAM, SKILLS_PARAM, AVAILABILITY_PARAM
+from api.routers.job import GetJob
+from api.database.database_models.models import Job
+from api.database.database_models.models import Candidate, Address, Experience, Sector, User, Language, LanguageLevel, CandidateLanguage, CandidateEducation, Education, EducationLevel, SectorEducation, JobCandidate
+from api.models.enums.endpoints import CandidateExtraField, JobCandidateExtraField
+from api.utils.constants.endpoints_params import ADRESS_POSTAL_CODE_QUERY, ADRESS_PROVINCE, EXPERIENCE_MONTHS, RESOURCE_SECTOR, AVAILABILITY_PARAM
+from api.utils.constants.endpoints_params import CANDIDATE_EXTRA_FIELD, LANGUAGE_CANDIDATE, LANGUAGE_LEVEL_VALUE, EDUCATION_NAME_PARAM, EDUCATION_LEVEL_PARAM, SKILLS_PARAM
 from api.utils.constants.error_strings import INVALID_CANDIDATE_DIR_PARAMS, INVALID_CANDIDATE_LANGUAGE_PARAMS, INVALID_EDUCATION_PARAMS
 from api.models.enums.models import WorkSchedule
 
@@ -63,6 +66,18 @@ def _get_uuid_or_str(string: str) -> UUID | str:
         return string.lower() if string is not None else string
 
 async def _get_extra_fields(extra_fields: Annotated[set[CandidateExtraField], CANDIDATE_EXTRA_FIELD] = ()) -> set[CandidateExtraField]:
+    """
+    Obtiene los campos extra para incluir en el resultado de la consulta.
+
+    Args:
+        extra_fields (set[CandidateExtraField], optional): Conjunto de campos extra. Defaults to ().
+
+    Returns:
+        set[CandidateExtraField]: Conjunto de campos extra para el candidato.
+    """
+    return extra_fields
+
+async def _get_extra_fields_applied_candidates(extra_fields: Annotated[set[JobCandidateExtraField], CANDIDATE_EXTRA_FIELD] = ()) -> set[CandidateExtraField]:
     """
     Obtiene los campos extra para incluir en el resultado de la consulta.
 
@@ -438,4 +453,44 @@ async def get_candidate_params(extra_fields_params: Annotated[set, Depends(_get_
 
     return final_query_params
 
+async def get_candidate_applied(extra_fields_params: Annotated[set, Depends(_get_extra_fields_applied_candidates)],
+                               direction_params: Annotated[bool | None, Depends(_get_direction_params)],
+                               experience_params: Annotated[dict | None, Depends(_get_experience_params)],
+                               language_params: Annotated[dict | None, Depends(_get_language_params)],
+                               education_params: Annotated[dict, Depends(_get_education_params)],
+                               skills_and_availability_params: Annotated[dict, Depends(_get_skills_and_availability_params)],
+                               job: Annotated[Job, Depends(GetJob(False))])  -> dict:
+    """
+    Obtiene los parámetros de búsqueda de candidatos aplicados y devuelve un diccionario con los parámetros de consulta.
+
+    Args:
+    - extra_fields_params (set): Conjunto de campos adicionales aplicados a los candidatos.
+    - direction_params (bool | None): Parámetro de dirección de búsqueda de candidatos.
+    - experience_params (dict | None): Parámetros de experiencia de búsqueda de candidatos.
+    - language_params (dict | None): Parámetros de idioma de búsqueda de candidatos.
+    - education_params (dict): Parámetros de educación de búsqueda de candidatos.
+    - skills_and_availability_params (dict): Parámetros de habilidades y disponibilidad de búsqueda de candidatos.
+
+    Returns:
+    - dict: Diccionario con los parámetros de consulta.
+
+    """
+    query_params = await get_candidate_params(extra_fields_params, direction_params, experience_params, language_params, education_params, skills_and_availability_params)
+
+    if "where" not in query_params:
+        query_params["where"] = []
+
+    query_params["joins"].append({
+        "target": JobCandidate,
+        "onclause": Candidate.user_id == JobCandidate.candidate_id
+    })
+
+
+    query_params["where"].append(JobCandidate.job_id == job.id)
+
+    query_params["options"].append(defaultload(Candidate.applied_jobs_list).noload(JobCandidate.job))
+
+    query_params["order"] = (JobCandidate.inscription_date.desc())
+
+    return query_params
     

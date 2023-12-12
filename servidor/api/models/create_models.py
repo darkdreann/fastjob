@@ -1,4 +1,4 @@
-from typing import Optional, Self
+from typing import Optional
 from uuid import UUID
 from api.models.base_models import *
 
@@ -113,6 +113,18 @@ class CreateLevel(BaseLevel):
             name: Nombre del nivel de formacion o idioma
             value: Valor numerico del nivel de formacion o idioma"""
     
+class CreateJobLanguage(BaseModel):
+    """
+    Modelo para crear un trabajo de idioma.
+    
+    Atributos:
+        language_id (UUID): ID del idioma.
+        language_level_id (UUID): ID del nivel de idioma.
+    """
+
+    language_id: UUID = Field(description=LanguageDescription.LANGUAGE_ID)
+    language_level_id: UUID = Field(description=LevelDescription.LEVEL_ID)
+
 class CreateJob(BaseJob):
     """Modelo para crear una oferta
 
@@ -124,12 +136,13 @@ class CreateJob(BaseJob):
             required_experience_months: Experiencia requerida en meses
             active: Estado de la oferta de trabajo (abierta o cerrada))
             address: Direccion de la oferta
-            required_education_level_id: Nivel de formacion requerido
+            required_education: Formacion requerida
+            required_language_list: Lista de idiomas requeridos
             sector_id: Sector de la oferta
             company_id: Empresa que publica la oferta"""
     
     address: CreateAddress = Field(description=JobDescription.ADRESS)
-    required_education_level_id: UUID = Field(description=JobDescription.REQUIRED_EDUCATION_LEVEL_ID)
+    required_education: Optional[UUID] = Field(description=JobDescription.REQUIRED_EDUCATION_ID, default=None)
     sector_id: UUID = Field(description=JobDescription.SECTOR_ID)
     company_id: UUID = Field(description=JobDescription.COMPANY_ID)
     

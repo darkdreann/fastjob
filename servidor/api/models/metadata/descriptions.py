@@ -83,6 +83,7 @@ class EducationDescription:
     LEVEL = "El nivel de la formación."
     SECTOR = "El sector que pertenece la formación. Puede no tener sector como por ejemplo la ESO."
     CANDIDATES = "Los candidatos que tienen la formación."
+    JOB = "Lista de ofertas que requieren la formación."
     LEVEL_ID = DESCRIPTIONS_ID["LEVEL_ID"]
     SECTOR_ID = DESCRIPTIONS_ID["SECTOR_ID"]
 
@@ -95,7 +96,6 @@ class LevelDescription:
 
 class EducationLevelDescription:
     EDUCATION = "Lista de formaciones pertenecientes al nivel."
-    JOB = "Lista de ofertas que requieren el nivel de formación."
 
 class LanguageLevelDescription:
     CANDIDATES = "Lista de candidatos con ese nivel de idioma"
@@ -123,13 +123,13 @@ class JobDescription:
     SKILLS = "Lista de habilidades requeridas para la oferta."
     ACTIVE = "Si la oferta esta cerrada o abierta."
     COMPANY_ID = DESCRIPTIONS_ID["COMPANY_ID"]
-    REQUIRED_EDUCATION_LEVEL_ID = DESCRIPTIONS_ID["LEVEL_ID"]
+    REQUIRED_EDUCATION_ID = DESCRIPTIONS_ID["EDUCATION_ID"]
     SECTOR_ID = DESCRIPTIONS_ID["SECTOR_ID"]
     ADRESS = "La dirección de la oferta."
     JOB_ID = DESCRIPTIONS_ID["JOB_ID"]
     PUBLICATION_DATE = "Fecha de publicación de la oferta."
     COMPANY = "Empresa a la que pertenece la oferta."
-    REQUIRED_EDUCATION_LEVEL = "El nivel de formacion requerido para la oferta"
+    REQUIRED_EDUCATION = "La formación requerida por la oferta."
     SECTOR = "El sector al que pertenece la oferta."
     ADRESS = "La dirección de la oferta."
     LANGUAGES = "Lista de idiomas requeridos por la oferta."

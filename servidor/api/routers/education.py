@@ -6,19 +6,18 @@ from sqlalchemy.orm import joinedload, noload
 from sqlalchemy import asc
 from api.database.database_models.models import Education, EducationLevel, User, Candidate, CandidateEducation, SectorEducation
 from api.database.connection import get_session
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, EDUCATION_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, EDUCATION_LEVEL_ID, EDUCATION_LEVEL_EXTRA_FIELD
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, EDUCATION_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, EDUCATION_LEVEL_ID, GET_EDUCATION, EDUCATION_EXTRA_FIELD
 from api.security.permissions import PermissionsManager
-from api.models.read_models import ReadLevel, ReadLevelEducation, ReadEducationComplete, ReadEducationCompleteWithCandidates
+from api.models.read_models import ReadLevel, ReadLevelEducation, ReadEducationComplete, ReadEducationWithUses
 from api.models.create_models import CreateEducation, CreateLevel
 from api.models.update_models import UpdateEducation, UpdateLevel
 from api.models.partial_update_models import PartialUpdateEducation, PartialUpdateLevel
 from api.utils.functions.management_utils import endpoint_request_log
 from api.utils.functions.database_utils import secure_commit, get_record_by_id, get_database_records
 from api.utils.functions.models_utils import update_model
-from api.models.enums.endpoints import EducationLevelExtraField
+from api.models.enums.endpoints import EducationExtraField
 
 education_route = APIRouter(prefix="/educations", tags=["educations"], dependencies=[Depends(endpoint_request_log)])
-
 
 
 # GET METHODS #
@@ -44,8 +43,6 @@ async def get_educations(*,
 
     return educations
 
-from sqlalchemy import select
-
 @education_route.get("/education-levels/", response_model=list[ReadLevel], dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_education_levels(*,
                             session: Annotated[AsyncSession, Depends(get_session)], 
@@ -68,11 +65,12 @@ async def get_education_levels(*,
     return education_levels
 
 
-@education_route.get("/admin/", response_model=list[ReadEducationCompleteWithCandidates], response_model_exclude_none=True, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
+@education_route.get("/admin/", response_model=list[ReadEducationWithUses], response_model_exclude_none=True, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_educations_with_candidates(*,
                         session: Annotated[AsyncSession, Depends(get_session)], 
                         limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
-                        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[Education]:
+                        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
+                        extra_fields: Annotated[set[EducationExtraField], EDUCATION_EXTRA_FIELD]) -> list[Education]:
     
     """
     Obtiene una lista de todas las educaciones con sus candidatos asociados.
@@ -81,14 +79,14 @@ async def get_educations_with_candidates(*,
         session (AsyncSession): Sesión de base de datos.
         limit (int | None, optional): Límite de resultados. Defaults to DEFAULT_LIMIT.
         offset (int | None, optional): Desplazamiento de resultados. Defaults to DEFAULT_OFFSET.
+        extra_fields (set[EducationExtraField]): Campos extra que se quieren obtener.
 
     Returns:
         list[Education]: Lista de educaciones con sus candidatos asociados.
     """
 
-    joined_load = joinedload(Education.candidates_list).defaultload(CandidateEducation.candidate).joinedload(Candidate.user).joinedload(User.address)
 
-    educations = await get_database_records(session, Education, options=joined_load, limit=limit, offset=offset, unique = True)
+    educations = await get_database_records(session, Education, options=[EducationExtraField.get_field_value(field) for field in extra_fields], limit=limit, offset=offset, unique = True)
 
     return educations
 
@@ -98,7 +96,7 @@ async def get_education_levels(*,
                             session: Annotated[AsyncSession, Depends(get_session)], 
                             limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                             offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
-                            extra_fields: Annotated[set[EducationLevelExtraField], EDUCATION_LEVEL_EXTRA_FIELD] = ()) -> list[EducationLevel]:
+                            get_educations: Annotated[bool, GET_EDUCATION] = False) -> list[EducationLevel]:
     """
     Obtiene los niveles de educación. Si se especifican campos extra, se obtienen los campos de las relaciones especificadas.
 
@@ -106,13 +104,14 @@ async def get_education_levels(*,
         session (AsyncSession): Sesión de base de datos.
         limit (int | None, optional): Límite de resultados. Defaults to DEFAULT_LIMIT.
         offset (int | None, optional): Desplazamiento de resultados. Defaults to DEFAULT_OFFSET.
-        extra_fields (set[EducationLevelExtraField], optional): Campos extra de nivel de educación. Defaults to ().
+        get_educations (bool, optional): Si se quieren obtener las educaciones asociadas. Defaults to False.
 
     Returns:
         list[EducationLevel]: Lista de niveles de educación.
     """
+    options = joinedload(EducationLevel.education_list) if get_educations else None
     
-    education_levels = await get_database_records(session, EducationLevel, limit=limit, offset=offset, options=[EducationLevelExtraField.get_field_value(field) for field in extra_fields], order=EducationLevel.value.asc(), unique=True)
+    education_levels = await get_database_records(session, EducationLevel, limit=limit, offset=offset, options=options, order=EducationLevel.value.asc(), unique=True)
 
     return education_levels
 
@@ -121,20 +120,21 @@ async def get_education_levels(*,
 async def get_education_levels(*,
                             session: Annotated[AsyncSession, Depends(get_session)], 
                             education_level_id: Annotated[UUID, EDUCATION_LEVEL_ID],
-                            extra_fields: Annotated[set[EducationLevelExtraField], EDUCATION_LEVEL_EXTRA_FIELD] = ()) -> EducationLevel:
+                            get_educations: Annotated[bool, GET_EDUCATION] = False) -> EducationLevel:
     """
     Obtiene un nivel de educación por su ID. Si se especifican campos extra, se obtienen los campos de las relaciones especificadas.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
         education_level_id (UUID): ID del nivel de educación.
-        extra_fields (set[EducationLevelExtraField], optional): Campos extra del nivel de educación. Por defecto, no se incluyen.
+        get_educations (bool, optional): Si se quieren obtener las educaciones asociadas. Defaults to False.
 
     Returns:
         EducationLevel: Nivel de educación.
     """
+    options = joinedload(EducationLevel.education_list) if get_educations else None
     
-    education_level: EducationLevel = await get_record_by_id(session, EducationLevel, education_level_id, options=[EducationLevelExtraField.get_field_value(field) for field in extra_fields])
+    education_level: EducationLevel = await get_record_by_id(session, EducationLevel, education_level_id, options=options)
 
     return education_level
 
@@ -162,23 +162,24 @@ async def get_education_levels(*,
 
 
 
-@education_route.get("/admin/{education_id}/", response_model=ReadEducationCompleteWithCandidates, response_model_exclude_none=True, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
+@education_route.get("/admin/{education_id}/", response_model=ReadEducationWithUses, response_model_exclude_none=True, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_education_with_candidates(*,
-               session: Annotated[AsyncSession, Depends(get_session)], 
-               education_id: Annotated[UUID, EDUCATION_ID]) -> Education:
+                                        session: Annotated[AsyncSession, Depends(get_session)], 
+                                        education_id: Annotated[UUID, EDUCATION_ID],
+                                        extra_fields: Annotated[set[EducationExtraField], EDUCATION_EXTRA_FIELD]) -> Education:
     """
     Obtiene una educación con sus candidatos por su ID.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
         education_id (UUID): ID de la educación.
+        extra_fields (set[EducationExtraField]): Campos extra que se quieren obtener.
 
     Returns:
         Education: Educación con sus candidatos.
     """
-    joined_load = joinedload(Education.candidates_list).defaultload(CandidateEducation.candidate).joinedload(Candidate.user).joinedload(User.address)
 
-    education: Education = await get_record_by_id(session, Education, education_id, options=joined_load)
+    education: Education = await get_record_by_id(session, Education, education_id, options=[EducationExtraField.get_field_value(field) for field in extra_fields])
 
     return education
 
@@ -399,6 +400,8 @@ async def partial_update_education(*,
 
 # DELETE METHODS #
 
+
+
 @education_route.delete("/education-levels/{education_level_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])
 async def delete_education_level(*,
                                 session: Annotated[AsyncSession, Depends(get_session)],
@@ -416,6 +419,26 @@ async def delete_education_level(*,
     await session.delete(education_level_to_delete)
 
     await secure_commit(session)
+
+@education_route.delete("/{education_id}/sector/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])
+async def delete_education_sector(*,
+                                    session: Annotated[AsyncSession, Depends(get_session)], 
+                                    education_id: Annotated[UUID, EDUCATION_ID]) -> None:
+    """
+    Elimina el sector de una educación.
+
+    Args:
+    - session (AsyncSession): sesión de base de datos.
+    - education_id (UUID): id de la educación a actualizar.
+    """
+    
+    education_sector: SectorEducation = await get_database_records(session, SectorEducation, where=SectorEducation.education_id == education_id, result_list=False)
+
+    await session.delete(education_sector)
+
+    await secure_commit(session)
+
+
 
 
 @education_route.delete("/{education_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])

@@ -3,6 +3,13 @@ class JobCandidateConstraint:
     CANDIDATE_FK = "job_candidate_candidate_id_fk"
     JOB_FK = "job_candidate_job_id_fk"
 
+class JobEducationConstraint:
+    JOB_EDUCATION_PK = "job_education_pk"
+    JOB_FK = "job_education_job_id_fk"
+    EDUCATION_FK = "job_education_education_id_fk"
+    DUPLICATE_JOB_ID = "job_education_duplicate_job_id"
+
+
 class SectorEducationConstraint:
     SECTOR_EDUCATION_PK = "sector_education_pk"
     SECTOR_FK = "sector_education_sector_id_fk"

@@ -32,7 +32,9 @@ EDUCATION_ID = Path(description="El id de la formación.")
 
 EDUCATION_LEVEL_ID = Path(description="El id del nivel de formación.")
 
-EDUCATION_LEVEL_EXTRA_FIELD = Query(description="Campos de las relaciones de la tabla education que se quieren obtener. Se pueden especificar varios.")
+GET_EDUCATION = Query(description="Si se quiere obtener las formaciones.")
+
+EDUCATION_EXTRA_FIELD = Query(description="Campos de las relaciones de la tabla education que se quieren obtener. Se pueden especificar varios.")
 
 EDUCATION_NAME_PARAM = Query(description="El nombre de la formación.")
 
@@ -65,3 +67,7 @@ AVAILABILITY_PARAM = Query(description="La disponibilidad del candidato. Se pued
 CV_PARAM = File(description="El CV del candidato.", media_type="application/pdf")
 
 COMPANIES_GET_JOBS = Query(description="Si se quieren obtener las ofertas de trabajos de la empresa.")
+
+JOB_ID = Path(description="El id de la oferta de trabajo.")
+
+JOB_EXTRA_FIELD = Query(description="Campos de las relaciones de la tabla job que se quieren obtener. Se pueden especificar varios.")

@@ -150,7 +150,7 @@ class BaseJob(BaseModel):
     description: str = Field(description=JobDescription.DESC, max_length=JobValidators.MAX_LENGHT_DESC)
     skills: list[str] = Field(description=JobDescription.SKILLS, max_length=JobValidators.MAX_ITEMS_SKILLS)
     work_schedule: WorkSchedule = Field(description=JobDescription.WORK_SHEDULE)
-    required_months_of_experience: int = Field(description=JobDescription.REQUIRED_EXP, ge=JobValidators.MIN_REQUIRED_EXP)
+    required_experience: int = Field(description=JobDescription.REQUIRED_EXP, ge=JobValidators.MIN_REQUIRED_EXP)
     active: bool = Field(description=JobDescription.ACTIVE)
 
     @field_validator('skills')

@@ -153,37 +153,49 @@ class PartialUpdateEducation(BaseModel):
     
 
 class PartialUpdateLevel(BaseModel):
-    """Modelo para actualizar parcialmente un nivel de formacion o idioma
+    """
+    Modelo para actualizar parcialmente un nivel de formacion o idioma
 
-        Atributos:
-            name: Nombre del nivel de formacion o idioma
-            value: Valor numerico del nivel de formacion o idioma"""
+    Atributos:
+        name: Nombre del nivel de formacion o idioma
+        value: Valor numerico del nivel de formacion o idioma
+    """
     
     name: Optional[str] = Field(description=LevelDescription.NAME, max_length=LevelValidators.MAX_LENGHT_NAME, default=None)
     value: Optional[int] = Field(description=LevelDescription.VALUE, ge=LevelValidators.MIN_VALUE, default=None)
-    
-class PartialUpdateJob(BaseModel):
-    """Modelo para actualizar parcialmente una oferta
 
-        Atributos:
-            title: Titulo del puesto de trabajo (ejemplo: Desarrollador web)
-            description: Descripcion del puesto de trabajo
-            skills: Lista de habilidades requeridas para el trabajo
-            work_schedule: Disponibilidad de jornada laboral requerida
-            required_experience_months: Experiencia requerida en meses
-            active: Estado de la oferta de trabajo (abierta o cerrada))
-            address: Direccion de la oferta
-            required_education_level_id: Nivel de formacion requerido
-            sector_id: Sector de la oferta
-            company_id: Empresa que publica la oferta"""
+
+
+
+class PartialUpdateJob(BaseModel):
+    """
+    Modelo para actualizar parcialmente una oferta
+
+    Atributos:
+        title: Titulo del puesto de trabajo (ejemplo: Desarrollador web)
+        description: Descripcion del puesto de trabajo
+        skills: Lista de habilidades requeridas para el trabajo
+        work_schedule: Disponibilidad de jornada laboral requerida
+        required_experience_months: Experiencia requerida en meses
+        active: Estado de la oferta de trabajo (abierta o cerrada))
+        address: Direccion de la oferta
+        required_education_level_id: Nivel de formacion requerido
+        sector_id: Sector de la oferta
+        company_id: Empresa que publica la oferta
+    """
     
     title: Optional[str] = Field(description=JobDescription.TITLE, max_length=JobValidators.MAX_LENGHT_TITLE, default=None)
     description: Optional[str] = Field(description=JobDescription.DESC, max_length=JobValidators.MAX_LENGHT_DESC, default=None)
     skills: Optional[list[str]] = Field(description=JobDescription.SKILLS, max_length=JobValidators.MAX_ITEMS_SKILLS, default=None)
     work_schedule: Optional[WorkSchedule] = Field(description=JobDescription.WORK_SHEDULE, default=None)
-    required_experience_months: Optional[int] = Field(description=JobDescription.REQUIRED_EXP, ge=JobValidators.MIN_REQUIRED_EXP, default=None)
+    required_experience: Optional[int] = Field(description=JobDescription.REQUIRED_EXP, ge=JobValidators.MIN_REQUIRED_EXP, default=None)
     active: Optional[bool] = Field(description=JobDescription.ACTIVE, default=None)
     address: Optional[PartialUpdateAddress] = Field(description=JobDescription.ADRESS, default=None)
-    required_education_level_id: Optional[UUID] = Field(description=JobDescription.REQUIRED_EDUCATION_LEVEL_ID, default=None)
+    required_education: Optional[UUID] = Field(description=JobDescription.REQUIRED_EDUCATION_ID, default=None)
     sector_id: Optional[UUID] = Field(description=JobDescription.SECTOR_ID, default=None)
     company_id: Optional[UUID] = Field(description=JobDescription.COMPANY_ID, default=None)
+
+    @field_validator('skills')
+    @classmethod
+    def validate(cls, list):
+        return validate_skills_len(list)

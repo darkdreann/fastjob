@@ -197,6 +197,7 @@ async def update_candidate(
 
     await secure_commit(session)
 
+# CURRICULUM #
 
 @candidate_route.get("/{candidate_id}/curriculum/", status_code=status.HTTP_200_OK, response_class=Response)
 async def get_candidate_curriculum(
