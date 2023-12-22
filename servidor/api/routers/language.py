@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID, uuid4
+from uuid import UUID
 from typing import Annotated
-from sqlalchemy.orm import joinedload, noload
 from api.database.database_models.models import Language, LanguageLevel
 from api.database.connection import get_session
 from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, LANGUAGE_ID, LANGUAGE_LEVEL_ID, LANGUAGE_EXTRA_FIELD, LANGUAGE_LEVEL_EXTRA_FIELD
@@ -25,18 +24,20 @@ async def get_languages(*,
                         limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                         offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[Language]:
     
-    """Obtener todos los idiomas
+    """
+    Obtener todos los idiomas.
+    Solo para usuarios logueados.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
-        offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
+    - session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
+    - limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
+    - offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
 
     Returns:
-        list[Language]: Lista de idiomas
+    - list[Language]: Lista de idiomas
     """
 
-    languages: list[Language] = await get_database_records(session, Language, limit, offset)
+    languages: list[Language] = await get_database_records(session, Language, limit=limit, offset=offset)
 
     return languages
 
@@ -46,18 +47,20 @@ async def get_language_levels(*,
                                 limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                                 offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[LanguageLevel]:
         
-    """Obtener todos los niveles de idiomas
+    """
+    Obtener todos los niveles de idiomas
+    Solo para usuarios logueados.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
-        offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
+    - session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
+    - limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
+    - offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
 
     Returns:
-        list[LanguageLevel]: Lista de niveles de idiomas
+    - list[LanguageLevel]: Lista de niveles de idiomas
     """
 
-    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, limit, offset, order=LanguageLevel.value)
+    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, limit=limit, offset=offset, order=LanguageLevel.value)
 
     return levels
 
@@ -69,18 +72,20 @@ async def get_languages_complete(*,
                                 offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
                                 extra_fields: Annotated[set[LanguageExtraField], LANGUAGE_EXTRA_FIELD] = ()) -> list[Language]:
     
-    """Obtener todos los idiomas. Con sus relaciones. Solo para administradores
+    """
+    Obtener todos los idiomas con sus relaciones. 
+    Solo para administradores
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
-        offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
+    - session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
+    - limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
+    - offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
 
     Returns:
-        list[Language]: Lista de idiomas
+    - list[Language]: Lista de idiomas
     """
 
-    languages: list[Language] = await get_database_records(session, Language, limit, offset, options=[LanguageExtraField.get_field_value(field) for field in extra_fields], unique=True)
+    languages: list[Language] = await get_database_records(session, Language, limit=limit, offset=offset, options=[LanguageExtraField.get_field_value(field) for field in extra_fields], unique=True)
 
     return languages
 
@@ -90,20 +95,21 @@ async def get_language_levels_complete(*,
                                         limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                                         offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
                                         extra_fields: Annotated[set[LanguageLevelExtraField], LANGUAGE_LEVEL_EXTRA_FIELD] = ()) -> list[LanguageLevel]:
-    
-    """Obtener todos los niveles de idiomas. Con sus relaciones. Solo para administradores
+    """
+    Obtener todos los niveles de idiomas con sus relaciones. 
+    Solo para administradores.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
-        offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
-        extra_fields (Annotated[LanguageLevelExtraField, LANGUAGE_LEVEL_EXTRA_FIELD]): Campos extra de las relaciones de la tabla language level que se quieren obtener. Se pueden especificar varios.
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - limit (int, optional): Número de registros a mostrar. Defaults to DEFAULT_LIMIT.
+    - offset (int, optional): Número de registros a saltar. Defaults to DEFAULT_OFFSET.
+    - extra_fields (Annotated[LanguageLevelExtraField, LANGUAGE_LEVEL_EXTRA_FIELD]): Campos extra de las relaciones de la tabla language level que se quieren obtener. Se pueden especificar varios.
 
     Returns:
-        list[LanguageLevel]: Lista de niveles de idiomas
+    - list[LanguageLevel]: Lista de niveles de idiomas.
     """
 
-    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, limit, offset, options=[LanguageLevelExtraField.get_field_value(field) for field in extra_fields], order=LanguageLevel.value, unique=True)
+    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, limit=limit, offset=offset, options=[LanguageLevelExtraField.get_field_value(field) for field in extra_fields], order=LanguageLevel.value, unique=True)
 
     return levels
 
@@ -115,15 +121,17 @@ async def get_language_complete(*,
                                 language_id: Annotated[UUID, LANGUAGE_ID],
                                 extra_fields: Annotated[set[LanguageExtraField], LANGUAGE_EXTRA_FIELD] = ()) -> Language:
     
-    """Obtener un idioma por su id. Con sus relaciones. Solo para administradores
+    """
+    Obtener un idioma por su id con sus relaciones. 
+    Solo para administradores.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_id (UUID): Id del idioma
-        extra_fields (Annotated[LanguageExtraField, LANGUAGE_EXTRA_FIELD]): Campos extra de las relaciones de la tabla language que se quieren obtener. Se pueden especificar varios.
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language_id (UUID): Id del idioma.
+    - extra_fields (Annotated[LanguageExtraField, LANGUAGE_EXTRA_FIELD]): Campos extra de las relaciones de la tabla language que se quieren obtener. Se pueden especificar varios.
 
     Returns:
-        Language: Idioma
+    - Language: Idioma.
     """
 
     language: Language = await get_record_by_id(session, Language, language_id, options=[LanguageExtraField.get_field_value(field) for field in extra_fields])
@@ -135,16 +143,18 @@ async def get_language_level_complete(*,
                                     session: AsyncSession = Depends(get_session),
                                     language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID],
                                     extra_fields: Annotated[set[LanguageLevelExtraField], LANGUAGE_LEVEL_EXTRA_FIELD] = ()) -> LanguageLevel:
-       
-    """Obtener un nivel de idioma por su id. Con sus relaciones. Solo para administradores
+        
+    """
+    Obtener un nivel de idioma por su id con sus relaciones. 
+    Solo para administradores.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_level_id (UUID): Id del nivel de idioma
-        extra_fields (Annotated[LanguageLevelExtraField, LANGUAGE_LEVEL_EXTRA_FIELD]): Campos extra de las relaciones de la tabla language level que se quieren obtener. Se pueden especificar varios.
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language_level_id (UUID): Id del nivel de idioma.
+    - extra_fields (Annotated[LanguageLevelExtraField, LANGUAGE_LEVEL_EXTRA_FIELD]): Campos extra de las relaciones de la tabla language level que se quieren obtener. Se pueden especificar varios.
 
     Returns:
-        LanguageLevel: Nivel de idioma
+    - LanguageLevel: Nivel de idioma.
     """
     
     level: LanguageLevel = await get_record_by_id(session, LanguageLevel, language_level_id, options=[LanguageLevelExtraField.get_field_value(field) for field in extra_fields])
@@ -158,14 +168,16 @@ async def get_language_level(*,
                             session: AsyncSession = Depends(get_session),
                             language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID]) -> LanguageLevel:
         
-    """Obtener un nivel de idioma por su id
+    """
+    Obtener un nivel de idioma por su id.
+    Solo para usuarios logueados.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_level_id (UUID): Id del nivel de idioma
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language_level_id (UUID): Id del nivel de idioma.
 
     Returns:
-        LanguageLevel: Nivel de idioma
+    - LanguageLevel: Nivel de idioma.
     """
 
     level: LanguageLevel = await get_record_by_id(session, LanguageLevel, language_level_id)
@@ -177,14 +189,16 @@ async def get_language(*,
                         session: AsyncSession = Depends(get_session),
                         language_id: Annotated[UUID, LANGUAGE_ID]) -> Language:
     
-    """Obtener un idioma por su id
+    """
+    Obtener un idioma por su id.
+    Solo para usuarios logueados.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_id (UUID): Id del idioma
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language_id (UUID): Id del idioma.
 
     Returns:
-        Language: Idioma
+    - Language: Idioma.
     """
 
     language: Language = await get_record_by_id(session, Language, language_id)
@@ -194,22 +208,24 @@ async def get_language(*,
 
 # POST METHODS #
 
-@language_route.post("/", response_model=ReadLanguage, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.post("/", response_model=ReadLanguage, status_code=status.HTTP_201_CREATED, dependencies=[Depends(PermissionsManager.is_admin)])
 async def create_language(*,
                         session: AsyncSession = Depends(get_session),
                         new_language: CreateLanguage) -> Language:
         
-    """Crear un idioma
+    """
+    Crear un idioma.
+    Solo para administradores.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language (CreateLanguage): Modelo para crear un idioma
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language (CreateLanguage): Modelo para crear un idioma.
 
     Returns:
-        Language: Idioma creado
+    - Language: Idioma creado.
     """
 
-    new_db_language: Language = Language(**new_language.model_dump())
+    new_db_language = Language(**new_language.model_dump())
 
     session.add(new_db_language)
 
@@ -217,22 +233,22 @@ async def create_language(*,
 
     return new_db_language
 
-@language_route.post("/language-levels/", response_model=ReadLevel, dependencies=[Depends(PermissionsManager.is_admin)])
+@language_route.post("/language-levels/", response_model=ReadLevel, status_code=status.HTTP_201_CREATED, dependencies=[Depends(PermissionsManager.is_admin)])
 async def create_language_level(*,
                                 session: AsyncSession = Depends(get_session),
                                 new_language_level: CreateLevel) -> LanguageLevel:
         
-    """Crear un nivel de idioma
+    """Crear un nivel de idioma.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_level (CreateLevel): Modelo para crear un nivel de idioma
+        session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+        language_level (CreateLevel): Modelo para crear un nivel de idioma.
 
     Returns:
-        LanguageLevel: Nivel de idioma creado
+        LanguageLevel: Nivel de idioma creado.
     """
 
-    new_db_language_level: LanguageLevel = LanguageLevel(**new_language_level.model_dump())
+    new_db_language_level = LanguageLevel(**new_language_level.model_dump())
 
     session.add(new_db_language_level)
 
@@ -248,18 +264,20 @@ async def update_language_level(*,
                                 language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID],
                                 language_level: UpdateLevel) -> LanguageLevel:
     
-    """Actualizar un nivel de idioma
+    """
+    Actualizar un nivel de idioma.
+    Solo para administradores.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_level_id (UUID): Id del nivel de idioma
-        language_level (UpdateLevel): Modelo para actualizar un nivel de idioma
-    
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language_level_id (UUID): Id del nivel de idioma.
+    - language_level (UpdateLevel): Modelo para actualizar un nivel de idioma.
+
     Returns:
-        LanguageLevel: Nivel de idioma actualizado
+    - LanguageLevel: Nivel de idioma actualizado.
     """
 
-    db_language_level: LanguageLevel = await get_record_by_id(session, LanguageLevel, language_level_id)
+    db_language_level = await get_record_by_id(session, LanguageLevel, language_level_id)
 
     update_model(db_language_level, language_level.model_dump())
 
@@ -275,18 +293,20 @@ async def update_language(*,
                             language_id: Annotated[UUID, LANGUAGE_ID],
                             language: UpdateLanguage) -> Language:
         
-    """Actualizar un idioma
+    """
+    Actualizar un idioma.
+    Solo para administradores.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_id (UUID): Id del idioma
-        language (UpdateLanguage): Modelo para actualizar un idioma
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language_id (UUID): Id del idioma.
+    - language (UpdateLanguage): Modelo para actualizar un idioma.
 
     Returns:
-        Language: Idioma actualizado
+    - Language: Idioma actualizado.
     """
 
-    db_language: Language = await get_record_by_id(session, Language, language_id)
+    db_language = await get_record_by_id(session, Language, language_id)
 
     update_model(db_language, language.model_dump())
 
@@ -303,18 +323,20 @@ async def partial_update_language_level(*,
                                 language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID],
                                 language_level: PartialUpdateLevel) -> LanguageLevel:
     
-    """Actualizar un nivel de idioma parcialmente. Solo se actualizaran los campos que se pasen en el modelo.
+    """
+    Actualizar un nivel de idioma parcialmente. Solo se actualizarán los campos que se pasen en el modelo.
+    Solo para administradores.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_level_id (UUID): Id del nivel de idioma
-        language_level (PartialUpdateLevel): Modelo para actualizar parcialmente un nivel de idioma
-    
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language_level_id (UUID): Id del nivel de idioma.
+    - language_level (PartialUpdateLevel): Modelo para actualizar parcialmente un nivel de idioma.
+
     Returns:
-        LanguageLevel: Nivel de idioma actualizado
+    - LanguageLevel: Nivel de idioma actualizado.
     """
 
-    db_language_level: LanguageLevel = await get_record_by_id(session, LanguageLevel, language_level_id)
+    db_language_level = await get_record_by_id(session, LanguageLevel, language_level_id)
 
     update_model(db_language_level, language_level.model_dump(exclude_unset=True))
 
@@ -329,11 +351,13 @@ async def delete_language_level(*,
                                 session: AsyncSession = Depends(get_session),
                                 language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID]) -> None:
     
-    """Eliminar un nivel de idioma.
+    """
+    Eliminar un nivel de idioma.
+    Solo para administradores.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_level_id (UUID): Id del nivel de idioma
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language_level_id (UUID): Id del nivel de idioma.
     """
 
     db_language_level: LanguageLevel = await get_record_by_id(session, LanguageLevel, language_level_id)
@@ -348,11 +372,13 @@ async def partial_update_language(*,
                             session: AsyncSession = Depends(get_session),
                             language_id: Annotated[UUID, LANGUAGE_ID]) -> None:
     
-    """Eliminar un idioma.
+    """
+    Eliminar un idioma.
+    Solo para administradores.
 
     Args:
-        session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
-        language_id (UUID): Id del idioma
+    - session (AsyncSession, optional): Conexión a la base de datos. Defaults to Depends(get_session).
+    - language_id (UUID): Id del idioma.
     """
 
     db_language: Language = await get_record_by_id(session, Language, language_id)

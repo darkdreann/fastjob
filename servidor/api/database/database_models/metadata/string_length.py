@@ -4,7 +4,7 @@ class UserStringLen:
     password = 128
     name = 50
     surname = 50
-
+    
 class CandidateStringLen:
     skills = 50
 

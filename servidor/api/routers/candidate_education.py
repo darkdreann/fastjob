@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Body
+from fastapi import APIRouter, Depends, status
 from typing import Annotated
 from uuid import UUID
 from datetime import date
@@ -8,7 +8,7 @@ from api.utils.functions.database_utils import secure_commit, get_database_recor
 from api.security.permissions import PermissionsManager
 from api.database.database_models.models import CandidateEducation
 from api.models.read_models import ReadCandidateRelationEducation
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, USER_ID, EDUCATION_ID
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, USER_ID, EDUCATION_ID, EDUCATION_ID_BODY, COMPLETION_DATE
 from api.utils.functions.management_utils import endpoint_request_log
 
 candidate_education_route = APIRouter(prefix="/candidates/educations", tags=["candidates", "educations"], dependencies=[Depends(endpoint_request_log), Depends(PermissionsManager.is_candidate_resource_owner)])
@@ -21,6 +21,7 @@ async def get_candidate_educations(
                                     offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[CandidateEducation]:
     """
     Obtiene una lista de educaciones de un candidato.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
@@ -42,15 +43,16 @@ async def get_candidate_education(
                                     candidate_id: Annotated[UUID, USER_ID],
                                     education_id: Annotated[UUID, EDUCATION_ID]) -> CandidateEducation:
     """
-    Obtiene una educación de un candidato.
+    Obtiene una formación de un candidato.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
     - candidate_id: ID del usuario candidato.
-    - education_id: ID de la educación.
+    - education_id: ID de la formación.
 
     Returns:
-    - CandidateEducation: educación del candidato.
+    - CandidateEducation: Educación del candidato.
     """
 
     candidate_education: CandidateEducation = await get_database_records(session, CandidateEducation, where=(CandidateEducation.candidate_id == candidate_id, CandidateEducation.education_id == education_id), result_list=False)
@@ -61,15 +63,17 @@ async def get_candidate_education(
 async def create_candidate_education(
                                         session: Annotated[AsyncSession, Depends(get_session)],
                                         candidate_id: Annotated[UUID, USER_ID],
-                                        education_id: Annotated[UUID, Body()],
-                                        completion_date: Annotated[date, Body()]) -> CandidateEducation:
+                                        education_id: Annotated[UUID, EDUCATION_ID_BODY],
+                                        completion_date: Annotated[date, COMPLETION_DATE]) -> CandidateEducation:
     """
-    Crea una educación para un candidato.
+    Crea una formación para un candidato.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
     - candidate_id: ID del usuario candidato.
-    - candidate_education: Datos de la educación del candidato.
+    - education_id: ID de la formación.
+    - completion_date: Fecha de finalización de la formación.
 
     Returns:
     - CandidateEducation: Educación del candidato creada.
@@ -91,15 +95,16 @@ async def update_candidate_education(
                                     session: Annotated[AsyncSession, Depends(get_session)],
                                     candidate_id: Annotated[UUID, USER_ID],
                                     education_id: Annotated[UUID, EDUCATION_ID],
-                                    completion_date: Annotated[date, Body()]) -> CandidateEducation:
+                                    completion_date: Annotated[date, COMPLETION_DATE]) -> CandidateEducation:
     """
-    Actualiza la fecha de finalización de una educación de un candidato.
+    Actualiza la fecha de finalización de una formación de un candidato.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
     - candidate_id: ID del usuario candidato.
-    - education_id: ID de la educación.
-    - completion_date: Fecha de finalización de la educación.
+    - education_id: ID de la formación.
+    - completion_date: Fecha de finalización de la formación.
 
     Returns:
     - CandidateEducation: Educación del candidato actualizada.
@@ -122,15 +127,13 @@ async def delete_candidate_education(
                                     candidate_id: Annotated[UUID, USER_ID],
                                     education_id: Annotated[UUID, EDUCATION_ID]) -> None:
     """
-    Elimina una educación de un candidato.
+    Elimina una formación de un candidato.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
     - candidate_id: ID del usuario candidato.
-    - education_id: ID de la educación.
-
-    Returns:
-    - None
+    - education_id: ID de la formación.
     """
 
     candidate_education: CandidateEducation = await get_database_records(session, CandidateEducation, where=(CandidateEducation.candidate_id == candidate_id, CandidateEducation.education_id == education_id), result_list=False)

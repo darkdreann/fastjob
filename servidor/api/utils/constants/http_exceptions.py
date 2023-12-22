@@ -1,7 +1,7 @@
 from fastapi import status
 from api.database.database_models.metadata.constraint_name import *
 
-# constantes para las excepciones de integridad
+# clave para la excepción de null
 _NULL_IN_RELATION_ERROR = "null value in column of relation violates not-null constraint"
 
 PARAMS_EXCEPTION = {
@@ -14,11 +14,10 @@ INCORRECT_RESOURCE_EXCEPTION = {
     "detail": "El tipo de recurso no es válido para este endpoint."
 }
 
-# constantes para las excepciones
 CREDENTIALS_EXCEPTION = {
     "status_code": status.HTTP_401_UNAUTHORIZED,
     "headers": {"WWW-Authenticate": "Bearer"},
-    "detail": "No se pudo validar el usuario.",
+    "detail": "No se pudo validar el usuario."
 }
 
 FORBIDDEN_EXCEPTION = {
@@ -62,7 +61,7 @@ INTEGRATION_EXCEPTION = {
     UserConstraint.ADMIN_HAS_TABLE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario administrador no puede tener una tabla de candidato o empresa."},
     UserConstraint.CANDIDATE_HAS_COMPANY_TABLE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario de empresa no puede tener una tabla de candidato."},
     UserConstraint.COMPANY_HAS_CANDIDATE_TABLE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario de candidato no puede tener una tabla de empresa."},
-    UserConstraint.ADRESS_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de address."},
+    UserConstraint.ADDRESS_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de address."},
 
     CandidateConstraint.CANDIDATE_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Candidate ya existe."},
     CandidateConstraint.USER_NOT_CANDIDATE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario no es un candidato."},
@@ -96,19 +95,18 @@ INTEGRATION_EXCEPTION = {
     LanguageLevelConstraint.DUPLICATE_VALUE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El valor de language_level ya existe."},
     LanguageLevelConstraint.DUPLICATE_NAME: {"status_code": status.HTTP_409_CONFLICT, "detail": "El nombre de language_level ya existe."},
 
-    AddressConstraint.ADRESS_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Address ya existe."},
-    AddressConstraint.DUPLICATE_ADRESS: {"status_code": status.HTTP_409_CONFLICT, "detail": "La dirección ya existe."},
+    AddressConstraint.ADDRESS_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Address ya existe."},
+    AddressConstraint.DUPLICATE_ADDRESS: {"status_code": status.HTTP_409_CONFLICT, "detail": "La dirección ya existe."},
     AddressConstraint.DUPLICATE_POSTAL_CODE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El código postal ya existe."},
 
     JobConstraint.JOB_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Job ya existe."},
     JobConstraint.COMPANY_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de company."},
     JobConstraint.SECTOR_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de sector."},
-    JobConstraint.ADRESS_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de address."},
+    JobConstraint.ADDRESS_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de address."},
     JobConstraint.LEVEL_EDUCATION_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de education_level."},
 
-    _NULL_IN_RELATION_ERROR: {"status_code": status.HTTP_409_CONFLICT, "detail": "La columna no puede ser nula."},
+    _NULL_IN_RELATION_ERROR: {"status_code": status.HTTP_409_CONFLICT, "detail": "La columna no puede ser nula."}
 }
-
 
 DEFAULT_EXCEPTION = {
     "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -24,6 +24,7 @@ async def get_candidate_experiences(
                                     offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[Experience]:
     """
     Obtiene una lista de experiencias de un candidato.
+    Se debe ser el propietario del recurso o un administrador.
     
     Args:
     - session: Sesión de base de datos.
@@ -47,6 +48,7 @@ async def get_candidate_experience(
                                     experience_id: Annotated[UUID, EXPERIENCE_ID]) -> Experience:
     """
     Obtiene una experiencia de un candidato.
+    Se debe ser el propietario del recurso o un administrador.
     
     Args:
     - session: Sesión de base de datos.
@@ -69,11 +71,12 @@ async def create_candidate_experience(
                                         new_experience: CreateExperience) -> Experience:
     """
     Crea una experiencia para un candidato.
+    Se debe ser el propietario del recurso o un administrador.
     
     Args:
     - session: Sesión de base de datos.
     - candidate_id: ID del usuario candidato.
-    - experience: Datos de la experiencia.
+    - new_experience: Datos de la experiencia.
     
     Returns:
     - Experience: Experiencia creada.
@@ -96,6 +99,7 @@ async def update_candidate_experience(
                                         update_experience: UpdateExperience) -> Experience:
     """
     Actualiza una experiencia de un candidato.
+    Se debe ser el propietario del recurso o un administrador.
     
     Args:
     - session: Sesión de base de datos.
@@ -124,6 +128,7 @@ async def partial_update_candidate_experience(
                                         update_experience: PartialUpdateExperience) -> Experience:
     """
     Actualiza una experiencia de un candidato de forma parcial.
+    Se debe ser el propietario del recurso o un administrador.
     
     Args:
     - session: Sesión de base de datos.
@@ -151,14 +156,12 @@ async def delete_candidate_experience(
                                         experience_id: Annotated[UUID, EXPERIENCE_ID]) -> None:
     """
     Elimina una experiencia de un candidato.
+    Se debe ser el propietario del recurso o un administrador.
     
     Args:
     - session: Sesión de base de datos.
     - candidate_id: ID del usuario candidato.
     - experience_id: ID de la experiencia.
-    
-    Returns:
-    - Experience: Experiencia eliminada.
     """
     
     db_experience: Experience = await get_database_records(session, Experience, where=(Experience.candidate_id == candidate_id, Experience.id == experience_id), result_list=False)

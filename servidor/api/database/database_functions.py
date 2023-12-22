@@ -1,7 +1,7 @@
 from api.database.database_models.models import User, Candidate, Company
 
 def _get_function_check_table(func_name: str, table_name: str, user_id_name: str) -> str:
-    """Plantiilla para crear una función para comprobar si un usuario tiene una tabla asociada de un tipo de usuario (candidato|empresa)"""
+    """Plantilla para crear una función para comprobar si un usuario tiene una tabla asociada de un tipo de usuario (candidato|empresa)"""
 
     function_sql = f"""
         CREATE OR REPLACE FUNCTION {func_name}(id UUID)
@@ -18,7 +18,6 @@ def _get_function_check_table(func_name: str, table_name: str, user_id_name: str
     """
 
     return function_sql
-
 
 def _function_check_candidate_table() -> str:
     """Crea una función para comprobar si un usuario tiene una tabla asociada de un tipo de usuario (candidato|empresa)"""
@@ -61,8 +60,6 @@ def _function_check_user_type() -> str:
     """
 
     return function_sql
-
-
 
 def get_database_functions() -> list[str]:
     """Devuelve una lista con las funciones para crear en la base de datos."""

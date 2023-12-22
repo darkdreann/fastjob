@@ -1,25 +1,25 @@
-from api.models.metadata.validators import UserValidators, ValidatePhoneNumbers, ValidateSkills, ValidateDates, ValidateEndDate, ValidatePassword
 from datetime import date
+from api.models.metadata.validators import UserValidators, ValidatePhoneNumbers, ValidateSkills, ValidateDates, ValidateEndDate, ValidatePassword
 
 def validate_phone_numbers(phone_list: list) -> list:
     """Valida los numeros de telefono de una lista."""
 
-    PHONE_NUMBERS_LENGHT = ValidatePhoneNumbers.PHONE_NUMBERS_LENGHT
+    PHONE_NUMBERS_LENGTH = ValidatePhoneNumbers.PHONE_NUMBERS_LENGTH
     ERROR_MSG = ValidatePhoneNumbers.ERROR_MSG
 
     for num in phone_list:
-        if not len(str(num)) == PHONE_NUMBERS_LENGHT:
+        if not len(str(num)) == PHONE_NUMBERS_LENGTH:
             raise ValueError(ERROR_MSG)
     return phone_list
 
 def validate_skills_len(skill_list: list) -> list:
     """Valida el numero maximo de caractees de una habilidad en la lista."""
 
-    MAX_LENGHT_SKILLS = ValidateSkills.MAX_LENGHT_SKILLS
+    MAX_LENGTH_SKILLS = ValidateSkills.MAX_LENGTH_SKILLS
     ERROR_MSG = ValidateSkills.ERROR_MSG
 
     for skill in skill_list:
-        if len(skill) > MAX_LENGHT_SKILLS:
+        if len(skill) > MAX_LENGTH_SKILLS:
             raise ValueError(ERROR_MSG)
     return skill_list
 
@@ -54,7 +54,7 @@ def validate_password(password: str) -> str:
 
     ERROR_MSG = ValidatePassword.ERROR_MSG
 
-    if len(password) < UserValidators.MIN_LENGHT_PASSWORD:
+    if len(password) < UserValidators.MIN_LENGTH_PASSWORD:
         raise ValueError(ERROR_MSG)
     if not any(letter.isupper() for letter in password):
          raise ValueError(ERROR_MSG)

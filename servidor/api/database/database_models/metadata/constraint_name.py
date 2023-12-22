@@ -9,7 +9,6 @@ class JobEducationConstraint:
     EDUCATION_FK = "job_education_education_id_fk"
     DUPLICATE_JOB_ID = "job_education_duplicate_job_id"
 
-
 class SectorEducationConstraint:
     SECTOR_EDUCATION_PK = "sector_education_pk"
     SECTOR_FK = "sector_education_sector_id_fk"
@@ -40,7 +39,7 @@ class UserConstraint:
     ADMIN_HAS_TABLE = "check_admin_has_candidate_or_company_table"
     CANDIDATE_HAS_COMPANY_TABLE = "check_candidate_has_company_table"
     COMPANY_HAS_CANDIDATE_TABLE = "check_company_has_candidate_table"
-    ADRESS_FK = "user_address_id_fk"
+    ADDRESS_FK = "user_address_id_fk"
 
 class CandidateConstraint:
     CANDIDATE_PK = "candidate_pk"
@@ -72,12 +71,10 @@ class EducationConstraint:
     DUPLICATE_QUALIFICATION = "unique_education_qualification"
     LEVEL_FK = "education_level_id_fk"
 
-
 class EducationLevelConstraint:
     EDUCATION_LEVEL_PK = "education_level_pk"
     DUPLICATE_NAME = "unique_education_level_name"
     DUPLICATE_VALUE = "unique_education_level_value"
-
 
 class LanguageLevelConstraint:
     LANGUAGE_LEVEL_PK = "language_level_pk"
@@ -85,13 +82,13 @@ class LanguageLevelConstraint:
     DUPLICATE_VALUE = "unique_language_level_value"
 
 class AddressConstraint:
-    ADRESS_PK = "address_pk"
+    ADDRESS_PK = "address_pk"
     DUPLICATE_POSTAL_CODE = "unique_postal_code"
-    DUPLICATE_ADRESS = "unique_street"
+    DUPLICATE_ADDRESS = "unique_street"
 
 class JobConstraint:
     JOB_PK = "job_pk"
-    ADRESS_FK = "job_address_id_fk"
+    ADDRESS_FK = "job_address_id_fk"
     COMPANY_FK = "job_company_id_fk"
     SECTOR_FK = "job_sector_id_fk"
     LEVEL_EDUCATION_FK = "job_education_level_id_fk"

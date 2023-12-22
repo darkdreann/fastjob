@@ -3,8 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID, uuid4
 from typing import Annotated
 from sqlalchemy.orm import joinedload, noload
-from sqlalchemy import asc
-from api.database.database_models.models import Education, EducationLevel, User, Candidate, CandidateEducation, SectorEducation
+from api.database.database_models.models import Education, EducationLevel, SectorEducation
 from api.database.connection import get_session
 from api.utils.constants.endpoints_params import LIMIT, OFFSET, EDUCATION_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, EDUCATION_LEVEL_ID, GET_EDUCATION, EDUCATION_EXTRA_FIELD
 from api.security.permissions import PermissionsManager
@@ -19,7 +18,6 @@ from api.models.enums.endpoints import EducationExtraField
 
 education_route = APIRouter(prefix="/educations", tags=["educations"], dependencies=[Depends(endpoint_request_log)])
 
-
 # GET METHODS #
 @education_route.get("/", response_model=list[ReadEducationComplete], response_model_exclude_none=True, dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_educations(*,
@@ -29,11 +27,12 @@ async def get_educations(*,
     
     """
     Obtiene todas las formaciones con su nivel de formación y sector si lo tiene.
+    Se debe estar logueado para poder acceder a este endpoint.
     
     Args:
         session (AsyncSession): La sesión de la base de datos.
-        limit (int | None, optional): El límite de registros devueltos. Defaults to DEFAULT_LIMIT.
-        offset (int | None, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to DEFAULT_OFFSET.
+        limit (int, optional): El límite de registros devueltos. Por defecto es DEFAULT_LIMIT.
+        offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Por defecto es DEFAULT_OFFSET.
         
     Returns:
         list[Education]: La lista de formaciones.
@@ -50,11 +49,12 @@ async def get_education_levels(*,
                             offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[EducationLevel]:
     """
     Obtiene todos los niveles de formación.
+    Se debe estar logueado para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): La sesión de la base de datos.
-        limit (int | None, optional): El límite de registros devueltos. Defaults to DEFAULT_LIMIT.
-        offset (int | None, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to DEFAULT_OFFSET.
+        limit (int, optional): El límite de registros devueltos. Defaults to DEFAULT_LIMIT.
+        offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to DEFAULT_OFFSET.
 
     Returns:
         list[EducationLevel]: La lista de niveles de formación.
@@ -74,11 +74,12 @@ async def get_educations_with_candidates(*,
     
     """
     Obtiene una lista de todas las educaciones con sus candidatos asociados.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
-        limit (int | None, optional): Límite de resultados. Defaults to DEFAULT_LIMIT.
-        offset (int | None, optional): Desplazamiento de resultados. Defaults to DEFAULT_OFFSET.
+        limit (int, optional): Límite de resultados. Defaults to DEFAULT_LIMIT.
+        offset (int, optional): Desplazamiento de resultados. Defaults to DEFAULT_OFFSET.
         extra_fields (set[EducationExtraField]): Campos extra que se quieren obtener.
 
     Returns:
@@ -98,16 +99,17 @@ async def get_education_levels(*,
                             offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
                             get_educations: Annotated[bool, GET_EDUCATION] = False) -> list[EducationLevel]:
     """
-    Obtiene los niveles de educación. Si se especifican campos extra, se obtienen los campos de las relaciones especificadas.
+    Obtiene los niveles de formación. Si se especifican campos extra, se obtienen los campos de las relaciones especificadas.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
-        limit (int | None, optional): Límite de resultados. Defaults to DEFAULT_LIMIT.
-        offset (int | None, optional): Desplazamiento de resultados. Defaults to DEFAULT_OFFSET.
+        limit (int, optional): Límite de resultados. Defaults to DEFAULT_LIMIT.
+        offset (int, optional): Desplazamiento de resultados. Defaults to DEFAULT_OFFSET.
         get_educations (bool, optional): Si se quieren obtener las educaciones asociadas. Defaults to False.
 
     Returns:
-        list[EducationLevel]: Lista de niveles de educación.
+        list[EducationLevel]: Lista de niveles de formación.
     """
     options = joinedload(EducationLevel.education_list) if get_educations else None
     
@@ -122,15 +124,16 @@ async def get_education_levels(*,
                             education_level_id: Annotated[UUID, EDUCATION_LEVEL_ID],
                             get_educations: Annotated[bool, GET_EDUCATION] = False) -> EducationLevel:
     """
-    Obtiene un nivel de educación por su ID. Si se especifican campos extra, se obtienen los campos de las relaciones especificadas.
+    Obtiene un nivel de formación por su ID. Si se especifican campos extra, se obtienen los campos de las relaciones especificadas.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
-        education_level_id (UUID): ID del nivel de educación.
+        education_level_id (UUID): ID del nivel de formación.
         get_educations (bool, optional): Si se quieren obtener las educaciones asociadas. Defaults to False.
 
     Returns:
-        EducationLevel: Nivel de educación.
+        EducationLevel: Nivel de formación.
     """
     options = joinedload(EducationLevel.education_list) if get_educations else None
     
@@ -146,14 +149,15 @@ async def get_education_levels(*,
                             session: Annotated[AsyncSession, Depends(get_session)], 
                             education_level_id: Annotated[UUID, EDUCATION_LEVEL_ID]) -> EducationLevel:
     """
-    Obtiene un nivel de educación por su ID.
+    Obtiene un nivel de formación por su ID.
+    Se debe estar logueado para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
-        education_level_id (UUID): ID del nivel de educación.
+        education_level_id (UUID): ID del nivel de formación.
 
     Returns:
-        EducationLevel: El nivel de educación solicitado.
+        EducationLevel: El nivel de formación solicitado.
     """
     
     education_level: EducationLevel = await get_record_by_id(session, EducationLevel, education_level_id)
@@ -168,11 +172,12 @@ async def get_education_with_candidates(*,
                                         education_id: Annotated[UUID, EDUCATION_ID],
                                         extra_fields: Annotated[set[EducationExtraField], EDUCATION_EXTRA_FIELD]) -> Education:
     """
-    Obtiene una educación con sus candidatos por su ID.
+    Obtiene una formación con sus candidatos por su ID.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
-        education_id (UUID): ID de la educación.
+        education_id (UUID): ID de la formación.
         extra_fields (set[EducationExtraField]): Campos extra que se quieren obtener.
 
     Returns:
@@ -189,14 +194,15 @@ async def get_education(*,
                         session: Annotated[AsyncSession, Depends(get_session)], 
                         education_id: Annotated[UUID, EDUCATION_ID]) -> Education:
     """
-    Obtiene una educación por su ID.
+    Obtiene una formación por su ID.
+    Se debe estar logueado para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): La sesión de base de datos.
-        education_id (UUID): El ID de la educación.
+        education_id (UUID): El ID de la formación.
 
     Returns:
-        Education: La educación encontrada.
+        Education: La formación encontrada.
     """
 
     education: Education = await get_record_by_id(session, Education, education_id)
@@ -206,30 +212,34 @@ async def get_education(*,
 
 
 # POST METHODS #
-@education_route.post("/", response_model=ReadEducationComplete, status_code=status.HTTP_201_CREATED, dependencies=[Depends(PermissionsManager.is_admin)], response_model_exclude_none=True)
+@education_route.post("/", response_model=ReadEducationComplete, status_code=status.HTTP_201_CREATED, response_model_exclude_none=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def create_education(*,
                             session: Annotated[AsyncSession, Depends(get_session)],
                             new_education: CreateEducation) -> Education:
     """
-    Crea una nueva educación en la base de datos.
+    Crea una nueva formación en la base de datos.'
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
-        new_education (CreateEducation): Datos de la educación a crear.
+        new_education (CreateEducation): Datos de la formación a crear.
 
     Returns:
-        Education: La educación creada.
+        Education: La formación creada.
     """
     
+    # obtenemos el diccionario de la formación y le añadimos un id
     education_dict = new_education.model_dump()
     education_dict["id"] = uuid4()
 
+    # obtenemos el sector_id y lo eliminamos del diccionario
     sector_id = education_dict.pop("sector_id", None)
 
     new_database_education = Education(**education_dict)
 
     session.add(new_database_education)
 
+    # si se ha especificado un sector, lo añadimos a la tabla relacion de sector y educacion
     if sector_id:
         new_sector_education = SectorEducation(education_id=new_database_education.id, sector_id=sector_id)
         session.add(new_sector_education)
@@ -247,6 +257,7 @@ async def create_education_level(*,
                                 new_education: CreateLevel) -> EducationLevel:
     """
     Crea un nuevo nivel educativo en la base de datos.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
@@ -273,6 +284,7 @@ async def update_education_level(*,
                             education_update: UpdateLevel) -> EducationLevel:
     """
     Actualiza un nivel educativo existente en la base de datos.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
@@ -298,25 +310,32 @@ async def update_education(*,
                             education_id: Annotated[UUID, EDUCATION_ID],
                             education_update: UpdateEducation) -> Education:
     """
-    Actualiza una educación existente en la base de datos.
+    Actualiza una formación existente en la base de datos.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): Sesión de base de datos.
-        education_id (UUID): ID de la educación a actualizar.
-        education_update (UpdateEducation): Datos de la educación actualizada.
+        education_id (UUID): ID de la formación a actualizar.
+        education_update (UpdateEducation): Datos de la formación actualizada.
 
     Returns:
-        Education: La educación actualizada.
+        Education: La formación actualizada.
     """
     
+    # obtenemos el diccionario de la formación
     update_education_dict = education_update.model_dump()
+    # obtenemos el sector_id y lo eliminamos del diccionario
     sector_id = update_education_dict.pop("sector_id", None)
 
+    # obtenemos la formación a actualizar
     education_to_update: Education = await get_record_by_id(session, Education, education_id)
 
+    # actualizamos los campos de la formación
     update_model(education_to_update, update_education_dict)
 
+    # si se ha especificado un sector, lo añadimos a la tabla relacion de sector y educacion
     if sector_id:
+        # si la formación ya tiene un sector, actualizamos el sector_id si no, creamos una nueva relacion
         if education_to_update.sector is not None:
             education_to_update.sector.sector_id = sector_id
         else:
@@ -340,6 +359,7 @@ async def partial_update_education_level(*,
                                         education_update: PartialUpdateLevel) -> EducationLevel:
     """
     Actualiza parcialmente un nivel educativo existente en la base de datos.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): sesión de base de datos.
@@ -358,32 +378,39 @@ async def partial_update_education_level(*,
     return education_level_to_update
 
 
-@education_route.patch("/{education_id}/", response_model=ReadEducationComplete, dependencies=[Depends(PermissionsManager.is_admin)], response_model_exclude_none=True)
+@education_route.patch("/{education_id}/", response_model=ReadEducationComplete, response_model_exclude_none=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def partial_update_education(*,
                                     session: Annotated[AsyncSession, Depends(get_session)], 
                                     education_id: Annotated[UUID, EDUCATION_ID],
                                     education_update: PartialUpdateEducation) -> Education:
     """
-    Actualiza parcialmente una educación existente en la base de datos.
+    Actualiza parcialmente una formación existente en la base de datos.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): sesión de base de datos.
-        education_id (UUID): id de la educación a actualizar.
+        education_id (UUID): id de la formación a actualizar.
         education_update (PartialUpdateEducation): objeto que contiene los campos a actualizar.
 
     Returns:
-        Education: objeto de la educación actualizada.
+        Education: objeto de la formación actualizada.
     """
     
+    # obtenemos el diccionario de la formación sin los campos que no se han especificado
     update_education_dict = education_update.model_dump(exclude_unset=True)
 
+    # obtenemos el sector_id y lo eliminamos del diccionario
     sector_id = update_education_dict.pop("sector_id", None)
 
+    # obtenemos la formación a actualizar
     education_to_update: Education = await get_record_by_id(session, Education, education_id)
 
+    # actualizamos los campos de la formación
     update_model(education_to_update, update_education_dict)
 
+    # si se ha especificado un sector, lo añadimos a la tabla relacion de sector y educacion
     if sector_id:
+        # si la formación ya tiene un sector, actualizamos el sector_id si no, creamos una nueva relacion
         if education_to_update.sector is not None:
             education_to_update.sector.sector_id = sector_id
         else:
@@ -408,6 +435,7 @@ async def delete_education_level(*,
                                 education_level_id: Annotated[UUID, EDUCATION_LEVEL_ID]) -> None:
     """
     Elimina un nivel educativo de la base de datos.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): sesión de base de datos.
@@ -425,11 +453,12 @@ async def delete_education_sector(*,
                                     session: Annotated[AsyncSession, Depends(get_session)], 
                                     education_id: Annotated[UUID, EDUCATION_ID]) -> None:
     """
-    Elimina el sector de una educación.
+    Elimina el sector de una formación.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
     - session (AsyncSession): sesión de base de datos.
-    - education_id (UUID): id de la educación a actualizar.
+    - education_id (UUID): id de la formación a actualizar.
     """
     
     education_sector: SectorEducation = await get_database_records(session, SectorEducation, where=SectorEducation.education_id == education_id, result_list=False)
@@ -446,11 +475,12 @@ async def delete_education(*,
                             session: Annotated[AsyncSession, Depends(get_session)], 
                             education_id: Annotated[UUID, EDUCATION_ID]) -> None:
     """
-    Elimina un registro de educación de la base de datos.
+    Elimina un registro de formación de la base de datos.
+    Se debe ser administrador para poder acceder a este endpoint.
 
     Args:
-        session (AsyncSession): sesión de base de datos.
-        education_id (UUID): id de la educación a eliminar.
+    - session (AsyncSession): sesión de base de datos.
+    - education_id (UUID): id de la formación a eliminar.
     """
     education_to_delete: Education = await get_record_by_id(session, Education, education_id, options=(noload(Education.level), noload(Education.sector)))
 

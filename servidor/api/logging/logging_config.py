@@ -2,6 +2,7 @@ import os, logging
 from api.utils.constants.error_strings import LOG_FOLDER_CREATE_PERMISSION_DENIED
 from api.utils.functions.env_config import CONFIG
 
+# Configuración de los logs
 _LOG_INFO_PATH = os.path.join(CONFIG.LOG_PATH, CONFIG.LOG_FOLDER)
 _LOG_ERROR_PATH = os.path.join(CONFIG.LOG_PATH, CONFIG.LOG_FOLDER)
 _SPACE_BETWEEN_LOGS = "\n" + "-" * 100 + "\n"

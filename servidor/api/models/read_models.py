@@ -4,149 +4,172 @@ from datetime import date, timedelta
 from typing import Optional
 from api.models.base_models import *
 from api.models.enums.models import UserType
+from api.models.metadata.constants import DAYS_TO_MONTHS_DIVIDER
 
 class ReadAddress(BaseAddress):
-    """Modelo para leer una direccion
+    """
+    Modelo para leer una dirección.
 
-        Atributos:
-            id: Identificador de la direccion
-            postal_code: Codigo postal
-            street: Calle de la direccion
-            city: Ciudad de la direccion
-            province: Provincia de la direccion"""
+    Atributos:
+    - id: Identificador de la dirección.
+    - postal_code: Código postal.
+    - street: Calle de la dirección.
+    - city: Ciudad de la dirección.
+    - province: Provincia de la dirección.
+    """
     
     id: UUID = Field(description=AddressDescription.ID)
     
 class ReadUser(BaseUser):
-    """Modelo para leer un usuario
+    """
+    Modelo para leer un usuario.
 
-        Atributos:
-            id: Identificador del usuario
-            username: nombre identificador del usuario
-            email: Correo electronico
-            name: Nombre del usuario
-            surname: Apellido del usuario
-            phone_numbers: Lista de numeros de telefono
-            user_type: Tipo de usuario"""
+    Atributos:
+    - id: Identificador del usuario.
+    - username: Nombre identificador del usuario.
+    - email: Correo electrónico.
+    - name: Nombre del usuario.
+    - surname: Apellido del usuario.
+    - phone_numbers: Lista de números de teléfono.
+    - user_type: Tipo de usuario.
+    """
     
     id: UUID = Field(description=UserDescriptions.USER_ID)
     user_type: UserType = Field(description=UserDescriptions.USER_TYPE)
 
 class ReadUserComplete(ReadUser):
-    """Modelo para leer un usuario
+    """
+    Modelo para leer un usuario completo.
 
     Atributos:
-        id: Identificador del usuario
-        username: nombre identificador del usuario
-        email: Correo electronico
-        name: Nombre del usuario
-        surname: Apellido del usuario
-        phone_numbers: Lista de numeros de telefono
-        user_type: Tipo de usuario
-        address: Direccion del usuario"""
+    - id: Identificador del usuario.
+    - username: Nombre identificador del usuario.
+    - email: Correo electrónico.
+    - name: Nombre del usuario.
+    - surname: Apellido del usuario.
+    - phone_numbers: Lista de números de teléfono.
+    - user_type: Tipo de usuario.
+    - address: Dirección del usuario.
+    """
     
-    address: ReadAddress = Field(description=UserDescriptions.ADRESS)
+    address: ReadAddress = Field(description=UserDescriptions.ADDRESS)
 
 class ReadCandidate(BaseCandidate):
-    """Modelo para leer un candidato
+    """
+    Modelo para leer un candidato.
 
-        Atributos:
-            id: Identificador del usuario
-            username: nombre identificador del usuario
-            email: Correo electronico
-            name: Nombre del usuario
-            surname: Apellido del usuario
-            phone_numbers: Lista de numeros de telefono
-            address: Direccion del usuario
-            user_type: Tipo de usuario
-            skills: Lista de habilidades del candidato
-            availability: Lista de disponibilidad de jornada laboral del candidato"""
+    Atributos:
+    - id: Identificador del usuario.
+    - username: Nombre identificador del usuario.
+    - email: Correo electrónico.
+    - name: Nombre del usuario.
+    - surname: Apellido del usuario.
+    - phone_numbers: Lista de números de teléfono.
+    - address: Dirección del usuario.
+    - user_type: Tipo de usuario.
+    - skills: Lista de habilidades del candidato.
+    - availability: Lista de disponibilidad de jornada laboral del candidato.
+    """
     
     user: ReadUserComplete = Field(CandidateDescription.USER)
 
 class ReadCompany(BaseCompany):
-    """Modelo para leer una empresa
+    """
+    Modelo para leer una empresa.
 
-        Atributos:
-            id: Identificador del usuario
-            username: nombre identificador del usuario
-            email: Correo electronico
-            name: Nombre del usuario
-            surname: Apellido del usuario
-            phone_numbers: Lista de numeros de telefono
-            address: Direccion del usuario
-            user_type: Tipo de usuario
-            tin: Numero de identificacion de la empresa
-            company_name: Nombre de la empresa"""
+    Atributos:
+    - id: Identificador del usuario.
+    - username: Nombre identificador del usuario.
+    - email: Correo electrónico.
+    - name: Nombre del usuario.
+    - surname: Apellido del usuario.
+    - phone_numbers: Lista de números de teléfono.
+    - address: Dirección del usuario.
+    - user_type: Tipo de usuario.
+    - tin: Número de identificación de la empresa.
+    - company_name: Nombre de la empresa.
+    """
     
     user: ReadUserComplete = Field(CompanyDescription.USER)
     
 
 class ReadLanguage(BaseLanguage):
-    """Modelo para leer un idioma
+    """
+    Modelo para leer un idioma.
 
-        Atributos:
-            id: Identificador del idioma
-            name: Nombre del idioma"""
+    Atributos:
+    - id: Identificador del idioma.
+    - name: Nombre del idioma.
+    """
     
     id: UUID = Field(description=LanguageDescription.LANGUAGE_ID)
     
 class ReadSector(BaseModel):
-    """Modelo para leer un sector
+    """
+    Modelo para leer un sector.
 
-        Atributos:
-            id: Identificador del sector
-            category: La categoría del sector
-            subcategory: La subcategoría del sector"""
+    Atributos:
+    - id: Identificador del sector.
+    - category: La categoría del sector.
+    - subcategory: La subcategoría del sector.
+    """
     
     id: Optional[UUID] = Field(description=SectorDescription.SECTOR_ID, default=None)
-    category: Optional[str] = Field(description=SectorDescription.CATEGORY, max_length=SectorValidators.MAX_LENGHT_CATEGORY, default=None)
-    subcategory: Optional[str] = Field(description=SectorDescription.SUBCATEGORY, max_length=SectorValidators.MAX_LENGHT_SUBCATEGORY, default=None)
+    category: Optional[str] = Field(description=SectorDescription.CATEGORY, max_length=SectorValidators.MAX_LENGTH_CATEGORY, default=None)
+    subcategory: Optional[str] = Field(description=SectorDescription.SUBCATEGORY, max_length=SectorValidators.MAX_LENGTH_SUBCATEGORY, default=None)
 
 class ReadExperience(BaseExperience):
-    """Modelo para leer una experiencia
+    """
+    Modelo para leer una experiencia.
 
-        Atributos:
-            id: Identificador de la experiencia
-            company_name: Nombre de la empresa
-            position: Puesto de trabajo
-            position_description: Descripcion del puesto de trabajo
-            start_date: Fecha de inicio
-            end_date: Fecha de finalizacion"""
+    Atributos:
+    - id: Identificador de la experiencia.
+    - company_name: Nombre de la empresa.
+    - position: Puesto de trabajo.
+    - position_description: Descripción del puesto de trabajo.
+    - start_date: Fecha de inicio.
+    - end_date: Fecha de finalización.
+    """
     
     id: UUID = Field(description=ExperienceDescription.EXPERIENCE_ID)
 
 class ReadEducation(BaseEducation):
-    """Modelo para leer una formacion
+    """
+    Modelo para leer una formación.
 
-        Atributos:
-            id: Identificador de la formacion
-            qualification: Titulo de la formacion"""
+    Atributos:
+    - id: Identificador de la formación.
+    - qualification: Título de la formación.
+    """
     
     id: UUID = Field(description=EducationDescription.EDUCATION_ID)
 
 class ReadLevel(BaseLevel):
-    """Modelo para leer un nivel
+    """
+    Modelo para leer un nivel.
 
-        Atributos:
-            id: Identificador del nivel
-            name: Nombre del nivel de formacion o idioma
-            value: Valor numerico del nivel de formacion o idioma"""
+    Atributos:
+    - id: Identificador del nivel.
+    - name: Nombre del nivel de formación o idioma.
+    - value: Valor numérico del nivel de formación o idioma.
+    """
     
     id: UUID = Field(description=LevelDescription.LEVEL_ID)
 
 
 class ReadJob(BaseJob):
-    """Modelo para leer una oferta
+    """
+    Modelo para leer una oferta.
 
-        Atributos:
-            id: Identificador de la oferta
-            title: Titulo de la oferta
-            description: Descripcion de la oferta
-            skills: Lista de habilidades de la oferta
-            required_experience: Experiencia requerida para la oferta
-            active: Estado de la oferta (abierta o cerrada)
-            publication_date: Fecha de publicacion de la oferta"""
+    Atributos:
+    - id: Identificador de la oferta.
+    - title: Título de la oferta.
+    - description: Descripción de la oferta.
+    - skills: Lista de habilidades de la oferta.
+    - required_experience: Experiencia requerida para la oferta.
+    - active: Estado de la oferta (abierta o cerrada).
+    - publication_date: Fecha de publicación de la oferta.
+    """
     
     id: UUID = Field(description=JobDescription.JOB_ID)
     publication_date: date = Field(description=JobDescription.PUBLICATION_DATE)
@@ -154,7 +177,7 @@ class ReadJob(BaseJob):
 
     @field_serializer('required_experience', when_used="always")
     def convert_num(value):
-        return round(value.days / 30.4167)
+        return round(value.days / DAYS_TO_MONTHS_DIVIDER)
 
 
 ############################################################################################################################################################################
@@ -189,7 +212,7 @@ class ReadCandidateRelationLanguage(BaseModel):
 
     Atributos:
     - language: objeto ReadLanguage que representa el idioma del candidato.
-    - level: objeto ReadLevel que representa el nivel del idioma del candidato.
+    - language_level: objeto ReadLevel que representa el nivel del idioma del candidato.
     """
 
     language: ReadLanguage = Field(description=CandidateLanguageDescriptions.LANGUAGE)
@@ -237,7 +260,7 @@ class ReadJobRelationLanguage(BaseModel):
 
     Atributos:
     - language: objeto ReadLanguage que representa el idioma del trabajo.
-    - level: objeto ReadLevel que representa el nivel del idioma del trabajo.
+    - language_level: objeto ReadLevel que representa el nivel del idioma del trabajo.
     """
 
     language: ReadLanguage = Field(description=JobLanguageDescriptions.LANGUAGE)
@@ -291,30 +314,32 @@ class ReadEducationRelationSector(BaseModel):
 
 ############################################################################################################################################################################
 class ReadExperienceComplete(ReadExperience):
-    """Modelo para leer una experiencia con todos sus datos incluidos el sector al que pertenece.
-        Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
+    """
+    Modelo para leer una experiencia con todos sus datos incluidos el sector al que pertenece.
+    Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
 
-        Atributos:
-            id: Identificador de la experiencia
-            company_name: Nombre de la empresa
-            position: Puesto de trabajo
-            position_description: Descripcion del puesto de trabajo
-            start_date: Fecha de inicio
-            end_date: Fecha de finalizacion
-            sector: Sector de la experiencia"""
+    Atributos:
+    - id: Identificador de la experiencia
+    - company_name: Nombre de la empresa
+    - position: Puesto de trabajo
+    - position_description: Descripción del puesto de trabajo
+    - start_date: Fecha de inicio
+    - end_date: Fecha de finalización
+    - sector: Sector de la experiencia
+    """
     
     sector: Optional[ReadSector] = Field(description=ExperienceDescription.SECTOR, default=None)
 
 class ReadEducationComplete(ReadEducation):
     """
-    Modelo para leer una formacion con todos sus datos incluidos el sector y el nivel de formacion.
+    Modelo para leer una formación con todos sus datos incluidos el sector y el nivel de formación.
     Puede no tener sector.
 
     Atributos:
-        id: Identificador de la formacion
-        qualification: Titulo de la formacion
-        level: Nivel de la formacion
-        sector: Sector de la formacion
+    - id: Identificador de la formación
+    - qualification: Título de la formación
+    - level: Nivel de la formación
+    - sector: Sector de la formación
     """
     
     level: ReadLevel = Field(description=EducationDescription.LEVEL)
@@ -326,32 +351,43 @@ class ReadCandidateRelationEducation(BaseModel):
     Modelo para leer la relación entre un candidato y una formación.
 
     Atributos:
-    - education: objeto ReadEducation que representa la formación del candidato.
-    - completion_date: fecha de finalización de la formación del candidato.
+    - education: Objeto ReadEducation que representa la formación del candidato.
+    - completion_date: Fecha de finalización de la formación del candidato.
     """
 
     education: ReadEducationComplete = Field(description=EducationCandidateDescriptions.EDUCATION)
     completion_date: date = Field(description=EducationCandidateDescriptions.COMPLETION_DATE)
 
+class ReadCandidateMinimal(BaseModel):
+
+    id: UUID = Field(description=UserDescriptions.USER_ID)
+    name: str = Field(description=UserDescriptions.NAME)
+    surname: str = Field(description=UserDescriptions.SURNAME)
+    province: str = Field(description=AddressDescription.PROVINCE)
+    skills: list[str] = Field(description=CandidateDescription.SKILLS, default=[])
+    availability: list[str] = Field(description=CandidateDescription.AVAILABILITY, default=[])
+
 class ReadCandidateComplete(ReadCandidate):
-    """Modelo para leer un candidato con todos sus datos incluidos las relaciones con otras tablas experiencia, educacion, idiomas y trabajos a los que se ha aplicado.
-        Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
+    """
+    Modelo para leer un candidato con todos sus datos incluidas las relaciones con otras tablas experiencia, educación, idiomas y trabajos a los que se ha aplicado.
+    Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
 
     Atributos:
-        id: Identificador del usuario
-        username: nombre identificador del usuario
-        email: Correo electronico
-        name: Nombre del usuario
-        surname: Apellido del usuario
-        phone_numbers: Lista de numeros de telefono
-        address: Direccion del usuario
-        user_type: Tipo de usuario
-        skills: Lista de habilidades del candidato
-        availability: Lista de disponibilidad de jornada laboral del candidato
-        experiences: Lista de experiencias del candidato
-        education: Lista de educaciones del candidato
-        languages: Lista de idiomas del candidato
-        applied_jobs: Lista de trabajos a los que se ha aplicado"""
+    - id: Identificador del usuario
+    - username: Nombre identificador del usuario
+    - email: Correo electrónico
+    - name: Nombre del usuario
+    - surname: Apellido del usuario
+    - phone_numbers: Lista de números de teléfono
+    - address: Dirección del usuario
+    - user_type: Tipo de usuario
+    - skills: Lista de habilidades del candidato
+    - availability: Lista de disponibilidad de jornada laboral del candidato
+    - experience_list: Lista de experiencias del candidato
+    - language_list: Lista de educaciones del candidato
+    - language_list: Lista de idiomas del candidato
+    - applied_jobs_list: Lista de trabajos a los que se ha aplicado
+    """
 
     experience_list: Optional[list[ReadExperienceComplete]] = Field(description=CandidateDescription.EXPERIENCE, default=[])
     education_list: Optional[list[ReadCandidateRelationEducation]] = Field(description=CandidateDescription.EDUCATION, default=[])
@@ -359,47 +395,52 @@ class ReadCandidateComplete(ReadCandidate):
     applied_jobs_list: Optional[list[ReadCandidateRelationJob]] = Field(description=CandidateDescription.JOBS, default=[])
 
 class ReadCompanyComplete(ReadCompany):
-    """Modelo para leer una empresa con todos sus datos incluidos sus ofertas de trabajo.
-        Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
+    """
+    Modelo para leer una empresa con todos sus datos incluidas sus ofertas de trabajo.
+    Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
 
     Atributos:
-        id: Identificador del usuario
-        username: nombre identificador del usuario
-        email: Correo electronico
-        name: Nombre del usuario
-        surname: Apellido del usuario
-        phone_numbers: Lista de numeros de telefono
-        address: Direccion del usuario
-        user_type: Tipo de usuario
-        tin: Numero de identificacion de la empresa
-        company_name: Nombre de la empresa
-        jobs: Lista de trabajos de la empresa"""
+    - id: Identificador del usuario
+    - username: Nombre identificador del usuario
+    - email: Correo electrónico
+    - name: Nombre del usuario
+    - surname: Apellido del usuario
+    - phone_numbers: Lista de números de teléfono
+    - address: Dirección del usuario
+    - user_type: Tipo de usuario
+    - tin: Número de identificación de la empresa
+    - company_name: Nombre de la empresa
+    - jobs: Lista de trabajos de la empresa
+    """
     
     jobs: Optional[list[ReadJob]] = Field(description=CompanyDescription.JOB, default=[])
 
 class ReadLanguageComplete(ReadLanguage):
-    """Modelo para leer un idioma con todos sus datos incluidos los usuarios que tienen ese idioma.
-        Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
+    """
+    Modelo para leer un idioma con todos sus datos incluidos los usuarios que tienen ese idioma.
+    Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
 
-        Atributos:
-            name: Nombre del idioma
-            jobs: Lista de trabajos que requieren ese idioma
-            candidates: Lista de candidatos que tienen ese idioma"""
+    Atributos:
+    - name: Nombre del idioma
+    - jobs_list: Lista de trabajos que requieren ese idioma
+    - candidates_list: Lista de candidatos que tienen ese idioma
+    """
     
     candidates_list: Optional[list[ReadLanguageRelationCandidate]] = Field(description=LanguageDescription.CANDIDATE, default=[])
     jobs_list: Optional[list[ReadLanguageRelationJob]] = Field(description=LanguageDescription.JOB, default=[])
 
 
 class ReadSectorComplete(ReadSector):
-    """Modelo para leer un sector con todos sus datos incluidos las formaciones, experiencias y trabajos que tienen ese sector.
+    """
+    Modelo para leer un sector con todos sus datos incluidas las formaciones, experiencias y trabajos que tienen ese sector.
 
-        Atributos:
-            id: Identificador del sector
-            category: La categoría del sector
-            subcategory: La subcategoría del sector
-            education_list: Lista de formaciones que pertenecen al sector
-            experience_list: Lista de experiencias que pertenecen al sector
-            job_list: Lista de trabajos que pertenecen al sector
+    Atributos:
+    - id: Identificador del sector
+    - category: La categoría del sector
+    - subcategory: La subcategoría del sector
+    - education_list: Lista de formaciones que pertenecen al sector
+    - experience_list: Lista de experiencias que pertenecen al sector
+    - job_list: Lista de trabajos que pertenecen al sector
     """
     
     education_list: Optional[list[ReadSectorRelationEducation]] = Field(description=SectorDescription.EDUCATIONS, default=[])
@@ -410,56 +451,65 @@ class ReadSectorComplete(ReadSector):
 
 class ReadEducationWithUses(ReadEducationComplete):
     """
-    Modelo para leer una formacion con todos sus datos incluidos los candidatos que tienen esa formacion.
+    Modelo para leer una formación con todos sus datos incluidos los candidatos que tienen esa formación.
 
     Atributos:
-        id: Identificador de la formacion
-        qualification: Titulo de la formacion
-        level: Nivel de la formacion
-        sector: Sector de la formacion
-        candidates_list: Lista de candidatos con esa formacion
+    - id: Identificador de la formación
+    - qualification: Título de la formación
+    - level: Nivel de la formación
+    - sector: Sector de la formación
+    - candidates_list: Lista de candidatos con esa formación
+    - jobs_list: Lista de trabajos que requieren esa formación
     """
 
     candidates_list: Optional[list[ReadEducationRelationCandidate]] = Field(description=EducationDescription.CANDIDATES, default=[])
     jobs_list: Optional[list[ReadJob]] = Field(description=EducationDescription.JOB, default=[])
 
 class ReadLevelLanguage(ReadLevel):
-    """Modelo para leer un nivel con todos sus datos incluidos los idiomas que tienen ese nivel.
-        Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
+    """
+    Modelo para leer un nivel con todos sus datos incluidos los idiomas que tienen ese nivel.
+    Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
 
-        Atributos:
-            id: Identificador del nivel
-            name: Nombre del nivel de formacion o idioma
-            value: Valor numerico del nivel de formacion o idioma
-            candidates: Lista de candidatos con ese nivel de idioma
-            jobs: Lista de trabajos que requieren ese nivel de idioma"""
+    Atributos:
+    - id: Identificador del nivel
+    - name: Nombre del nivel de formación o idioma
+    - value: Valor numérico del nivel de formación o idioma
+    - candidates: Lista de candidatos con ese nivel de idioma
+    - jobs: Lista de trabajos que requieren ese nivel de idioma
+    """
     
     candidates: Optional[list[ReadLevelLanguageRelationsCandidate]] = Field(description=LanguageLevelDescription.CANDIDATES, default=[])
     jobs: Optional[list[ReadLevelLanguageRelationsJob]] = Field(description=LanguageLevelDescription.JOBS, default=[])
 
 class ReadLevelEducation(ReadLevel):
-    """Modelo para leer un nivel con todos sus datos incluidos las formaciones que tienen ese nivel.
-        Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
+    """
+    Modelo para leer un nivel con todos sus datos incluidas las formaciones que tienen ese nivel.
+    Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
 
-        Atributos:
-            id: Identificador del nivel
-            name: Nombre del nivel de formacion o idioma
-            value: Valor numerico del nivel de formacion o idioma
-            educations: Lista de formaciones con ese nivel"""
+    Atributos:
+    - id: Identificador del nivel
+    - name: Nombre del nivel de formación o idioma
+    - value: Valor numérico del nivel de formación o idioma
+    - education_list: Lista de formaciones con ese nivel
+    """
     
     education_list: Optional[list[ReadEducation]] = Field(description=EducationLevelDescription.EDUCATION, default=[])
     
 
 
 class ReadAddressComplete(ReadAddress):
-    """Modelo para leer una direccion con todos sus datos incluidos los usuarios y trabajos que tienen esa direccion.
-        Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
+    """
+    Modelo para leer una dirección con todos sus datos incluidos los usuarios y trabajos que tienen esa dirección.
+    Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
 
-        Atributos:
-            postal_code: Codigo postal
-            street: Calle de la direccion
-            city: Ciudad de la direccion
-            province: Provincia de la direccion"""
+    Atributos:
+    - postal_code: Código postal
+    - street: Calle de la dirección
+    - city: Ciudad de la dirección
+    - province: Provincia de la dirección
+    - users_list: Lista de usuarios que tienen esa dirección
+    - jobs_list: Lista de trabajos que tienen esa dirección
+    """
     
     users_list: Optional[list[ReadUser]] = Field(description=AddressDescription.USERS, default=[])
     jobs_list: Optional[list[ReadJob]] = Field(description=AddressDescription.JOB, default=[])
@@ -470,30 +520,49 @@ class ReadJobRelationEducation(BaseModel):
     Modelo para leer la relación entre un trabajo y una formación.
 
     Atributos:
-    - education: objeto ReadEducation que representa la formación del trabajo.
+    - education: Objeto ReadEducation que representa la formación del trabajo.
     """
 
     education: ReadEducationComplete = Field(description=JobDescription.REQUIRED_EDUCATION)
 
-class ReadJobComplete(ReadJob):
-    """Modelo para leer una oferta con todos sus datos incluidos la empresa, el sector, la direccion, el nivel de formacion requerido y los idiomas requeridos.
-        Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
+class ReadJobMinimal(BaseModel):
+    """
+    Modelo para leer una oferta con los datos mínimos.
 
-        Atributos:
-            id: Identificador de la oferta
-            title: Titulo de la oferta
-            description: Descripcion de la oferta
-            skills: Lista de habilidades de la oferta
-            required_experience_months: Experiencia requerida para la oferta
-            active: Estado de la oferta (abierta o cerrada)
-            publication_date: Fecha de publicacion de la oferta
-            required_education_level: Nivel de formacion requerido para la oferta
-            sector: Sector al que pertenece la oferta
-            address: Direccion de la oferta
-            languages: Lista de idiomas requeridos por la oferta"""
+    Atributos:
+    - id: Identificador de la oferta
+    - title: Título de la oferta
+    - description: Descripción de la oferta
+    - province: Provincia de la dirección de la oferta
+    """
+
+    id: UUID = Field(description=JobDescription.JOB_ID)
+    title: str = Field(description=JobDescription.TITLE)
+    description: str = Field(description=JobDescription.DESC)
+    province: str = Field(description=AddressDescription.PROVINCE)
+
+
+class ReadJobComplete(ReadJob):
+    """
+    Modelo para leer una oferta con todos sus datos incluidos la empresa, el sector, la dirección, el nivel de formación requerido y los idiomas requeridos.
+    Los atributos de las relaciones son opcionales para mostrar solo los datos que se necesiten.
+
+    Atributos:
+    - id: Identificador de la oferta
+    - title: Título de la oferta
+    - description: Descripción de la oferta
+    - skills: Lista de habilidades de la oferta
+    - required_experience_months: Experiencia requerida para la oferta
+    - active: Estado de la oferta (abierta o cerrada)
+    - publication_date: Fecha de publicación de la oferta
+    - required_education: Formación requerida
+    - sector: Sector al que pertenece la oferta
+    - address: Dirección de la oferta
+    - language_list: Lista de idiomas requeridos por la oferta
+    """
 
     sector: ReadSector = Field(description=JobDescription.SECTOR, default=None)
-    address: ReadAddress = Field(description=JobDescription.ADRESS, default=None)
+    address: ReadAddress = Field(description=JobDescription.ADDRESS, default=None)
     required_education: Optional[ReadJobRelationEducation] = Field(description=JobDescription.REQUIRED_EDUCATION, default=None)
     language_list: Optional[list[ReadJobRelationLanguage]] = Field(description=JobDescription.LANGUAGES, default=[])
 

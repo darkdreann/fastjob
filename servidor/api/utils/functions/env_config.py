@@ -1,7 +1,7 @@
 from platform import system
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
 from api.utils.constants.error_strings import ENV_FILE_NOT_FOUND, ENV_UNEXPECTED_ERROR
-from dotenv import load_dotenv
 
 # Valores por defecto en caso de que no se encuentren en el archivo .env
 _DEFAULT_FOLDER = "app_folder"
@@ -18,9 +18,14 @@ _DEFAULT_TOKEN_TYPE = "bearer"
 _DEFAULT_POOL_SIZE = 5
 _DEFAULT_MAX_OVERFLOW = 5
 _DEFAULT_DEV = "False"
+_DEFAULT__TEST_DATA_JSON_PATH = "test_data.json"
 
 
 class _Settings(BaseSettings):
+    """
+    Clase que define la configuración de variables de entorno para la aplicación.
+    """
+
     DEVELOPMENT: bool = _DEFAULT_DEV
     LOG_FOLDER: str = _DEFAULT_FOLDER
     LOG_FILE_INFO: str = _DEFAULT_FILE_INFO
@@ -46,13 +51,18 @@ class _Settings(BaseSettings):
     TOKEN_TYPE: str = _DEFAULT_TOKEN_TYPE
     PASSWORD_CRYPT_SCHEME: str = _DEFAULT_PASSWORD_CRYPT_SCHEME
     SECRET_KEY: str
+    TEST_DATA_JSON_PATH: str = _DEFAULT__TEST_DATA_JSON_PATH
 
 try:
+    # Carga las variables de entorno del archivo .env
     load_dotenv()
+    # Crea una instancia de la clase _Settings
     CONFIG = _Settings()
 
 except FileNotFoundError:
+    # Si no se encuentra el archivo .env, se asignan los valores por defecto
     raise FileNotFoundError(ENV_FILE_NOT_FOUND)
 
 except Exception as exc:
+    # Si ocurre un error inesperado, se lanza una excepción
     raise Exception(ENV_UNEXPECTED_ERROR.format(exc=exc))

@@ -6,7 +6,6 @@ from api.database.database_models.models import Base
 from api.utils.constants.error_strings import DATABASE_ERROR
 from api.utils.functions.env_config import CONFIG
 
-
 # Database configuration
 DATABASE = CONFIG.DATABASE_NAME if not CONFIG.DEVELOPMENT else CONFIG.DEVELOPMENT_DATABASE_NAME
 DATABASE_URL = f"postgresql+asyncpg://{CONFIG.DATABASE_USERNAME}:{CONFIG.DATABASE_PASSWORD}@{CONFIG.DATABASE_IP}:{CONFIG.DATABASE_PORT}/{DATABASE}"

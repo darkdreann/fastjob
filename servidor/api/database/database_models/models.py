@@ -8,6 +8,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from api.database.database_models.metadata.table_name import *
 from api.database.database_models.metadata.constraint_name import *
 from api.database.database_models.metadata.string_length import *
+from api.models.metadata.constants import MONTHS_TO_DAYS_MULTIPLIER
 from api.models.enums.models import UserType, WorkSchedule
 from api.security.hash_crypt import encrypt_string
 
@@ -15,13 +16,19 @@ class Base(DeclarativeBase):
     pass
 
 class SectorEducation(Base):
-    """Modelo de la tabla sector_education.
+    """
+    Modelo de la tabla sector_education.
 
     Esta tabla representa la relación entre las tablas sector y education.
 
     Campos:
-        education_id: Campo que representa la clave foránea de la tabla education.
-        sector_id: Campo que representa la clave foránea de la tabla sector."""
+    - education_id: Campo que representa la clave foránea de la tabla education.
+    - sector_id: Campo que representa la clave foránea de la tabla sector.
+    
+    Relaciones:
+    - sector: Relación con la tabla sector.
+    - education: Relación con la tabla education.
+    """
 
     __tablename__ = SECTOR_EDUCATION
 
@@ -38,18 +45,20 @@ class SectorEducation(Base):
 
 
 class CandidateEducation(Base):
-    """Modelo de la tabla candidate_education.
+    """
+    Modelo de la tabla candidate_education.
 
     Esta tabla representa la relación entre las tablas candidate y education.
 
     Campos:
-        candidate_id: Campo que representa la clave foránea de la tabla candidate.
-        education_id: Campo que representa la clave foránea de la tabla education.
-        completion_date: Campo que representa la fecha de finalización de los estudios.
+    - candidate_id: Campo que representa la clave foránea de la tabla candidate.
+    - education_id: Campo que representa la clave foránea de la tabla education.
+    - completion_date: Campo que representa la fecha de finalización de los estudios.
         
     Relaciones:
-        candidate: Relación con la tabla candidate.
-        education: Relación con la tabla education."""
+    - candidate: Relación con la tabla candidate.
+    - education: Relación con la tabla education.
+    """
 
     __tablename__ = CANDIDATE_EDUCATION
 
@@ -66,19 +75,21 @@ class CandidateEducation(Base):
 
 
 class CandidateLanguage(Base):
-    """Modelo de la tabla candidate_language.
+    """
+    Modelo de la tabla candidate_language.
 
     Esta tabla representa la relación entre las tablas candidate y language, Además, contiene la relación con la tabla language_level que representa el nivel de idioma del candidato.
 
     Campos:
-        candidate_id: Campo que representa la clave foránea de la tabla candidate.
-        language_id: Campo que representa la clave foránea de la tabla language.
-        language_level_id: Campo que representa la clave foránea de la tabla language_level.
+    - candidate_id: Campo que representa la clave foránea de la tabla candidate.
+    - language_id: Campo que representa la clave foránea de la tabla language.
+    - language_level_id: Campo que representa la clave foránea de la tabla language_level.
 
     Relaciones:
-        candidate: Relación con la tabla candidate.
-        language: Relación con la tabla language.
-        language_level: Relación con la tabla language_level."""
+    - candidate: Relación con la tabla candidate.
+    - language: Relación con la tabla language.
+    - language_level: Relación con la tabla language_level.
+    """
 
     __tablename__ = CANDIDATE_LANGUAGE
 
@@ -94,13 +105,20 @@ class CandidateLanguage(Base):
         PrimaryKeyConstraint(candidate_id, language_id, name=CandidateLanguageConstraint.CANDIDATE_LANGUAGE_PK),
     )
 class JobCandidate(Base):
-    """Modelo de la tabla jobcandidate.
+    """
+    Modelo de la tabla jobcandidate.
     
     Esta tabla representa la relación entre las tablas job y candidate.
     
     Campos:
-        candidate_id: Campo que representa la clave foránea de la tabla candidate.
-        job_id: Campo que representa la clave foránea de la tabla job."""
+    - candidate_id: Campo que representa la clave foránea de la tabla candidate.
+    - job_id: Campo que representa la clave foránea de la tabla job.
+    - inscription_date: Campo que representa la fecha de inscripción a la oferta.
+    
+    Relaciones:
+    - candidate: Relación con la tabla candidate.
+    - job: Relación con la tabla job.
+    """
 
     __tablename__ = JOB_CANDIDATE
 
@@ -116,6 +134,19 @@ class JobCandidate(Base):
     )
 
 class JobEducation(Base):
+    """
+    Modelo de la tabla job_education.
+
+    Esta tabla representa la relación entre las tablas job y education.
+
+    Campos:
+    - job_id: Campo que representa la clave foránea de la tabla job.
+    - education_id: Campo que representa la clave foránea de la tabla education.
+
+    Relaciones:
+    - job: Relación con la tabla job.
+    - education: Relación con la tabla education.
+    """
 
     __tablename__ = JOB_EDUCATION
 
@@ -131,19 +162,21 @@ class JobEducation(Base):
     )
 
 class JobLanguage(Base):
-    """Modelo de la tabla job_language.
+    """
+    Modelo de la tabla job_language.
 
     Esta tabla representa la relación entre las tablas job y language, Además, contiene la relación con la tabla language_level que representa el nivel de idioma requerido por la oferta de trabajo.
 
     Campos:
-        job_id: Campo que representa la clave foránea de la tabla job.
-        language_id: Campo que representa la clave foránea de la tabla language.
-        language_level_id: Campo que representa la clave foránea de la tabla language_level.
+    - job_id: Campo que representa la clave foránea de la tabla job.
+    - language_id: Campo que representa la clave foránea de la tabla language.
+    - language_level_id: Campo que representa la clave foránea de la tabla language_level.
     
     Relaciones:
-        job: Relación con la tabla job.
-        language: Relación con la tabla language.
-        language_level: Relación con la tabla language_level."""
+    - job: Relación con la tabla job.
+    - language: Relación con la tabla language.
+    - language_level: Relación con la tabla language_level.
+    """
 
     __tablename__ = JOB_LANGUAGE
 
@@ -162,25 +195,27 @@ class JobLanguage(Base):
 #################################################################################################################################
 
 class User(Base):
-    """Modelo de la tabla user.
+    """
+    Modelo de la tabla user.
 
     Esta tabla representa a los usuarios de la aplicación.
 
     Campos:
-        id: Campo que representa la clave primaria de la tabla.
-        user_type: Campo que representa el tipo de usuario.
-        username: Campo que representa el nombre de usuario.
-        email: Campo que representa el correo electrónico.
-        password: Campo que representa la contraseña.
-        name: Campo que representa el nombre del usuario.
-        surname: Campo que representa el apellido del usuario.
-        phone_numbers: Campo que representa los números de teléfono del usuario.
-        address_postal_code: Campo que representa el código postal de la dirección del usuario.
+    - id: Campo que representa la clave primaria de la tabla.
+    - user_type: Campo que representa el tipo de usuario.
+    - username: Campo que representa el nombre de usuario.
+    - email: Campo que representa el correo electrónico.
+    - password: Campo que representa la contraseña.
+    - name: Campo que representa el nombre del usuario.
+    - surname: Campo que representa el apellido del usuario.
+    - phone_numbers: Campo que representa los números de teléfono del usuario.
+    - address_id: Campo que representa la clave foránea de la tabla address.
     
     Relaciones:
-        address: Relación con la tabla address.
-        candidate: Relación con la tabla candidate.
-        company: Relación con la tabla company."""
+    - address: Relación con la tabla address.
+    - candidate: Relación con la tabla candidate.
+    - company: Relación con la tabla company.
+    """
 
     __tablename__ = USER
 
@@ -192,7 +227,7 @@ class User(Base):
     _name: Mapped[str] = mapped_column(String(UserStringLen.name), name="name")
     _surname: Mapped[str] = mapped_column(String(UserStringLen.surname), name="surname")
     phone_numbers: Mapped[list[int]] = mapped_column(ARRAY(Integer))
-    address_id: Mapped[UUID] = mapped_column(ForeignKey(f"{ADDRESS}.id", name=UserConstraint.ADRESS_FK))
+    address_id: Mapped[UUID] = mapped_column(ForeignKey(f"{ADDRESS}.id", name=UserConstraint.ADDRESS_FK))
     
     address: Mapped["Address"] = relationship(back_populates="users_list")
     candidate: Mapped[Optional["Candidate"]] = relationship(back_populates="user", uselist=False, lazy="noload")
@@ -279,21 +314,24 @@ class User(Base):
 
 
 class Candidate(Base):
-    """Modelo de la tabla candidate.
+    """
+    Modelo de la tabla candidate.
 
     Esta tabla representa a los candidatos de la aplicación.
 
     Campos:
-        user_id: Campo que representa la clave foránea de la tabla user.
-        skills: Campo que representa las habilidades del candidato.
-        availability: Campo que representa la disponibilidad del candidato.
+    - user_id: Campo que representa la clave foránea de la tabla user.
+    - skills: Campo que representa las habilidades del candidato.
+    - availability: Campo que representa la disponibilidad del candidato.
+    - curriculum: Campo que representa el currículum del candidato.
     
     Relaciones:
-        user: Relación con la tabla user.
-        education_list: Relación con la tabla candidate_education.
-        language_list: Relación con la tabla candidate_language.
-        experience_list: Relación con la tabla experience.
-        applied_jobs_list: Relación con la tabla job."""
+    - user: Relación con la tabla user.
+    - education_list: Relación con la tabla candidate_education.
+    - language_list: Relación con la tabla candidate_language.
+    - experience_list: Relación con la tabla experience.
+    - applied_jobs_list: Relación con la tabla job.
+    """
 
     __tablename__ = CANDIDATE
 
@@ -317,18 +355,20 @@ class Candidate(Base):
     )
 
 class Company(Base):
-    """Modelo de la tabla company.
+    """
+    Modelo de la tabla company.
 
     Esta tabla representa a las empresas de la aplicación.
 
     Campos:
-        user_id: Campo que representa la clave foránea de la tabla user.
-        tin: Campo que representa el CIF de la empresa.
-        company_name: Campo que representa el nombre de la empresa.
+    - user_id: Campo que representa la clave foránea de la tabla user.
+    - tin: Campo que representa el CIF de la empresa.
+    - company_name: Campo que representa el nombre de la empresa.
 
     Relaciones:
-        user: Relación con la tabla user.
-        job_list: Relación con la tabla job."""
+    - user: Relación con la tabla user.
+    - job_list: Relación con la tabla job.
+    """
 
     __tablename__ = COMPANY
 
@@ -375,17 +415,19 @@ class Company(Base):
 
 
 class Language(Base):
-    """Modelo de la tabla language.
+    """
+    Modelo de la tabla language.
 
     Esta tabla representa los idiomas de la aplicación.
 
     Campos:
-        id: Campo que representa la clave primaria de la tabla.
-        name: Campo que representa el nombre del idioma.
+    - id: Campo que representa la clave primaria de la tabla.
+    - name: Campo que representa el nombre del idioma.
     
     Relaciones:
-        candidates_list: Relación con la tabla candidate_language.
-        jobs_list: Relación con la tabla job_language."""
+    - candidates_list: Relación con la tabla candidate_language.
+    - jobs_list: Relación con la tabla job_language.
+    """
 
     __tablename__ = LANGUAGE
 
@@ -413,18 +455,20 @@ class Language(Base):
         self._name = name.lower()
 
 class Sector(Base):
-    """Modelo de la tabla sector.
+    """
+    Modelo de la tabla sector.
 
     Esta tabla representa los sectores de la aplicación.
 
     Campos:
-        id: Campo que representa la clave primaria de la tabla.
-        category: Campo que representa la categoría del sector.
-        subcategory: Campo que representa la subcategoría del sector.
+    - id: Campo que representa la clave primaria de la tabla.
+    - category: Campo que representa la categoría del sector.
+    - subcategory: Campo que representa la subcategoría del sector.
     
     Relaciones:
-        education_list: Relación con la tabla sector_education.
-        experience_list: Relación con la tabla experience."""
+    - education_list: Relación con la tabla sector_education.
+    - experience_list: Relación con la tabla experience.
+    """
 
     __tablename__ = SECTOR
 
@@ -466,23 +510,25 @@ class Sector(Base):
         self._subcategory = subcategory.lower()
 
 class Experience(Base):
-    """Modelo de la tabla experience.
+    """
+    Modelo de la tabla experience.
 
     Esta tabla representa la experiencia de los candidatos.
 
     Campos:
-        id: Campo que representa la clave primaria de la tabla.
-        company_name: Campo que representa el nombre de la empresa.
-        start_date: Campo que representa la fecha de inicio.
-        end_date: Campo que representa la fecha de finalización.
-        job_position: Campo que representa el puesto de trabajo.
-        job_position_description: Campo que representa la descripción del puesto de trabajo.
-        candidate_id: Campo que representa la clave foránea de la tabla candidate.
-        sector_id: Campo que representa la clave foránea de la tabla sector.
+    - id: Campo que representa la clave primaria de la tabla.
+    - company_name: Campo que representa el nombre de la empresa.
+    - start_date: Campo que representa la fecha de inicio.
+    - end_date: Campo que representa la fecha de finalización.
+    - job_position: Campo que representa el puesto de trabajo.
+    - job_position_description: Campo que representa la descripción del puesto de trabajo.
+    - candidate_id: Campo que representa la clave foránea de la tabla candidate.
+    - sector_id: Campo que representa la clave foránea de la tabla sector.
 
     Relaciones:
-        candidate: Relación con la tabla candidate.
-        sector: Relación con la tabla sector."""
+    - candidate: Relación con la tabla candidate.
+    - sector: Relación con la tabla sector.
+    """
 
     __tablename__ = EXPERIENCE
 
@@ -539,20 +585,23 @@ class Experience(Base):
         self._job_position_description = job_position_description.lower()
 
 class Education(Base):
-    """Modelo de la tabla education.
+    """
+    Modelo de la tabla education.
 
     Esta tabla representa la educación de los candidatos.
 
     Campos:
-        id: Campo que representa la clave primaria de la tabla.
-        qualification: Campo que representa la cualificación.
-        level_id: Campo que representa la clave foránea de la tabla education_level.
-        sector_id: Campo que representa la clave foránea de la tabla sector.
+    - id: Campo que representa la clave primaria de la tabla.
+    - qualification: Campo que representa la cualificación.
+    - level_id: Campo que representa la clave foránea de la tabla education_level.
+    - sector_id: Campo que representa la clave foránea de la tabla sector.
     
     Relaciones:
-        sector: Relación con la tabla sector.
-        level: Relación con la tabla education_level.
-        candidates_list: Relación con la tabla candidate_education."""
+    - sector: Relación con la tabla sector.
+    - level: Relación con la tabla education_level.
+    - candidates_list: Relación con la tabla candidate_education.
+    - jobs_list: Relación con la tabla job_education.
+    """
     
     __tablename__ = EDUCATION
 
@@ -583,18 +632,19 @@ class Education(Base):
         self._qualification = qualification.lower()
 
 class EducationLevel(Base):
-    """Modelo de la tabla education_level.
+    """
+    Modelo de la tabla education_level.
 
     Esta tabla representa los niveles de educación de los candidatos.
 
     Campos:
-        id: Campo que representa la clave primaria de la tabla.
-        value: Campo que representa el valor del nivel de educación.
-        name: Campo que representa el nombre del nivel de educación.
+    - id: Campo que representa la clave primaria de la tabla.
+    - name: Campo que representa el nombre del nivel de educación.
+    - value: Campo que representa el valor del nivel de educación.
 
     Relaciones:
-        education_list: Relación con la tabla education
-        jobs_list: Relación con la tabla job."""
+    - education_list: Relación con la tabla education
+    """
 
     __tablename__ = EDUCATION_LEVEL
 
@@ -623,18 +673,20 @@ class EducationLevel(Base):
         self._name = name.lower()
 
 class LanguageLevel(Base):
-    """Modelo de la tabla language_level.
+    """
+    Modelo de la tabla language_level.
 
     Esta tabla representa los niveles de idioma de los candidatos.
 
     Campos:
-        id: Campo que representa la clave primaria de la tabla.
-        value: Campo que representa el valor del nivel de idioma.
-        name: Campo que representa el nombre del nivel de idioma.
+    - id: Campo que representa la clave primaria de la tabla.
+    - value: Campo que representa el valor del nivel de idioma.
+    - name: Campo que representa el nombre del nivel de idioma.
 
     Relaciones:
-        candidates_language_list: Relación con la tabla candidate_language
-        jobs_language_list: Relación con la tabla job_language."""
+    - candidates_language_list: Relación con la tabla candidate_language
+    - jobs_language_list: Relación con la tabla job_language.
+    """
 
     __tablename__ = LANGUAGE_LEVEL
 
@@ -664,20 +716,22 @@ class LanguageLevel(Base):
         self._name = name.lower()
 
 class Address(Base):
-    """Modelo de la tabla address.
+    """
+    Modelo de la tabla address.
 
     Esta tabla representa las direcciones de los usuarios.
 
     Campos:
-        id: Campo que representa la clave primaria de la tabla.
-        postal_code: Campo que representa el código postal.
-        street: Campo que representa la calle.
-        city: Campo que representa la ciudad.
-        province: Campo que representa la provincia.
+    - id: Campo que representa la clave primaria de la tabla.
+    - postal_code: Campo que representa el código postal.
+    - street: Campo que representa la calle.
+    - city: Campo que representa la ciudad.
+    - province: Campo que representa la provincia.
     
     Relaciones:
-        users_list: Relación con la tabla user.
-        jobs_list: Relación con la tabla job."""
+    - users_list: Relación con la tabla user.
+    - jobs_list: Relación con la tabla job.
+    """
 
     __tablename__ = ADDRESS
 
@@ -691,9 +745,9 @@ class Address(Base):
     jobs_list: Mapped[list["Job"]] = relationship(back_populates="address", lazy="noload")
 
     __table_args__ = (
-        PrimaryKeyConstraint("id", name=AddressConstraint.ADRESS_PK),
+        PrimaryKeyConstraint("id", name=AddressConstraint.ADDRESS_PK),
         UniqueConstraint(postal_code, name=AddressConstraint.DUPLICATE_POSTAL_CODE),
-        UniqueConstraint(postal_code, "city", "province", name=AddressConstraint.DUPLICATE_ADRESS)
+        UniqueConstraint(postal_code, "city", "province", name=AddressConstraint.DUPLICATE_ADDRESS)
     )
 
     @hybrid_property
@@ -734,30 +788,32 @@ class Address(Base):
 
 
 class Job(Base):
-    """Modelo de la tabla job.
+    """
+    Modelo de la tabla job.
 
     Esta tabla representa las ofertas de trabajo.
 
     Campos:
-        id: Campo que representa la clave primaria de la tabla.
-        title: Campo que representa el título de la oferta.
-        description: Campo que representa la descripción de la oferta.
-        required_months_of_experience: Campo que representa los meses de experiencia requeridos.
-        work_schedule: Campo que representa el horario de trabajo.
-        skills: Campo que representa las habilidades requeridas.
-        active: Campo que representa si la oferta está activa.
-        publication_date: Campo que representa la fecha de publicación.
-        address_postal_code: Campo que representa el código postal de la dirección de la oferta.
-        company_id: Campo que representa la clave foránea de la tabla company.
-        education_level_id: Campo que representa la clave foránea de la tabla education_level.
-        sector_id: Campo que representa la clave foránea de la tabla sector.
+    - id: Campo que representa la clave primaria de la tabla.
+    - title: Campo que representa el título de la oferta.
+    - description: Campo que representa la descripción de la oferta.
+    - required_months_of_experience: Campo que representa los meses de experiencia requeridos.
+    - work_schedule: Campo que representa el horario de trabajo.
+    - skills: Campo que representa las habilidades requeridas.
+    - active: Campo que representa si la oferta está activa.
+    - publication_date: Campo que representa la fecha de publicación.
+    - address_id: Campo que representa la clave foránea de la tabla address.
+    - company_id: Campo que representa la clave foránea de la tabla company.
+    - sector_id: Campo que representa la clave foránea de la tabla sector.
 
     Relaciones:
-        company: Relación con la tabla company.
-        education_level: Relación con la tabla education_level.
-        address: Relación con la tabla address.
-        language_list: Relación con la tabla job_language.
-        candidate: Relación con la tabla candidate."""
+    - company: Relación con la tabla company.
+    - candidates_list: Relación con la tabla candidate.
+    - required_education: Relación con la tabla job_education.
+    - address: Relación con la tabla address.
+    - language_list: Relación con la tabla job_language.
+    - sector: Relación con la tabla sector.
+    """
 
     __tablename__ = JOB
 
@@ -767,11 +823,11 @@ class Job(Base):
     _required_experience: Mapped[timedelta] = mapped_column(INTERVAL, name="required_experience")
     work_schedule: Mapped[WorkSchedule] = mapped_column(Enum(WorkSchedule))
     skills: Mapped[list[str]] = mapped_column(ARRAY(String(JobStringLen.skills)))
-    active: Mapped[bool]
     publication_date: Mapped[Optional[date]] = mapped_column(Date, server_default=text("CURRENT_DATE"))
-    address_id: Mapped[UUID] = mapped_column(ForeignKey(f"{ADDRESS}.id", name=JobConstraint.ADRESS_FK))
+    address_id: Mapped[UUID] = mapped_column(ForeignKey(f"{ADDRESS}.id", name=JobConstraint.ADDRESS_FK))
     company_id: Mapped[UUID] = mapped_column(ForeignKey(f"{COMPANY}.user_id", name=JobConstraint.COMPANY_FK, ondelete="CASCADE"))
     sector_id: Mapped[UUID] = mapped_column(ForeignKey(f"{SECTOR}.id", name=JobConstraint.SECTOR_FK))
+    active: Mapped[bool]
     
     company: Mapped["Company"] = relationship(back_populates="job_list", lazy="noload")
     candidates_list: Mapped[list["JobCandidate"]] = relationship(back_populates="job", lazy="noload")
@@ -818,4 +874,4 @@ class Job(Base):
     def required_experience(self, months_experience: int):
         """Guarda los meses de experiencia requeridos."""
 
-        self._required_experience = timedelta(weeks=months_experience * 4.35)
+        self._required_experience = timedelta(weeks=months_experience * MONTHS_TO_DAYS_MULTIPLIER)

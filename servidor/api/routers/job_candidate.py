@@ -9,7 +9,7 @@ from api.utils.functions.management_utils import endpoint_request_log
 from api.utils.functions.database_utils import secure_commit, get_database_records
 from api.security.permissions import PermissionsManager
 from api.database.database_models.models import Job, JobCandidate, Candidate, User
-from api.models.read_models import ReadCandidateRelationJob, ReadCandidateComplete
+from api.models.read_models import ReadCandidateRelationJob, ReadCandidateComplete, ReadCandidateMinimal
 from api.utils.constants.endpoints_params import LIMIT, OFFSET, USER_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, JOB_ID, CANDIDATE_EXTRA_FIELD
 from api.utils.functions.candidate_filter import get_candidate_applied, JobCandidateExtraField
 
@@ -18,14 +18,15 @@ job_candidate_route = APIRouter(prefix="/jobs/candidates", tags=["jobs"], depend
 
 # GET #
 
-@job_candidate_route.get("/{job_id}/", response_model_exclude_defaults=True, response_model=list[ReadCandidateComplete], dependencies=[Depends(PermissionsManager.is_job_resource_owner_noload)])
+@job_candidate_route.get("/{job_id}/", response_model_exclude_defaults=True, response_model=list[ReadCandidateMinimal|ReadCandidateComplete], dependencies=[Depends(PermissionsManager.is_job_resource_owner_noload)])
 async def get_job_candidates(
                             session: Annotated[AsyncSession, Depends(get_session)],
                             candidate_params: Annotated[dict, Depends(get_candidate_applied)],
                             limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                             offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[Candidate]:
     """
-    Obtiene los candidatos que aplicaron a un trabajo específico.
+    Obtiene los candidatos que aplicaron a una oferta específica.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session (AsyncSession): Sesión de base de datos.
@@ -34,10 +35,11 @@ async def get_job_candidates(
     - offset (int): Registro desde el cual se empieza a obtener.
 
     Returns:
-    - list[JobCandidate]: Lista de objetos que representan la relación entre el trabajo y el candidato.
+    - list[JobCandidate]: Lista de objetos que representan la relación entre la oferta y el candidato.
     """
+    fields = candidate_params.pop("fields")
 
-    job_candidates = await get_database_records(session, Candidate, limit=limit, offset=offset, **candidate_params, unique=True)
+    job_candidates = await get_database_records(session, *fields, **candidate_params, limit=limit, offset=offset)
 
     return job_candidates
 
@@ -48,22 +50,29 @@ async def get_job_candidate(
                             candidate_id: Annotated[UUID, USER_ID],
                             extra_fields: Annotated[set[JobCandidateExtraField], CANDIDATE_EXTRA_FIELD] = ()) -> Candidate:
     """
-    Obtiene la relación entre un trabajo y un candidato específico.
+    Obtiene la relación entre una oferta y un candidato específico.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session (AsyncSession): Sesión de base de datos.
-    - job (Job): Oferta de trabajo al que se desea aplicar.
-    - candidate_id (UUID): ID del candidato que aplica al trabajo.
+    - job (Job): Oferta de la oferta a la que se desea aplicar.
+    - candidate_id (UUID): ID del candidato que aplica a la oferta.
+    - extra_fields (set[JobCandidateExtraField]): Campos extra que se desean obtener del candidato.
 
     Returns:
-    - JobCandidate: Objeto que representa la relación entre el trabajo y el candidato.
+    - JobCandidate: Objeto que representa la relación entre la oferta y el candidato.
     """
 
+    # obtener los campos extra que se desean obtener del candidato
     options = [JobCandidateExtraField.get_field_value(field) for field in extra_fields]
+
+    # añadir para que se obtenga el usuario y su dirección
     options.append(joinedload(Candidate.user).joinedload(User.address))
 
-    where= (JobCandidate.job_id == job.id, Candidate.user_id == candidate_id)
+    # añadimos un filtro para que solo se obtengan los registros que coincidan con la oferta y el candidato
+    where = (JobCandidate.job_id == job.id, Candidate.user_id == candidate_id)
 
+    # hacemos join a la tabla de JobCandidate para poder filtrar por la oferta y el candidato
     joins = {
         "target": JobCandidate,
         "onclause": JobCandidate.candidate_id == Candidate.user_id,
@@ -79,22 +88,25 @@ async def get_job_candidate_cv(
                             job: Annotated[Job, Depends(GetJob(False))], 
                             candidate_id: Annotated[UUID, USER_ID]) -> Response:
     """
-    Obtiene la cantidad de veces que un candidato ha aplicado a un trabajo específico.
+    Obtiene el currículum de un candidato que ha aplicado a una oferta específica.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session (AsyncSession): Sesión de base de datos.
-    - job (Job): Oferta de trabajo al que se desea aplicar.
-    - candidate_id (UUID): ID del candidato que aplica al trabajo.
+    - job (Job): Oferta de la oferta a la que se desea aplicar.
+    - candidate_id (UUID): ID del candidato que aplica a la oferta.
 
     Returns:
-    - int: Cantidad de veces que el candidato ha aplicado al trabajo.
+    - int: Cantidad de veces que el candidato ha aplicado a la oferta.
     """
 
+    # hacemos join a la tabla de JobCandidate para poder filtrar por la oferta y el candidato
     joins = {
         "target": JobCandidate,
         "onclause": JobCandidate.candidate_id == Candidate.user_id,
     }
 
+    # añadimos un filtro para que solo se obtengan los registros que coincidan con la oferta y el candidato
     where = (
         Candidate.user_id == candidate_id,
         JobCandidate.job_id == job.id
@@ -107,21 +119,22 @@ async def get_job_candidate_cv(
 
 # POST #
 
-@job_candidate_route.post("/{job_id}/apply/{candidate_id}", status_code=status.HTTP_201_CREATED, response_model=ReadCandidateRelationJob, dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])
+@job_candidate_route.post("/{job_id}/apply/{candidate_id}/", status_code=status.HTTP_201_CREATED, response_model=ReadCandidateRelationJob, dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])
 async def apply_to_job(
                         session: Annotated[AsyncSession, Depends(get_session)],
                         job_id: Annotated[UUID, JOB_ID], 
                         candidate_id: Annotated[UUID, USER_ID]) -> JobCandidate:
     """
-    Aplica a un trabajo específico.
+    Aplica un candidato a una oferta de empleo.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session (AsyncSession): Sesión de base de datos.
-    - job_id (UUID): ID del trabajo al que se desea aplicar.
-    - candidate_id (UUID): ID del candidato que aplica al trabajo.
+    - job_id (UUID): ID de la oferta a la que se desea aplicar.
+    - candidate_id (UUID): ID del candidato que aplica a la oferta.
 
     Returns:
-    - JobCandidate: Objeto que representa la relación entre el trabajo y el candidato.
+    - JobCandidate: Objeto que representa la relación entre la oferta y el candidato.
     """
     
     job_candidate = JobCandidate(job_id=job_id, candidate_id=candidate_id)
@@ -142,12 +155,12 @@ async def remove_job_application(
                                 job_id: Annotated[UUID, JOB_ID], 
                                 candidate_id: Annotated[UUID, USER_ID]) -> None:
     """
-    Elimina la aplicación de un candidato a un trabajo específico.
+    Elimina la aplicación de un candidato a una oferta específica.
 
     Args:
     - session (AsyncSession): Sesión de base de datos.
-    - job_id (UUID): ID del trabajo al que se desea aplicar.
-    - candidate_id (UUID): ID del candidato que aplica al trabajo.
+    - job_id (UUID): ID de la oferta a la que se desea aplicar.
+    - candidate_id (UUID): ID del candidato que aplica a la oferta.
     """
 
     options = (noload(JobCandidate.candidate), noload(JobCandidate.job))

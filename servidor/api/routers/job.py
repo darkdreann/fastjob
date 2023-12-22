@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Body
+from fastapi import APIRouter, Depends, status
 from typing import Annotated
 from uuid import UUID, uuid4
 from sqlalchemy.orm import noload
@@ -8,37 +8,42 @@ from api.utils.functions.database_utils import secure_commit, get_database_recor
 from api.utils.functions.models_utils import update_model, get_address_from_db
 from api.security.permissions import PermissionsManager
 from api.database.database_models.models import Job, JobEducation, JobLanguage, Address
-from api.models.read_models import ReadJobComplete, ReadJobRelationLanguage, ReadJobCompleteWithUsers
+from api.models.read_models import ReadJobComplete, ReadJobRelationLanguage, ReadJobCompleteWithUsers, ReadJobMinimal
 from api.models.create_models import CreateJob, CreateJobLanguage
 from api.models.update_models import UpdateJob
 from api.models.partial_update_models import PartialUpdateJob
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, JOB_EXTRA_FIELD, LANGUAGE_ID
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, JOB_EXTRA_FIELD, LANGUAGE_ID, LANGUAGE_LEVEL_ID_BODY
 from api.utils.functions.management_utils import endpoint_request_log
 from api.utils.functions.models_utils import GetJob
 from api.models.enums.endpoints import JobExtraField
+from api.utils.functions.job_filter import get_job_filter_params
 
 job_route = APIRouter(prefix="/jobs", tags=["jobs"], dependencies=[Depends(endpoint_request_log)])
 
-
 # GET #
 
-@job_route.get("/", response_model=list[ReadJobComplete], response_model_exclude_none=True)
+@job_route.get("/", response_model=list[ReadJobComplete|ReadJobMinimal], response_model_exclude_none=True)
 async def get_jobs(
-                session: Annotated[AsyncSession, Depends(get_session)], 
+                session: Annotated[AsyncSession, Depends(get_session)],
+                job_params: Annotated[dict, Depends(get_job_filter_params)],
                 limit: Annotated[int, LIMIT] = DEFAULT_LIMIT, 
                 offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[Job]:
     """
     Obtiene todas las ofertas de trabajo.
+    Se puede usar sin autenticación.
 
     Args:
     - session: Sesión de base de datos.
+    - job_params: Parámetros de filtrado de las ofertas de trabajo.
     - limit: Cantidad de registros a obtener.
     - offset: Cantidad de registros a saltar.
 
     Return:
     - Lista de ofertas de trabajo.
     """
-    jobs: list[Job] = await get_database_records(session, Job, limit, offset, unique=True)
+    fields = job_params.pop("fields")
+
+    jobs: list[Job] = await get_database_records(session, *fields, **job_params, limit=limit, offset=offset)
 
     return jobs
 
@@ -49,18 +54,20 @@ async def get_jobs_admin(
                 offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
                 extra_fields: Annotated[set[JobExtraField], JOB_EXTRA_FIELD] = ()) -> list[Job]:
     """
-    Obtiene todas las ofertas de trabajo.
+    Obtiene todas las ofertas de trabajo para administradores.
+    Se debe ser administrador.
 
     Args:
     - session: Sesión de base de datos.
     - limit: Cantidad de registros a obtener.
     - offset: Cantidad de registros a saltar.
+    - extra_fields: Campos adicionales de la oferta de trabajo.
 
     Return:
     - Lista de ofertas de trabajo.
     """
 
-    jobs: list[Job] = await get_database_records(session, Job, limit, offset, options=[JobExtraField.get_field_value(field) for field in extra_fields], unique=True)
+    jobs: list[Job] = await get_database_records(session, Job, options=[JobExtraField.get_field_value(field) for field in extra_fields], unique=True, limit=limit, offset=offset)
 
     return jobs
 
@@ -69,10 +76,10 @@ async def get_job_by_id(
                     job: Annotated[Job, Depends(GetJob())]) -> Job:
     """
     Obtiene una oferta de trabajo por su ID.
+    Se puede usar sin autenticación.
 
     Args:
-    - session: Sesión de base de datos.
-    - job_id: ID del trabajo a obtener.
+    - job: Oferta de trabajo a obtener.
 
     Return:
     - La oferta de trabajo.
@@ -89,23 +96,28 @@ async def create_job(
                     job_languages: list[CreateJobLanguage] = None) -> Job:
     """
     Crea una oferta de trabajo.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
-    - company_id: ID de la empresa que crea la oferta.
     - job: Datos de la oferta de trabajo a crear.
+    - job_languages: Idiomas requeridos para la oferta de trabajo.
 
     Return:
     - La oferta de trabajo creada.
     """
 
+    # obtenemos la dirección de la base de datos
     address: Address = await get_address_from_db(session, job.address)
+    # creamos la oferta de trabajo
     job_db = Job(**job.model_dump(exclude={"address", "required_education", "required_language_list"}), id=uuid4(), address=address)
 
+    # si se especificó una formación requerida, la anadimos
     if job.required_education:
         job_education = JobEducation(job_id=job_db.id, education_id=job.required_education)
         session.add(job_education)
 
+    # si se especificaron idiomas requeridos, los anadimos
     if job_languages:
         for language in job_languages:
             job_language = JobLanguage(job_id=job_db.id, language_id=language.language_id, language_level_id=language.language_level_id)
@@ -126,10 +138,11 @@ async def create_job_language(
                     job_language: CreateJobLanguage) -> JobLanguage:
     """
     Crea un idioma requerido para una oferta de trabajo.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
-    - job: Oferta de trabajo a crear.
+    - job: Oferta de trabajo a la que se le añadirá el idioma requerido.
     - job_language: Datos del idioma requerido.
 
     Return:
@@ -158,20 +171,24 @@ async def update_job(
 
     Args:
     - session: Sesión de base de datos.
-    - job_db: Oferta de trabajo a crear.
-    - job: Datos de la oferta de trabajo a actualizar.
+    - job: Oferta de trabajo a actualizar.
+    - update_job: Datos de la oferta de trabajo actualizada.
 
     Return:
     - La oferta de trabajo actualizada.
     """
 
+    # actualizamos la oferta de trabajo con los datos recibidos excepto la direccion y la formacion requerida
     update_model(job, update_job.model_dump(exclude={"address", "required_education"}))
 
+    # si se especifico una direccion, la actualizamos buscandola en la base de datos
     if update_job.address:
         address: Address = await get_address_from_db(session, update_job.address)
         job.address = address
 
+    # si se especifico una formacion requerida, la actualizamos
     if update_job.required_education:
+        # si la oferta ya tenia una formacion requerida, actualizamos su ID, si no, la creamos
         if job.required_education is not None:
             job.required_education.education_id = update_job.required_education
         else:
@@ -189,18 +206,19 @@ async def update_job_language(
                             session: Annotated[AsyncSession, Depends(get_session)],
                             job: Annotated[Job, Depends(GetJob())],
                             language_id: Annotated[UUID, LANGUAGE_ID],
-                            language_level: Annotated[UUID, Body()]) -> JobLanguage:
+                            language_level: Annotated[UUID, LANGUAGE_LEVEL_ID_BODY]) -> JobLanguage:
     """
     Actualiza un idioma requerido para una oferta de trabajo.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
-    - job: Oferta de trabajo a crear.
+    - job: Oferta de trabajo a la que se le actualizará el idioma requerido.
     - language_id: ID del idioma requerido.
     - language_level: Nivel del idioma requerido.
 
     Return:
-    - El idioma requerido creado.
+    - El idioma requerido actualizado.
     """
 
     job_language_db: JobLanguage = await get_database_records(session, JobLanguage, where=(JobLanguage.job_id == job.id, JobLanguage.language_id == language_id), result_list=False, unique=True)
@@ -222,23 +240,28 @@ async def partial_update_job(
                         update_job: PartialUpdateJob) -> Job:
     """
     Actualiza parcialmente una oferta de trabajo.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
-    - job_db: Oferta de trabajo a crear.
-    - job: Datos de la oferta de trabajo a actualizar.
+    - job: Oferta de trabajo a actualizar.
+    - update_job: Datos de la oferta de trabajo actualizada.
 
     Return:
     - La oferta de trabajo actualizada.
     """
 
+    # actualizamos la oferta de trabajo con los datos recibidos excepto la direccion, la formacion requerida y los campos no especificados
     update_model(job, update_job.model_dump(exclude={"address", "required_education"}, exclude_unset=True))
 
+    # si se especifico una direccion, la actualizamos buscandola en la base de datos
     if update_job.address:
         address: Address = await get_address_from_db(session, update_job.address)
         job.address = address
 
+    # si se especifico una formacion requerida, la actualizamos
     if update_job.required_education:
+        # si la oferta ya tenia una formacion requerida, actualizamos su ID, si no, la creamos
         if job.required_education is not None:
             job.required_education.education_id = update_job.required_education
         else:
@@ -259,6 +282,7 @@ async def delete_job(
                     job: Annotated[Job, Depends(GetJob(False))]) -> None:
     """
     Elimina una oferta de trabajo.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
@@ -276,13 +300,18 @@ async def delete_job_language(
                             language_id: Annotated[UUID, LANGUAGE_ID]) -> None:
     """
     Elimina un idioma requerido para una oferta de trabajo.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
-    - job: Oferta de trabajo a eliminar.
+    - job: Oferta de trabajo a la que pertenece el idioma requerido.
     - language_id: ID del idioma requerido.
     """
+
+    # anadimos las opciones para que no se carguen las relaciones
     options = (noload(JobLanguage.language), noload(JobLanguage.language_level), noload(JobLanguage.job))
+
+    # filtramos por el id de la oferta de trabajo y el id del idioma
     where = (JobLanguage.job_id == job.id, JobLanguage.language_id == language_id)
 
     job_language_db: JobLanguage = await get_database_records(session, JobLanguage, options=options, where=where, result_list=False)
@@ -297,13 +326,17 @@ async def delete_job_education(
                             job: Annotated[Job, Depends(GetJob(False))]) -> None:
     """
     Elimina una formación requerida para una oferta de trabajo.
+    Se debe ser el propietario del recurso o un administrador.
 
     Args:
     - session: Sesión de base de datos.
-    - job: Oferta de trabajo a eliminar.
+    - job: Oferta de trabajo a la que pertenece la formación requerida.
     """
 
+    # anadimos las opciones para que no se carguen las relaciones
     options = (noload(JobEducation.education), noload(JobEducation.job))
+
+    # filtramos por el id de la oferta de trabajo
     where = JobEducation.job_id == job.id
 
     job_education_db: JobEducation = await get_database_records(session, JobEducation, options=options, where=where, result_list=False)

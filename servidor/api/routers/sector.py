@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Request
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.exceptions import RequestValidationError
 from typing import Annotated
@@ -23,105 +23,123 @@ sector_route = APIRouter(prefix="/sectors", tags=["sectors"], dependencies=[Depe
 
 async def _get_sector_params(only_categories: Annotated[bool | None, ONLY_CATEGORY] = False,
                              category_name: Annotated[str | None, SECTOR_CATEGORY] = None) -> dict:
-    """Función que valida los parámetros de la ruta /sectors. Si se especifica el parámetro 'only_category' se devolverán solo las categorías de los sectores.	
-        Si se especifica el parámetro 'category' se devolverán las subcategorías de ese sector. No se pueden usar ambos parámetros a la vez.
+    """
+    Función que valida los parámetros de la ruta /sectors. Si se especifica el parámetro 'only_category' se devolverán solo las categorías de los sectores.
+    Si se especifica el parámetro 'category' se devolverán las subcategorías de ese sector. No se pueden usar ambos parámetros a la vez.
 
-        Args:
-            request (Request): La request.
-            only_categories (bool, optional): Si se quiere obtener solo la categoría del sector. Defaults to False.
-            category_name (str, optional): La categoría del sector. Para obtener todas sus subcategorías. Defaults to None.
-        
-        Raises:
-            RequestValidationError: Si se especifican ambos parámetros a la vez.
+    Args:
+    - only_categories (bool, optional): Si se quiere obtener solo la categoría del sector. Defaults to False.
+    - category_name (str, optional): La categoría del sector. Para obtener todas sus subcategorías. Defaults to None.
 
-        Returns:
-            dict: Los parámetros de la ruta."""
-            
+    Raises:
+    - RequestValidationError: Si se especifican ambos parámetros a la vez.
+
+    Returns:
+    - dict: Los parámetros de la ruta.
+    """
+
+    # Si se especifican ambos parámetros a la vez se lanza una excepción
     if category_name and only_categories:
         raise RequestValidationError([SECTOR_GET_PARAMS])
-    
+
+    # Si se especifica el parámetro 'category' se devuelve el nombre de la categoría, si no se devuelve el parámetro 'only_categories'
     if category_name:
         return {"category_name": category_name}
     return {"only_categories": only_categories}
 
 
 @sector_route.get("/", response_model=list[ReadSector], response_model_exclude_unset=True, dependencies=[Depends(PermissionsManager.is_logged)])
-async def get_sectors(*, 
-                    session: Annotated[AsyncSession, Depends(get_session)], 
-                    limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
-                    offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
-                    extra_params: dict = Depends(_get_sector_params)) -> list[Sector]:
-    """Devuelve todos los sectores o las subcategorías de un sector en específico. Si se especifica el parámetro 'only_category' se devolverán solo las categorías de los sectores.
-        Si se especifica el parámetro 'category' se devolverán las subcategorías de ese sector. No se pueden usar ambos parámetros a la vez.
-        
-        Args:
-            session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
-            limit (int, optional): Limite de registros devueltos. Defaults to 20.
-            offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to 0.
-            only_categories (bool, optional): Si se quiere obtener solo la categoría del sector. Defaults to False.
-            category_name (str, optional): La categoría del sector. Para obtener todas sus subcategorías. Defaults to None."""
+async def get_sectors(
+        session: Annotated[AsyncSession, Depends(get_session)],
+        limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
+        extra_params: dict = Depends(_get_sector_params)) -> list[Sector]:
+    """
+    Devuelve todos los sectores o las subcategorías de un sector en específico. Si se especifica el parámetro 'only_category' se devolverán solo las categorías de los sectores.
+    Si se especifica el parámetro 'category' se devolverán las subcategorías de ese sector. No se pueden usar ambos parámetros a la vez.
+    Se debe estar logueado para acceder a este endpoint.
 
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - limit (int, optional): Límite de registros devueltos. Defaults to 20.
+    - offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to 0.
+    - extra_params (dict, optional): Parámetros adicionales de la ruta.
+
+    Returns:
+    - list[Sector]: La lista de sectores o subcategorías.
+    """
+
+    # creamos los args y kwargs iniciales para la función get_database_records
     args = [session]
     kwargs = {
         "limit": limit,
         "offset": offset,
         "scalar": False,
     }
-    
+
+    # si se especifica el parámetro 'category'
     if extra_params.get("category_name"):
+        # anadimos los parámetros de la consulta
         args.extend((Sector.id, Sector.subcategory))
         kwargs["where"] = Sector.category == extra_params["category_name"]
-        
+
+    # si se especifica el parámetro 'only_category'
     elif extra_params.get("only_categories"):
+        # anadimos los parámetros de la consulta
         args.append(Sector.category.distinct().label("category"))
 
+    # si no se especifica ninguno de los dos parámetros
     else:
+        # anadimos los parámetros de la consulta
         args.append(Sector)
         kwargs["scalar"] = True
 
     sectors = await get_database_records(*args, **kwargs)
 
-
-
     return sectors
 
 
 @sector_route.get("/admin/", response_model=list[ReadSectorComplete], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
-async def get_sectors_complete(*,
-                                session: Annotated[AsyncSession, Depends(get_session)], 
-                                limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
-                                offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
-                                extra_fields: Annotated[set[SectorExtraField], SECTOR_EXTRA_FIELD] = ()) -> list[Sector]:
-    """Devuelve todos los sectores con todos sus campos. Solo accesible por administradores. Se pueden especificar los campos extra que se quieren obtener de las tablas relacionadas.
+async def get_sectors_complete(
+        session: Annotated[AsyncSession, Depends(get_session)],
+        limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
+        extra_fields: Annotated[set[SectorExtraField], SECTOR_EXTRA_FIELD] = ()) -> list[Sector]:
+    """
+    Devuelve todos los sectores con todos sus campos. Solo accesible por administradores. Se pueden especificar los campos extra que se quieren obtener de las tablas relacionadas.
+    Se debe ser administrador para acceder a este endpoint.
 
-        Args:
-            session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
-            limit (int, optional): Limite de registros devueltos. Defaults to 20.
-            offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to 0.
-            extra_fields (set[SectorExtraField], optional): Los campos extra que se quieren obtener de las tablas relacionadas. Defaults to ().
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - limit (int, optional): Límite de registros devueltos. Defaults to 20.
+    - offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to 0.
+    - extra_fields (set[SectorExtraField], optional): Los campos extra que se quieren obtener de las tablas relacionadas. Defaults to ().
 
-        Returns:
-            list[Sector]: La lista de sectores con todos sus campos.
-        """
-
+    Returns:
+    - list[Sector]: La lista de sectores con todos sus campos.
+    """
     sectors = await get_database_records(session, Sector, options=[SectorExtraField.get_field_value(field) for field in extra_fields], limit=limit, offset=offset, unique=True)
 
     return sectors
 
 
 @sector_route.get("/admin/{sector_id}/", response_model=ReadSectorComplete, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
-async def get_sector_complete(*,
-                    session: Annotated[AsyncSession, Depends(get_session)], 
-                    sector_id: Annotated[UUID, SECTOR_ID], 
-                    extra_fields: Annotated[set[SectorExtraField], SECTOR_EXTRA_FIELD] = ()) -> Sector:
-    
-    """Devuelve un sector en específico pasandole el id del sector. Solo accesible por administradores. Se pueden especificar los campos extra que se quieren obtener de las tablas relacionadas.
+async def get_sector_complete(
+        session: Annotated[AsyncSession, Depends(get_session)],
+        sector_id: Annotated[UUID, SECTOR_ID],
+        extra_fields: Annotated[set[SectorExtraField], SECTOR_EXTRA_FIELD] = ()) -> Sector:
+    """
+    Devuelve un sector en específico pasándole el id del sector. Solo accesible por administradores. Se pueden especificar los campos extra que se quieren obtener de las tablas relacionadas.
+    Se debe ser administrador para acceder a este endpoint.
 
-        Args:
-            session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
-            sector_id (int): El id del sector.
-            extra_fields (set[SectorExtraField], optional): Los campos extra que se quieren obtener de las tablas relacionadas. Defaults to ()."""
-    
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - sector_id (int): El id del sector.
+    - extra_fields (set[SectorExtraField], optional): Los campos extra que se quieren obtener de las tablas relacionadas. Defaults to ().
+
+    Returns:
+    - Sector: El sector completo.
+    """
     sector = await get_record_by_id(session, Sector, sector_id, options=[SectorExtraField.get_field_value(field) for field in extra_fields])
 
     return sector
@@ -129,34 +147,41 @@ async def get_sector_complete(*,
 
 @sector_route.get("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_sector(*,
-                    session: Annotated[AsyncSession, Depends(get_session)], 
-                    sector_id: Annotated[UUID, SECTOR_ID]) -> Sector:
-    
-    """Devuelve un sector en específico pasandole el id del sector.
+                     session: Annotated[AsyncSession, Depends(get_session)],
+                     sector_id: Annotated[UUID, SECTOR_ID]) -> Sector:
+    """
+    Devuelve un sector en específico pasándole el id del sector.
+    Se debe estar logueado para acceder a este endpoint.
 
-        Args:
-            session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
-            sector_id (int): El id del sector."""
-    
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - sector_id (int): El id del sector.
+
+    Returns:
+    - Sector: El sector.
+    """
     sector: Sector = await get_record_by_id(session, Sector, sector_id)
 
     return sector
 
 
-
 @sector_route.post("/", status_code=status.HTTP_201_CREATED, response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
-async def create_sector(*,
-                        session: Annotated[AsyncSession, Depends(get_session)], 
-                        new_sector: CreateSector) -> Sector:
-    
-    """Crea un nuevo sector.
+async def create_sector(
+        session: Annotated[AsyncSession, Depends(get_session)],
+        new_sector: CreateSector) -> Sector:
+    """
+    Crea un nuevo sector.
+    Se debe ser administrador para acceder a este endpoint.
 
-        Args:
-            session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
-            sector (CreateSector): El sector a crear."""
-    
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - new_sector (CreateSector): El sector a crear.
+
+    Returns:
+    - Sector: El sector creado.
+    """
     db_new_sector = Sector(**new_sector.model_dump())
-    
+
     session.add(db_new_sector)
 
     await secure_commit(session)
@@ -165,20 +190,21 @@ async def create_sector(*,
 
 
 @sector_route.put("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
-async def update_sector(*,
-                    session: Annotated[AsyncSession, Depends(get_session)], 
-                    sector_id: Annotated[UUID, SECTOR_ID],
-                    updated_sector: UpdateSector) -> Sector:
-    """Actualiza un sector en específico pasandole el id del sector. Si el sector no existe lanza una excepción.
-        
-        Args:
-            session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
-            sector_to_update (Sector): El sector a actualizar.
-            updated_sector (UpdateSector): El sector con los datos actualizados.
-            
-        Raises:
-            HTTPException: Si el sector no existe."""
-    
+async def update_sector(
+        session: Annotated[AsyncSession, Depends(get_session)],
+        sector_id: Annotated[UUID, SECTOR_ID],
+        updated_sector: UpdateSector) -> Sector:
+    """
+    Actualiza un sector en específico pasándole el id del sector. Se debe ser administrador para acceder a este endpoint.
+
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - sector_id (int): El id del sector.
+    - updated_sector (UpdateSector): El sector con los datos actualizados.
+
+    Returns:
+    - Sector: El sector actualizado.
+    """
     sector_to_update = await get_record_by_id(session, Sector, sector_id)
 
     update_model(sector_to_update, updated_sector.model_dump())
@@ -187,23 +213,26 @@ async def update_sector(*,
 
     return sector_to_update
 
-@sector_route.patch("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
-async def partial_update_sector(*,
-                        session: Annotated[AsyncSession, Depends(get_session)], 
-                        sector_id: Annotated[UUID, SECTOR_ID],
-                        updated_sector: PartialUpdateSector) -> Sector:
-    """Actualiza un parcialmente sector en específico pasandole el id del sector. Si el sector no existe lanza una excepción.
-        Permite actualizar solo algunos campos del sector.
 
-        Args:
-            session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
-            sector_to_update (Sector): El sector a actualizar.
-            updated_sector (PartialUpdateSector): El sector con los datos actualizados.
-        Raises:
-            HTTPException: Si el sector no existe."""
-    
+@sector_route.patch("/{sector_id}/", response_model=ReadSector, dependencies=[Depends(PermissionsManager.is_admin)])
+async def partial_update_sector(
+        session: Annotated[AsyncSession, Depends(get_session)],
+        sector_id: Annotated[UUID, SECTOR_ID],
+        updated_sector: PartialUpdateSector) -> Sector:
+    """
+    Actualiza parcialmente un sector en específico pasándole el id del sector. Permite actualizar solo algunos campos del sector.
+    Se debe ser administrador para acceder a este endpoint.
+
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - sector_id (int): El id del sector.
+    - updated_sector (PartialUpdateSector): El sector con los datos actualizados.
+
+    Returns:
+    - Sector: El sector actualizado.
+    """
     sector_to_update = await get_record_by_id(session, Sector, sector_id)
-    
+
     update_model(sector_to_update, updated_sector.model_dump(exclude_unset=True))
 
     await secure_commit(session)
@@ -212,19 +241,18 @@ async def partial_update_sector(*,
 
 
 @sector_route.delete("/{sector_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_admin)])
-async def delete_sector(*,
-                        session: Annotated[AsyncSession, Depends(get_session)], 
-                        sector_id: Annotated[UUID, SECTOR_ID]) -> None:
-    
-    """Elimina un sector en específico pasandole el id del sector. Si el sector no existe lanza una excepción.	
+async def delete_sector(
+        session: Annotated[AsyncSession, Depends(get_session)],
+        sector_id: Annotated[UUID, SECTOR_ID]) -> None:
+    """
+    Elimina un sector en específico pasándole el id del sector.
+    Se debe ser administrador para acceder a este endpoint.
 
-        Args:
-            session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
-            sector_to_delete (Sector): El sector a eliminar.
-        Raises:
-            HTTPException: Si el sector no existe."""
-    
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - sector_id (int): El id del sector.
+    """
     sector_to_delete = await get_record_by_id(session, Sector, sector_id)
-    
+
     await session.delete(sector_to_delete)
     await secure_commit(session)

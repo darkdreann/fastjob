@@ -2,6 +2,7 @@ import logging, logging.handlers
 from api.logging.logging_config import FORMATTER
 from api.utils.functions.env_config import CONFIG
 
+# Creación de los handlers de email para enviar los errores críticos
 EMAIL_HANDLER = logging.handlers.SMTPHandler(
     mailhost=(CONFIG.SMTP_SERVER, CONFIG.SMTP_PORT),
     fromaddr=CONFIG.SMTP_EMAIL,
