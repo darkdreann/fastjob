@@ -22,6 +22,7 @@ fastapi==0.104.1
 filelock==3.12.4
 future==0.18.3
 greenlet==3.0.0
+gunicorn==21.2.0
 h11==0.14.0
 httpcore==0.18.0
 httptools==0.6.0

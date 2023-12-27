@@ -9,6 +9,7 @@ from api.tests.test_utils.result_tests import check_request_data_saved, check_re
 from api.security.security import generate_token
 from api.tests.test_utils.db_manage_test import DATA
 
+
 @pytest.fixture(scope="module")
 async def test_consts() -> dict:
     """Devuelve las constantes de prueba."""

@@ -44,7 +44,7 @@ class PartialUpdateUser(BaseModel):
     name: Optional[str] = Field(description=UserDescriptions.NAME, max_length=UserValidators.MAX_LENGTH_NAME, default=None)
     surname: Optional[str] = Field(description=UserDescriptions.SURNAME, max_length=UserValidators.MAX_LENGTH_SURNAME, default=None)
     phone_numbers: Optional[list[int]] = Field(description=UserDescriptions.PHONE_NUMBER, max_length=UserValidators.MAX_ITEMS_PHONE_NUMBERS, default=None)
-    password: Optional[str] = Field(description=UserDescriptions.PASSWORD, max_length=UserValidators.MAX_LENGTH_PASSWORD, default=None)
+    password: Optional[str] = Field(description=UserDescriptions.PASSWORD, default=None)
     address: Optional[CreateAddress] = Field(description=UserDescriptions.ADDRESS, default=None, exclude=True)
 
     @field_validator('password')

@@ -1,6 +1,7 @@
 from typing import Optional
 from uuid import UUID
 from api.models.base_models import *
+from api.models.enums.models import UserType
 
 
 class CreateAddress(BaseAddress):
@@ -29,7 +30,7 @@ class CreateUser(BaseUser):
     - address: Dirección del usuario
     """
 
-    password: str = Field(description=UserDescriptions.PASSWORD, max_length=UserValidators.MAX_LENGTH_PASSWORD)
+    password: str = Field(description=UserDescriptions.PASSWORD)
     address: CreateAddress = Field(description=UserDescriptions.ADDRESS, exclude=True)
 
     @field_validator('password')

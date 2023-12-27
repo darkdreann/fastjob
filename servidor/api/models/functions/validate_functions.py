@@ -53,7 +53,8 @@ def validate_password(password: str) -> str:
     """Valida que la contraseña cumpla los requisitos de seguridad."""
 
     ERROR_MSG = ValidatePassword.ERROR_MSG
-
+    if len(password) > UserValidators.MAX_LENGTH_PASSWORD:
+        raise ValueError(ERROR_MSG)
     if len(password) < UserValidators.MIN_LENGTH_PASSWORD:
         raise ValueError(ERROR_MSG)
     if not any(letter.isupper() for letter in password):

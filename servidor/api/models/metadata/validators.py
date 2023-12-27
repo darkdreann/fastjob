@@ -50,6 +50,7 @@ class LevelValidators:
 class AddressValidators:
     MIN_POSTAL_CODE = 9999
     MAX_POSTAL_CODE = 100000
+    POSTAL_CODE_LENGTH = 5
     MAX_LENGTH_STREET = 30
     MAX_LENGTH_CITY = 20
     MAX_LENGTH_PROVINCE = 20
@@ -79,7 +80,7 @@ class ValidateEndDate:
     ERROR_MSG = "La fecha de finalización debe ser posterior a la fecha de inicio."
 
 class ValidatePassword:
-    ERROR_MSG = "La contraseña debe contener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial."
+    ERROR_MSG = "La contraseña debe contener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial. Como máximo 30 caracteres."
     PASSWORD_SPECIAL_CHAR = '@$!%*?&.'
 
 

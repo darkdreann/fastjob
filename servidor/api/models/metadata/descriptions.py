@@ -23,6 +23,7 @@ class UserDescriptions:
     PASSWORD = "La contraseña del usuario."
     ADDRESS = "La dirección del usuario."
     USER_TYPE = "El tipo de usuario."
+    ADDRESS_ID = DESCRIPTIONS_ID["ADDRESS_ID"]
 
 #-------------------CANDIDATE----------------------------
 class CandidateDescription:

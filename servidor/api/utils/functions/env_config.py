@@ -19,6 +19,9 @@ _DEFAULT_POOL_SIZE = 5
 _DEFAULT_MAX_OVERFLOW = 5
 _DEFAULT_DEV = "False"
 _DEFAULT__TEST_DATA_JSON_PATH = "test_data.json"
+_DEFAULT_SERVER_IP = "localhost"
+_DEFAULT_SERVER_PORT = 80
+_DEFAULT_SERVER_WORKERS = 1
 
 
 class _Settings(BaseSettings):
@@ -52,6 +55,9 @@ class _Settings(BaseSettings):
     PASSWORD_CRYPT_SCHEME: str = _DEFAULT_PASSWORD_CRYPT_SCHEME
     SECRET_KEY: str
     TEST_DATA_JSON_PATH: str = _DEFAULT__TEST_DATA_JSON_PATH
+    SERVER_IP: str = _DEFAULT_SERVER_IP
+    SERVER_PORT: int = _DEFAULT_SERVER_PORT
+    SERVER_WORKERS: int = _DEFAULT_SERVER_WORKERS
 
 try:
     # Carga las variables de entorno del archivo .env
