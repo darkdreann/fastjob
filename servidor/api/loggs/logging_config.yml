@@ -1,0 +1,50 @@
+version: 1
+disable_existing_loggers: False
+formatters:
+  app:
+    format: "%(asctime)s - %(name)s - %(levelname)s\n%(message)s\n"
+
+handlers:
+  critical_email:
+    class: logging.handlers.SMTPHandler
+    formatter: app
+    level: CRITICAL
+    mailhost: 
+      - ${SMTP_SERVER}
+      - ${SMTP_PORT}
+    fromaddr: ${SMTP_EMAIL}
+    toaddrs: ${EMAIL_TO_SEND}
+    subject: ${SUBJECT}
+    credentials: 
+      - ${SMTP_EMAIL}
+      - ${SMTP_PASSWORD}
+    secure: []
+
+  file_error:
+    class: logging.FileHandler
+    filename: ${LOG_FILE_ERROR}
+    level: WARNING
+    formatter: app
+
+  console_error:
+    class: logging.StreamHandler
+    level: ERROR
+    formatter: app
+
+  file_info:
+    class: logging.FileHandler
+    filename: ${LOG_FILE_INFO}
+    level: INFO
+    formatter: app
+  
+loggers:
+  app_info:
+    level: INFO
+    handlers: [file_info]
+    propagate: no
+
+  app_error:
+    level: WARNING
+    handlers: [file_error, console_error, critical_email]
+    propagate: yes
+

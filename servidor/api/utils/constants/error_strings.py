@@ -1,7 +1,3 @@
-ENV_FILE_NOT_FOUND = "Error: Archivo .env no encontrado"
-
-ENV_UNEXPECTED_ERROR = "Error: Algo salió mal al leer el archivo .env:\n {exc}"
-
 DATABASE_ERROR = "Error: Algo ha fallado en la base de datos: {exc}."
 
 TABLES_AND_FUNCTIONS_FAILED = "Error: Falló la creación de tablas y funciones\n {exc}"	
@@ -20,7 +16,9 @@ INVALID_TOKEN = "Error: Token inválido proporcionado:\n {exc}"
 
 INVALID_CREDENTIALS = "Error: No se pudieron validar las credenciales para {username}"
 
-LOG_FOLDER_CREATE_PERMISSION_DENIED = "Error: Permiso denegado para crear la carpeta de registros"
+LOG_FOLDER_CREATE_PERMISSION_DENIED = "Error: Permiso denegado para crear la carpeta de logs"
+
+LOG_CONFIG_FILE_ERROR = "Error: Algo salió mal al leer el archivo de configuración de registro:\n {exc}"
 
 LOG_FORMAT_ERROR = "Error: No se puede formatear el mensaje de registro:\n {exc}"
 

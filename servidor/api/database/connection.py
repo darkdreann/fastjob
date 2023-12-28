@@ -7,13 +7,12 @@ from api.utils.constants.error_strings import DATABASE_ERROR
 from api.utils.functions.env_config import CONFIG
 
 # Database configuration
-DATABASE = CONFIG.DATABASE_NAME if not CONFIG.DEVELOPMENT else CONFIG.DEVELOPMENT_DATABASE_NAME
-DATABASE_URL = f"postgresql+asyncpg://{CONFIG.DATABASE_USERNAME}:{CONFIG.DATABASE_PASSWORD}@{CONFIG.DATABASE_IP}:{CONFIG.DATABASE_PORT}/{DATABASE}"
+DATABASE_URL = f"postgresql+asyncpg://{CONFIG.DATABASE_USERNAME}:{CONFIG.DATABASE_PASSWORD}@{CONFIG.DATABASE_IP}:{CONFIG.DATABASE_PORT}/{CONFIG.DATABASE_NAME}"
 
 try:
     engine = create_async_engine(DATABASE_URL, echo=CONFIG.DEVELOPMENT, pool_size=CONFIG.POOL_SIZE, max_overflow=CONFIG.MAX_OVERFLOW)
     session_maker = async_sessionmaker(engine, expire_on_commit=False, autoflush=False)
-    
+
 except (OperationalError, ArgumentError) as exc:
     raise ConnectionError(DATABASE_ERROR.format(exc=exc))
 

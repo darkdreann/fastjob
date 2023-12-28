@@ -15,7 +15,6 @@ if CONFIG.DEVELOPMENT:
     from api.tests.test_utils.db_manage_test import create_test_data
     from api.database.connection import drop_tables
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """

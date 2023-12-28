@@ -1,0 +1,12 @@
+FROM python:3.11.7
+
+RUN mkdir /app
+
+WORKDIR /app
+
+COPY requirements.txt ./
+
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+
+CMD uvicorn api.main:app --reload --host $SERVER_IP --port $SERVER_PORT

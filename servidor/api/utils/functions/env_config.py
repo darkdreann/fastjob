@@ -1,39 +1,27 @@
-from platform import system
-from dotenv import load_dotenv
+import os
+from pydantic import model_validator
 from pydantic_settings import BaseSettings
-from api.utils.constants.error_strings import ENV_FILE_NOT_FOUND, ENV_UNEXPECTED_ERROR
 
 # Valores por defecto en caso de que no se encuentren en el archivo .env
-_DEFAULT_FOLDER = "app_folder"
-_DEFAULT_FILE_INFO = "app_info.log"
-_DEFAULT_FILE_ERROR = "app_error.log"
-_DEFAULT_LOG_PATH_WINDOWS = "C:\Windows\System32\LogFiles\\"
-_DEFAULT_LOG_PATH_LINUX = "/var/log/"
-_DEFAULT_LOG_PATH = _DEFAULT_LOG_PATH_WINDOWS if system() == "Windows" else _DEFAULT_LOG_PATH_LINUX
 _DEFAULT_TOKEN_EXPIRE_MINUTES = 30
 _DEFAULT_TOKEN_URL = "/token"
 _DEFAULT_ALGORITHM = "HS256"
 _DEFAULT_PASSWORD_CRYPT_SCHEME = "bcrypt"
 _DEFAULT_TOKEN_TYPE = "bearer"
-_DEFAULT_POOL_SIZE = 5
-_DEFAULT_MAX_OVERFLOW = 5
-_DEFAULT_DEV = "False"
+_DEFAULT_POOL_SIZE = 1
+_DEFAULT_MAX_OVERFLOW = 0
 _DEFAULT__TEST_DATA_JSON_PATH = "test_data.json"
 _DEFAULT_SERVER_IP = "localhost"
-_DEFAULT_SERVER_PORT = 80
+_DEFAULT_SERVER_PORT = 8000
 _DEFAULT_SERVER_WORKERS = 1
-
+_DEFAULT_LOGGING_CONFIG_FILE = "logging_config.yml"
 
 class _Settings(BaseSettings):
     """
     Clase que define la configuración de variables de entorno para la aplicación.
     """
-
-    DEVELOPMENT: bool = _DEFAULT_DEV
-    LOG_FOLDER: str = _DEFAULT_FOLDER
-    LOG_FILE_INFO: str = _DEFAULT_FILE_INFO
-    LOG_FILE_ERROR: str = _DEFAULT_FILE_ERROR
-    LOG_PATH: str = _DEFAULT_LOG_PATH
+    
+    DEVELOPMENT: bool
     SMTP_SERVER: str
     SMTP_PORT: int
     SMTP_EMAIL: str
@@ -43,7 +31,6 @@ class _Settings(BaseSettings):
     DATABASE_IP: str
     DATABASE_PORT: int
     DATABASE_NAME: str
-    DEVELOPMENT_DATABASE_NAME: str
     DATABASE_USERNAME: str
     DATABASE_PASSWORD: str
     POOL_SIZE: int = _DEFAULT_POOL_SIZE
@@ -58,17 +45,40 @@ class _Settings(BaseSettings):
     SERVER_IP: str = _DEFAULT_SERVER_IP
     SERVER_PORT: int = _DEFAULT_SERVER_PORT
     SERVER_WORKERS: int = _DEFAULT_SERVER_WORKERS
+    LOGS_PATH: str
+    APP_LOG_FOLDER: str
+    LOG_FILE_INFO: str
+    LOG_FILE_ERROR: str
+    APP_LOGGING_CONFIG_FILE: str = _DEFAULT_LOGGING_CONFIG_FILE
+    CONFIG_FILE_PATH: str
+    GUNICORN_LOG_LEVEL: str | None = None
+    GUNICORN_LOG_FOLDER: str | None = None
+    GUNICORN_ACCESS_LOG: str | None = None
+    GUNICORN_ERROR_LOG: str | None = None
 
-try:
-    # Carga las variables de entorno del archivo .env
-    load_dotenv()
-    # Crea una instancia de la clase _Settings
-    CONFIG = _Settings()
+    @model_validator(mode='after')
+    def log_path(self):
+        """
+        Cambia el valor de las variables de entorno que contienen rutas para que contengan la ruta completa.
+        """
+        
+        # ruta donde se guardan todos los logs
+        self.LOGS_PATH = f"/{self.LOGS_PATH}"
+        # ruta de la carpeta de logs de la aplicación
+        self.APP_LOG_FOLDER = os.path.join(self.LOGS_PATH, self.APP_LOG_FOLDER)
+        # ruta de los archivos de logs de la aplicación
+        self.LOG_FILE_INFO = os.path.join(self.APP_LOG_FOLDER, self.LOG_FILE_INFO)
+        self.LOG_FILE_ERROR = os.path.join(self.APP_LOG_FOLDER, self.LOG_FILE_ERROR)
+        # ruta de la carpeta de logs de Gunicorn
+        self.GUNICORN_LOG_FOLDER = os.path.join(self.LOGS_PATH, self.GUNICORN_LOG_FOLDER)
+        # ruta de los archivos de logs de Gunicorn
+        self.GUNICORN_ACCESS_LOG = os.path.join(self.GUNICORN_LOG_FOLDER, self.GUNICORN_ACCESS_LOG)
+        self.GUNICORN_ERROR_LOG = os.path.join(self.GUNICORN_LOG_FOLDER, self.GUNICORN_ERROR_LOG)
+        # ruta del archivo de configuración de logs de la aplicación
+        self.APP_LOGGING_CONFIG_FILE = f"{self.CONFIG_FILE_PATH}/{self.APP_LOGGING_CONFIG_FILE}"
 
-except FileNotFoundError:
-    # Si no se encuentra el archivo .env, se asignan los valores por defecto
-    raise FileNotFoundError(ENV_FILE_NOT_FOUND)
+        return self
 
-except Exception as exc:
-    # Si ocurre un error inesperado, se lanza una excepción
-    raise Exception(ENV_UNEXPECTED_ERROR.format(exc=exc))
+# Crea una instancia de la clase _Settings
+CONFIG = _Settings()
+

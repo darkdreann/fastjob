@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  postgres_dev:
+    container_name: ${DATABASE_IP}
+    image: postgres:15.5
+    expose:
+      - "${DATABASE_PORT}"
+    volumes:
+      - ./docker_files/create_db.sh:/docker-entrypoint-initdb.d/create_db.sh
+    env_file:
+      - .env.dev
+
+  pgadmin_dev:
+    image: dpage/pgadmin4
+    ports:
+      - "${PGADMIN_PORT}:80"
+    links:
+      - ${DATABASE_IP}
+    env_file:
+      - .env.dev
+  
+  server_dev:
+    build: 
+      context: .
+      dockerfile: docker_files/Dockerfile.dev
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    environment:
+      - DEVELOPMENT=True
+    links:
+      - ${DATABASE_IP}
+    volumes:
+      - .:/app
+      - app_logs_dev:/${LOGS_PATH}
+    env_file:
+      - .env.dev
+
+volumes:
+  app_logs_dev:

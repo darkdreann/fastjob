@@ -1,6 +1,0 @@
-docker_database_dev
-__pycache__
-routers/__pycache__
-database/__pycache__
-database/__pycache__/models_data/__pycache__
-.pytest_cache

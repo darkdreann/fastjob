@@ -8,6 +8,9 @@ from api.database.database_models.models import User, Address
 from api.models.enums.models import UserType
 from api.models.functions.validate_functions import validate_password
 from api.models.metadata.validators import UserValidators, ValidatePhoneNumbers, AddressValidators
+from api.utils.constants.cli_strings import EMPTY_USERNAME, USERNAME_LENGTH_ERROR, EMAIL_ERROR, DUPLICATED_USERNAME, DUPLICATED_EMAIL, PASSWORDS_NOT_MATCH, EMPTY_NAME
+from api.utils.constants.cli_strings import EMPTY_SURNAME, PHONES_ERROR, POSTAL_CODE_ERROR, EMPTY_STREET, EMPTY_CITY, EMPTY_PROVINCE, CREATE_ADMIN_MSG, INPUT_USERNAME, INPUT_CITY
+from api.utils.constants.cli_strings import INPUT_EMAIL, INPUT_PASSWORD, INPUT_PASSWORD_CONFIRMATION, INPUT_NAME, INPUT_SURNAME, INPUT_PHONES, INPUT_POSTAL_CODE, INPUT_STREET, INPUT_PROVINCE
 
 
 class NewAdmin:
@@ -35,7 +38,7 @@ class NewAdmin:
 
 
     # decorators
-    
+        
     @staticmethod
     def _repeat_if_exception_async(func: Callable) -> Callable:
         """
@@ -92,11 +95,11 @@ class NewAdmin:
 
         # si el valor es None, se lanza un ValueError
         if not value:
-            raise ValueError("El nombre de usuario no puede estar vacío.")
+            raise ValueError(EMPTY_USERNAME)
 
         # si el valor no tiene la longitud adecuada, se lanza un ValueError
         if not len(value) >= UserValidators.MIN_LENGTH_USERNAME and not len(value) <= UserValidators.MAX_LENGTH_USERNAME:
-            raise ValueError(f"El nombre de usuario debe tener entre {UserValidators.MIN_LENGTH_USERNAME} y {UserValidators.MAX_LENGTH_USERNAME} caracteres.")
+            raise ValueError(USERNAME_LENGTH_ERROR.format(MIN=UserValidators.MIN_LENGTH_USERNAME, MAX=UserValidators.MAX_LENGTH_USERNAME))
 
         self._username = value
 
@@ -110,7 +113,7 @@ class NewAdmin:
 
         # si el valor no es un correo electrónico válido, se lanza un ValueError
         if not value or not match(EMAIL_REGEX, value):
-            raise ValueError("El correo electrónico no es válido.")
+            raise ValueError(EMAIL_ERROR)
 
         self._email = value
 
@@ -138,14 +141,14 @@ class NewAdmin:
         - ValueError: Si el nombre de usuario ya existe en la base de datos.
         """
         # pedir el nombre de usuario
-        username = input("Nombre de usuario: ")
+        username = input(INPUT_USERNAME)
         
         # buscar el nombre de usuario en la base de datos 
         user = await self._get_from_db(User.username, User.username == username)
 
         # si el nombre de usuario ya existe, se lanza un ValueError
         if user:    
-            raise ValueError("El nombre de usuario ya existe. Vuelve a intentarlo.")
+            raise ValueError(DUPLICATED_USERNAME)
 
         self.username = username
  
@@ -161,14 +164,14 @@ class NewAdmin:
         - ValueError: Si el correo electrónico ya existe en la base de datos.
         """
         # pedir el correo electrónico
-        email = input("Correo electrónico: ")
+        email = input(INPUT_EMAIL)
 
         # buscar el correo electrónico en la base de datos
         user_email = await self._get_from_db(User.email, User.email == email)
 
         # si el correo electrónico ya existe, se lanza un ValueError
         if user_email:
-            raise ValueError("El correo electrónico ya existe. Vuelve a intentarlo.")
+            raise ValueError(DUPLICATED_EMAIL)
 
         self.email = email
 
@@ -184,12 +187,12 @@ class NewAdmin:
         - ValueError: Si las contraseñas no coinciden.
         """
         # pedir la contraseña y la confirmación
-        password = getpass("Contraseña: ")
-        password_confirm = getpass("Confirmar contraseña: ")
+        password = getpass(INPUT_PASSWORD)
+        password_confirm = getpass(INPUT_PASSWORD_CONFIRMATION)
 
         # si las contraseñas no coinciden, se lanza un ValueError
         if password != password_confirm:
-            raise ValueError("Las contraseñas no coinciden. Vuelve a intentarlo.")
+            raise ValueError(PASSWORDS_NOT_MATCH)
     
         self.password = password
      
@@ -205,13 +208,13 @@ class NewAdmin:
         CHECK_NAME: Callable[[str, int], bool] = lambda string, length: string and len(string) <= length
 
         # pedir el nombre del administrador mientras no cumpla los requisitos
-        while CHECK_NAME(name := input("Nombre: "), UserValidators.MAX_LENGTH_NAME):
-            print("El nombre no puede estar vacío. Vuelve a intentarlo.")
+        while CHECK_NAME(name := input(INPUT_NAME), UserValidators.MAX_LENGTH_NAME):
+            print(EMPTY_NAME)
         self.name = name
 
         # pedir los apellidos del administrador mientras no cumplan los requisitos
-        while CHECK_NAME(surname := input("Apellidos: "), UserValidators.MAX_LENGTH_SURNAME):
-            print("Los apellidos no pueden estar vacíos. Vuelve a intentarlo.")
+        while CHECK_NAME(surname := input(INPUT_SURNAME), UserValidators.MAX_LENGTH_SURNAME):
+            print(EMPTY_SURNAME)
         self.surname = surname
 
     def _set_phone_numbers(self) -> None:
@@ -225,7 +228,7 @@ class NewAdmin:
         
         while True:
             # pedir los números de teléfono separados por coma
-            phone_numbers_str = input("Números de teléfono (separados por coma): ").split(",")
+            phone_numbers_str = input(INPUT_PHONES).split(",")
             # convertir los números de teléfono a enteros
             phone_numbers_int = [int(number) for number in phone_numbers_str if CHECK_NUMBER(number)]
 
@@ -235,7 +238,7 @@ class NewAdmin:
                 return
             
             # si no se han introducido números de teléfono válidos, se vuelve a pedir los números de teléfono
-            print("Los números de teléfono no son válidos. Vuelve a intentarlo.")
+            print(PHONES_ERROR)
 
     async def _set_address(self) -> None:
         """
@@ -248,8 +251,8 @@ class NewAdmin:
         CHECK_POSTAL_CODE: Callable[[int], bool] = lambda postal_code: postal_code > AddressValidators.MIN_POSTAL_CODE and postal_code < AddressValidators.MAX_POSTAL_CODE
         
         # pedir el código postal mientras no cumpla los requisitos
-        while not CHECK_POSTAL_CODE(postal_code := NewAdmin._int_input("Código postal: ")):
-            print("El código postal no es válido. Vuelve a intentarlo.")
+        while not CHECK_POSTAL_CODE(postal_code := NewAdmin._int_input(INPUT_POSTAL_CODE)):
+            print(POSTAL_CODE_ERROR)
 
         # buscar el código postal en la base de datos
         address_id = await self._get_from_db(Address.id, Address.postal_code == postal_code)
@@ -270,16 +273,16 @@ class NewAdmin:
         - postal_code (int): El código postal de la dirección.
         """
         # pedir la calle, la ciudad y la provincia mientras no cumplan los requisitos
-        while (street := input("Calle: ")) == "":
-            print("La calle no puede estar vacía. Vuelve a intentarlo.")
+        while (street := input(INPUT_STREET)) == "":
+            print(EMPTY_STREET)
         
         # pedir la ciudad y la provincia mientras no cumplan los requisitos
-        while (city := input("Ciudad: ")) == "":
-            print("La ciudad no puede estar vacía. Vuelve a intentarlo.")
+        while (city := input(INPUT_CITY)) == "":
+            print(EMPTY_CITY)
         
         # pedir la provincia mientras no cumpla los requisitos
-        while (province := input("Provincia: ")) == "":
-            print("La provincia no puede estar vacía. Vuelve a intentarlo.")
+        while (province := input(INPUT_PROVINCE)) == "":
+            print(EMPTY_PROVINCE)
 
         # crear una nueva dirección
         new_address = Address(
@@ -298,7 +301,7 @@ class NewAdmin:
         Devuelve un diccionario con los atributos del objeto que no son None.
 
         Returns:
-            dict: Diccionario con los atributos del objeto.
+        - dict: Diccionario con los atributos del objeto.
         """
         return {key.lstrip("_"): value for key, value in vars(self).items() if value is not None}
     
@@ -331,8 +334,7 @@ class NewAdmin:
 
         NEW_ADMIN = cls()
 
-        print("##### Creación de administrador CLI #####")
-        print("Introduce los datos del administrador: ")
+        print(CREATE_ADMIN_MSG)
         await NEW_ADMIN._set_username()
         await NEW_ADMIN._set_email()
         NEW_ADMIN._set_password()

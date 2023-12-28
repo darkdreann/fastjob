@@ -1,8 +1,7 @@
 from typing import Annotated
 from fastapi import BackgroundTasks, Depends, Request
 from api.models.enums.models import LogLevel
-from api.logging.logging_error import ERROR_LOGGER 
-from api.logging.logging_info import INFO_LOGGER
+from api.loggs.loggers import ERROR_LOGGER, INFO_LOGGER
 from api.models.enums.models import LogLevel
 from api.database.database_models.models import User
 from api.utils.constants.error_strings import LOG_FORMAT_ERROR

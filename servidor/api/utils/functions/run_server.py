@@ -1,16 +1,17 @@
-from platform import system
+
+import os, platform
 from typing import Self, Any
-from uvicorn import run
-from api.utils.functions.env_config import CONFIG
 from api.main import app
+from api.utils.constants.error_strings import LOG_FOLDER_CREATE_PERMISSION_DENIED
+from api.utils.functions.env_config import CONFIG
+from api.utils.constants.cli_strings import WINDOWS_NOT_SUPPORTED
 
-# Determina si el sistema operativo es Windows
-_IS_WINDOWS = system() == "Windows"
+# Se comprueba si el sistema operativo es Windows
+_IS_WINDOWS = platform.system() == "Windows"
 
-# Si el sistema operativo no es Windows, importa la clase BaseApplication de Gunicorn, los UvicornWorker y crea una clase App para iniciar el servidor
+# Si el sistema operativo no es Windows, se importa la clase FastAPIApplication
 if not _IS_WINDOWS:
     from gunicorn.app.base import BaseApplication
-    from uvicorn.workers import UvicornWorker
 
     class _App(BaseApplication):
         """
@@ -28,6 +29,14 @@ if not _IS_WINDOWS:
             Returns:
             - Self: Una instancia de la clase App.
             """
+            try:
+                # Se crea la carpeta de logs de Gunicorn si no existe
+                if not os.path.exists(CONFIG.GUNICORN_LOG_FOLDER):
+                    os.makedirs(CONFIG.GUNICORN_LOG_FOLDER)
+            except:
+                # Si no se puede crear la carpeta de logs, se lanza una excepción
+                raise PermissionError(LOG_FOLDER_CREATE_PERMISSION_DENIED)
+
             self.options = options or {}
             self.application = app
             super().__init__()
@@ -39,9 +48,9 @@ if not _IS_WINDOWS:
             y que tienen un valor no nulo.
             """
             config = {key: value for key, value in self.options.items()
-                    if key in self.cfg.settings and value is not None}
+                        if key in self.cfg.settings and value is not None}
             for key, value in config.items():
-                self.cfg.set(key.lower(), value)
+                self.cfg.set(key, value)
 
         def load(self) -> Any:
             """
@@ -51,38 +60,7 @@ if not _IS_WINDOWS:
                 application: La aplicación del servidor.
             """
             return self.application
-        
-def _run_windows_server() -> None:
-    """
-    Ejecuta el servidor en el sistema operativo Windows.
-    """
-    import api.main
 
-    module_name = api.main.__name__
-    app_var_name = f"{app=}".split("=")[0]
-
-    app_server = f"{module_name}:{app_var_name}"
-
-    run(
-        app=app_server,
-        host=CONFIG.SERVER_IP,
-        port=CONFIG.SERVER_PORT,
-        workers=CONFIG.SERVER_WORKERS
-    )
-
-def _run_linux_server() -> None:
-    """
-    Ejecuta el servidor en un entorno Linux.
-    """
-    BIND = f"{CONFIG.SERVER_IP}:{CONFIG.SERVER_PORT}"
-
-    options = {
-        'bind': BIND,
-        'workers': CONFIG.SERVER_WORKERS,
-        'worker_class': UvicornWorker,
-    }
-
-    _App(app, options).run()
 
 def run_server() -> None:
     """
@@ -93,11 +71,19 @@ def run_server() -> None:
     trabajador utilizada por el servidor.
     """
 
-    # Si el sistema operativo es Windows, ejecuta el servidor utilizando el método run_windows_server
+    # Si el sistema operativo es Windows, se lanza una excepción ya que no se puede ejecutar el servidor en Windows
     if _IS_WINDOWS:
-        _run_windows_server()
-    # Si el sistema operativo no es Windows, ejecuta el servidor utilizando la clase App y el método run
-    else:
-        _run_linux_server()
+        raise NotImplementedError(WINDOWS_NOT_SUPPORTED)
 
-    
+    BIND = f"{CONFIG.SERVER_IP}:{CONFIG.SERVER_PORT}"
+
+    options = {
+        'bind': BIND,
+        'workers': CONFIG.SERVER_WORKERS,
+        'worker_class': "uvicorn.workers.UvicornWorker",
+        'accesslog': CONFIG.GUNICORN_ACCESS_LOG,
+        'errorlog': CONFIG.GUNICORN_ERROR_LOG,
+        'loglevel': CONFIG.GUNICORN_LOG_LEVEL
+    }
+
+    _App(app, options).run()
