@@ -5,3 +5,4 @@ env
 .env
 *.json
 .env.dev
+docker_database_dev

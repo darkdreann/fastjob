@@ -18,7 +18,7 @@ INPUT_NAME = "Introduzca el nombre del administrador: "
 
 INPUT_SURNAME = "Introduzca los apellidos del administrador: "
 
-INPUT_PHONES = "Introduzca los números de teléfono del administrador(separados por comas): "
+INPUT_PHONES = "Introduzca los números de teléfono del administrador (separados por comas): "
 
 INPUT_POSTAL_CODE = "Introduzca el código postal del administrador: "
 
@@ -85,7 +85,7 @@ WINDOWS_NOT_SUPPORTED = "No se puede ejecutar el servidor en un sistema Windows.
 ############## MANAGE ##############
 
 # ERROR #
-MODULE_ERROR = "No se ha podido importar el modulo {module_name} correctamente.\n Compruebe que el modulo esta instalado."
+MODULE_ERROR = "No se ha podido importar el módulo {module_name} correctamente.\n Compruebe que el módulo está instalado."
 
 ENV_VARS_ERROR = "No se han encontrado las variables de entorno necesarias para ejecutar el comando.\n{exc}"
 
@@ -94,4 +94,6 @@ NO_ARGS_ERROR = "No se ha proporcionado ningún argumento."
 TOO_MANY_ARGS_ERROR = "Se han proporcionado demasiados argumentos."
 
 INVALID_ARG_ERROR = "El argumento proporcionado no es válido: {COMMAND_NAME}"
+
+ENV_FILE_NOT_FOUND = "No se ha encontrado el archivo .env. Vuelve a intentarlo."
 

@@ -3,11 +3,11 @@ from sys import argv
 from asyncio import run
 from pydantic_core import ValidationError
 from inspect import iscoroutinefunction
-from api.utils.constants.cli_strings import NO_ARGS_ERROR, TOO_MANY_ARGS_ERROR, INVALID_ARG_ERROR, MODULE_ERROR, ENV_VARS_ERROR
+from api.utils.constants.cli_strings import NO_ARGS_ERROR, TOO_MANY_ARGS_ERROR, INVALID_ARG_ERROR, MODULE_ERROR, ENV_VARS_ERROR, ENV_FILE_NOT_FOUND
 
 AVAILABLE_COMMANDS = {
     "runserver": {
-        "import": "api.utils.functions.run_server.run_server",
+        "import": "api.utils.functions.run_server",
         "function": "run_server"
     },
     "createadmin": {
@@ -36,6 +36,8 @@ async def execute_command(command: dict) -> None:
     except ValidationError as exc:
         # Si ocurre un error importando el módulo, se muestra un mensaje de error
         raise Exception(ENV_VARS_ERROR.format(exc=exc))
+    except FileNotFoundError:
+        raise Exception(ENV_FILE_NOT_FOUND)
 
     # Se obtiene la función correspondiente al comando
     func = getattr(module, command["function"])

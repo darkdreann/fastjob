@@ -40,7 +40,7 @@ class NewAdmin:
     # decorators
         
     @staticmethod
-    def _repeat_if_exception_async(func: Callable) -> Callable:
+    def _repeat_if_exception(func: Callable) -> Callable:
         """
         Repite la función si se produce un ValueError.
         Para envolver una función asíncrona.
@@ -57,28 +57,6 @@ class NewAdmin:
                 try:
                     # ejecutar la función y devolver el resultado si no se produce un ValueError
                     return await func(*args, **kwargs)
-                except ValueError as error:
-                    # imprimir el error y volver a ejecutar la función
-                    print(error)
-        return wrapper
-    
-    @staticmethod
-    def _repeat_if_exception(func: Callable) -> Callable:
-        """
-        Repite la función si se produce un ValueError.
-
-        Args:
-        - func (Callable): La función a repetir
-
-        Returns:
-        - Callable: La función envuelta que se repetirá si se produce un ValueError
-        """
-        def wrapper(*args, **kwargs):
-            # repetir hasta que no se produzca un ValueError
-            while True:
-                try:
-                    # ejecutar la función y devolver el resultado si no se produce un ValueError
-                    return func(*args, **kwargs)
                 except ValueError as error:
                     # imprimir el error y volver a ejecutar la función
                     print(error)
@@ -129,7 +107,7 @@ class NewAdmin:
 
     # Métodos para pedir datos del nuevo administrador
 
-    @_repeat_if_exception_async
+    @_repeat_if_exception
     async def _set_username(self) -> None:
         """
         Establece el nombre de usuario para el administrador.
@@ -152,7 +130,7 @@ class NewAdmin:
 
         self.username = username
  
-    @_repeat_if_exception_async
+    @_repeat_if_exception
     async def _set_email(self) -> None:
         """
         Establece el correo electrónico del administrador.
@@ -176,7 +154,7 @@ class NewAdmin:
         self.email = email
 
     @_repeat_if_exception
-    def _set_password(self) -> None:
+    async def _set_password(self) -> None:
         """
         Establece la contraseña del administrador.
 
@@ -337,7 +315,7 @@ class NewAdmin:
         print(CREATE_ADMIN_MSG)
         await NEW_ADMIN._set_username()
         await NEW_ADMIN._set_email()
-        NEW_ADMIN._set_password()
+        await NEW_ADMIN._set_password()
         NEW_ADMIN._set_name()
         NEW_ADMIN._set_phone_numbers()
         await NEW_ADMIN._set_address()
