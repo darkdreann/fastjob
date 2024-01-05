@@ -32,7 +32,7 @@ class _Settings(BaseSettings):
     TOKEN_TYPE: str
     PASSWORD_CRYPT_SCHEME: str
     SECRET_KEY: str
-    TEST_DATA_JSON_PATH: str
+    TEST_DATA_JSON_PATH: str | None = None
     SERVER_IP: str | None = None
     SERVER_PORT: int | None = None
     SERVER_WORKERS: int | None = None

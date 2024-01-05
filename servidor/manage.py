@@ -11,8 +11,8 @@ AVAILABLE_COMMANDS = {
         "function": "run_server"
     },
     "createadmin": {
-        "import": "api.utils.functions.create_admin.NewAdmin",
-        "function": "NewAdmin"
+        "import": "api.utils.functions.create_admin",
+        "function": "create_admin"
     },
     "dockerbuild": {
         "import": "api.utils.functions.docker_build",

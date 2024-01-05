@@ -12,7 +12,6 @@ from api.utils.constants.cli_strings import EMPTY_USERNAME, USERNAME_LENGTH_ERRO
 from api.utils.constants.cli_strings import EMPTY_SURNAME, PHONES_ERROR, POSTAL_CODE_ERROR, EMPTY_STREET, EMPTY_CITY, EMPTY_PROVINCE, CREATE_ADMIN_MSG, INPUT_USERNAME, INPUT_CITY
 from api.utils.constants.cli_strings import INPUT_EMAIL, INPUT_PASSWORD, INPUT_PASSWORD_CONFIRMATION, INPUT_NAME, INPUT_SURNAME, INPUT_PHONES, INPUT_POSTAL_CODE, INPUT_STREET, INPUT_PROVINCE
 
-
 class NewAdmin:
     """
     Clase que representa un nuevo administrador. Se encarga de pedir los datos necesarios para crear un nuevo administrador y de insertarlos en la base de datos.
@@ -301,27 +300,6 @@ class NewAdmin:
                 # si ocurre algún error, hacemos rollback y lanzamos la excepción
                 await session.rollback()
                 raise error
-
-    # classmethods
-
-    @classmethod
-    async def create_admin(cls) -> None:
-        """
-        Crea un nuevo administrador y lo inserta en la base de datos.
-        """
-
-        NEW_ADMIN = cls()
-
-        print(CREATE_ADMIN_MSG)
-        await NEW_ADMIN._set_username()
-        await NEW_ADMIN._set_email()
-        await NEW_ADMIN._set_password()
-        NEW_ADMIN._set_name()
-        NEW_ADMIN._set_phone_numbers()
-        await NEW_ADMIN._set_address()
-
-        await NEW_ADMIN._db_commit()
-        
         
 
     # staticmethods
@@ -363,8 +341,24 @@ class NewAdmin:
 
             return record
         
-    
-            
+
+async def create_admin() -> None:
+    """
+    Crea un nuevo administrador y lo inserta en la base de datos.
+    """
+
+    NEW_ADMIN = NewAdmin()
+
+    print(CREATE_ADMIN_MSG)
+    await NEW_ADMIN._set_username()
+    await NEW_ADMIN._set_email()
+    await NEW_ADMIN._set_password()
+    NEW_ADMIN._set_name()
+    NEW_ADMIN._set_phone_numbers()
+    await NEW_ADMIN._set_address()
+
+    await NEW_ADMIN._db_commit()
+        
 
         
 
