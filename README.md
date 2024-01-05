@@ -12,3 +12,7 @@ En las diversas carpetas se encuentra un README adicional que contiene informaci
 ## Estado del proyecto
 
 El proyecto se encuentra actualmente en fase de desarrollo, donde se están implementando y perfeccionando sus componentes para cumplir con los objetivos establecidos.
+
+## Licencia
+
+Fastjob está disponible bajo la Licencia GPL-3.0. Para obtener el texto completo de la licencia, consulte el siguiente enlace: [Licencia](LICENSE)

@@ -2,6 +2,14 @@
 
 Esta API Restful asume la responsabilidad de gestionar la autenticación de usuarios y llevar a cabo las operaciones CRUD dentro del ámbito de la API. Facilita la interacción de las aplicaciones frontend con los datos mediante los endpoints específicos. Además, cuenta con un sistema de registros (logs) que posibilita que la API registre tanto los accesos a los endpoints como los posibles errores que puedan surgir en su ejecución.
 
+## Índice
+
+- [Requisitos](#Requisitos)
+- [Instrucciones](#Instrucciones-de-uso)
+- [Archivos ENV](#Archivos-ENV)
+- [Archivo JSON DEV](#Archivo-JSON-DEV)
+- [Estructura del proyecto](#Estructura-del-proyecto)
+
 ## Requisitos
 
 Para implementar el servidor de esta API, se emplea Gunicorn como gestor de procesos, estableciendo comunicación con los Workers de Uvicorn. Como consecuencia de esta configuración, no es factible desplegar la API en un entorno Windows. No obstante, se ofrece la alternativa de implementarla en un contenedor Docker, requiriendo, para ello, la instalación previa de Docker en el sistema correspondiente.
