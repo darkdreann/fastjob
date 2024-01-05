@@ -185,12 +185,12 @@ class NewAdmin:
         CHECK_NAME: Callable[[str, int], bool] = lambda string, length: string and len(string) <= length
 
         # pedir el nombre del administrador mientras no cumpla los requisitos
-        while CHECK_NAME(name := input(INPUT_NAME), UserValidators.MAX_LENGTH_NAME):
+        while not CHECK_NAME(name := input(INPUT_NAME), UserValidators.MAX_LENGTH_NAME):
             print(EMPTY_NAME)
         self.name = name
 
         # pedir los apellidos del administrador mientras no cumplan los requisitos
-        while CHECK_NAME(surname := input(INPUT_SURNAME), UserValidators.MAX_LENGTH_SURNAME):
+        while not CHECK_NAME(surname := input(INPUT_SURNAME), UserValidators.MAX_LENGTH_SURNAME):
             print(EMPTY_SURNAME)
         self.surname = surname
 
@@ -303,7 +303,6 @@ class NewAdmin:
         
 
     # staticmethods
-
     @staticmethod
     def _int_input(msg: str) -> int:
         """
