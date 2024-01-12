@@ -16,6 +16,8 @@ services:
       - "${PGADMIN_PORT}:80"
     links:
       - ${DATABASE_IP}
+    depends_on:
+      - ${DATABASE_IP}
     env_file:
       - .env.dev
   
@@ -28,6 +30,8 @@ services:
     environment:
       - DEVELOPMENT=True
     links:
+      - ${DATABASE_IP}
+    depends_on:
       - ${DATABASE_IP}
     volumes:
       - .:/app

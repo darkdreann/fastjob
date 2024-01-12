@@ -46,6 +46,7 @@ class _Settings(BaseSettings):
     GUNICORN_LOG_FOLDER: str | None = None
     GUNICORN_ACCESS_LOG: str | None = None
     GUNICORN_ERROR_LOG: str | None = None
+    SCHEDULER_INTERVAL: int = 10
 
     @model_validator(mode='after')
     def log_path(self):
@@ -62,14 +63,20 @@ class _Settings(BaseSettings):
         self.LOG_FILE_INFO = os.path.join(self.APP_LOG_FOLDER, self.LOG_FILE_INFO)
         self.LOG_FILE_ERROR = os.path.join(self.APP_LOG_FOLDER, self.LOG_FILE_ERROR)
 
+        # ruta del archivo de configuración de logs de la aplicación
+        self.APP_LOGGING_CONFIG_FILE = f"{self.CONFIG_FILE_PATH}/{self.APP_LOGGING_CONFIG_FILE}"
+
+        # si estamos en desarrollo no se cambian las rutas de los logs de Gunicorn ya que no se usan
+        if self.DEVELOPMENT:
+            return self
+        
         # ruta de la carpeta de logs de Gunicorn
         self.GUNICORN_LOG_FOLDER = os.path.join(self.LOGS_PATH, self.GUNICORN_LOG_FOLDER)
         # ruta de los archivos de logs de Gunicorn
         self.GUNICORN_ACCESS_LOG = os.path.join(self.GUNICORN_LOG_FOLDER, self.GUNICORN_ACCESS_LOG)
         self.GUNICORN_ERROR_LOG = os.path.join(self.GUNICORN_LOG_FOLDER, self.GUNICORN_ERROR_LOG)
         
-        # ruta del archivo de configuración de logs de la aplicación
-        self.APP_LOGGING_CONFIG_FILE = f"{self.CONFIG_FILE_PATH}/{self.APP_LOGGING_CONFIG_FILE}"
+        
 
         return self
 

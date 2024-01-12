@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from typing import Annotated
 from uuid import UUID, uuid4
+from sqlalchemy import func
 from sqlalchemy.orm import noload
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.connection import get_session
@@ -12,11 +13,12 @@ from api.models.read_models import ReadJobComplete, ReadJobRelationLanguage, Rea
 from api.models.create_models import CreateJob, CreateJobLanguage
 from api.models.update_models import UpdateJob
 from api.models.partial_update_models import PartialUpdateJob
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, JOB_EXTRA_FIELD, LANGUAGE_ID, LANGUAGE_LEVEL_ID_BODY
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, JOB_EXTRA_FIELD, LANGUAGE_ID, LANGUAGE_LEVEL_ID_BODY, JOB_KEYWORD
 from api.utils.functions.management_utils import endpoint_request_log
 from api.utils.functions.models_utils import GetJob
 from api.models.enums.endpoints import JobExtraField
 from api.utils.functions.job_filter import get_job_filter_params
+from api.database.database_models.view_models import JobKeywordModel
 
 job_route = APIRouter(prefix="/jobs", tags=["jobs"], dependencies=[Depends(endpoint_request_log)])
 
@@ -344,3 +346,31 @@ async def delete_job_education(
     await session.delete(job_education_db)
 
     await secure_commit(session)
+
+@job_route.get("/keywords/{keyword}/")
+async def get_jobs_keywords(
+                            session: Annotated[AsyncSession, Depends(get_session)],
+                            keyword: Annotated[str, JOB_KEYWORD],
+                            limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                            offset: Annotated[int, OFFSET] = DEFAULT_OFFSET):
+    """
+    Obtiene una lista de palabras clave relacionadas con ofertas de trabajo que comienzan con la palabra clave dada.
+    
+    Args:
+    - session: Sesión de base de datos.
+    - keyword: Palabra clave para buscar trabajos relacionados.
+    - limit: Límite de resultados a devolver (opcional, valor predeterminado: DEFAULT_LIMIT).
+    - offset: Desplazamiento de resultados (opcional, valor predeterminado: DEFAULT_OFFSET).
+    
+    Return:
+    - Lista de palabras clave relacionadas con trabajos.
+    """
+    
+    view_table = JobKeywordModel.get_view()
+
+    keywords = await get_database_records(session, view_table.c.word, where=view_table.c.word.startswith(keyword), order_by=view_table.c.count.desc(), limit=limit, offset=offset)
+
+    return keywords
+
+
+    

@@ -6,7 +6,7 @@ from api.database.connection import get_session
 from api.utils.functions.database_utils import secure_commit, get_database_records
 from api.security.permissions import PermissionsManager
 from api.database.database_models.models import Experience
-from api.models.read_models import ReadExperience
+from api.models.read_models import ReadExperience, ReadExperienceComplete
 from api.models.create_models import CreateExperience
 from api.models.update_models import UpdateExperience
 from api.models.partial_update_models import PartialUpdateExperience
@@ -16,7 +16,7 @@ from api.utils.functions.models_utils import update_model
 
 candidate_experience_route = APIRouter(prefix="/candidates/experiences", tags=["candidates", "experiences"], dependencies=[Depends(endpoint_request_log), Depends(PermissionsManager.is_candidate_resource_owner)])
 
-@candidate_experience_route.get("/{candidate_id}/", response_model=list[ReadExperience], response_model_exclude_none=True)
+@candidate_experience_route.get("/{candidate_id}/", response_model=list[ReadExperienceComplete], response_model_exclude_none=True)
 async def get_candidate_experiences(
                                     session: Annotated[AsyncSession, Depends(get_session)],
                                     candidate_id: Annotated[UUID, USER_ID],
@@ -36,12 +36,12 @@ async def get_candidate_experiences(
     - list[Experience]: Lista de experiencias del candidato.
     """
     
-    experiences: list[Experience] = await get_database_records(session, Experience, limit=limit, offset=offset, where=Experience.candidate_id == candidate_id, order=(Experience.start_date.asc(), Experience.end_date.asc()))
+    experiences: list[Experience] = await get_database_records(session, Experience, limit=limit, offset=offset, where=Experience.candidate_id == candidate_id, order_by=(Experience.start_date.asc(), Experience.end_date.asc()))
 
     return experiences
 
 
-@candidate_experience_route.get("/{candidate_id}/{experience_id}/", response_model=ReadExperience, response_model_exclude_none=True)
+@candidate_experience_route.get("/{candidate_id}/{experience_id}/", response_model=ReadExperienceComplete, response_model_exclude_none=True)
 async def get_candidate_experience(
                                     session: Annotated[AsyncSession, Depends(get_session)],
                                     candidate_id: Annotated[UUID, USER_ID],

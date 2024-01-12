@@ -71,7 +71,7 @@ class ReadCandidate(BaseCandidate):
     - availability: Lista de disponibilidad de jornada laboral del candidato.
     """
     
-    user: ReadUserComplete = Field(CandidateDescription.USER)
+    user: ReadUserComplete = Field(description=CandidateDescription.USER)
 
 class ReadCompany(BaseCompany):
     """
@@ -90,7 +90,7 @@ class ReadCompany(BaseCompany):
     - company_name: Nombre de la empresa.
     """
     
-    user: ReadUserComplete = Field(CompanyDescription.USER)
+    user: ReadUserComplete = Field(description=CompanyDescription.USER)
     
 
 class ReadLanguage(BaseLanguage):

@@ -93,3 +93,5 @@ KEYWORD = Query(description="La palabra clave para buscar en las ofertas de trab
 JOB_ACTIVE = Query(description="Si se quiere obtener solo las ofertas de trabajo activas. Por defecto es verdadero.")
 
 JOB_MINIMAL_FIELDS = Query(description="Si se quiere obtener solo los campos mínimos para listar las ofertas de trabajo. Por defecto es falso.")
+
+JOB_KEYWORD = Path(description="Palabras clave para buscar en las ofertas de trabajo.")

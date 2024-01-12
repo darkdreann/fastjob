@@ -818,8 +818,8 @@ class Job(Base):
     __tablename__ = JOB
 
     id: Mapped[Optional[UUID]] = mapped_column(SQL_UUID, default=uuid4)
-    _title: Mapped[str] = mapped_column(String(JobStringLen.title), name="title")
-    _description: Mapped[str] = mapped_column(String(JobStringLen.description), name="description")
+    _title: Mapped[str] = mapped_column(String(JobStringLen.title), name="title", index=True)
+    _description: Mapped[str] = mapped_column(String(JobStringLen.description), name="description", index=True)
     _required_experience: Mapped[timedelta] = mapped_column(INTERVAL, name="required_experience")
     work_schedule: Mapped[WorkSchedule] = mapped_column(Enum(WorkSchedule))
     skills: Mapped[list[str]] = mapped_column(ARRAY(String(JobStringLen.skills)))

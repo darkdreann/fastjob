@@ -60,7 +60,7 @@ async def get_language_levels(*,
     - list[LanguageLevel]: Lista de niveles de idiomas
     """
 
-    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, limit=limit, offset=offset, order=LanguageLevel.value)
+    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, limit=limit, offset=offset, order_by=LanguageLevel.value)
 
     return levels
 
@@ -109,7 +109,7 @@ async def get_language_levels_complete(*,
     - list[LanguageLevel]: Lista de niveles de idiomas.
     """
 
-    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, limit=limit, offset=offset, options=[LanguageLevelExtraField.get_field_value(field) for field in extra_fields], order=LanguageLevel.value, unique=True)
+    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, limit=limit, offset=offset, options=[LanguageLevelExtraField.get_field_value(field) for field in extra_fields], order_by=LanguageLevel.value, unique=True)
 
     return levels
 

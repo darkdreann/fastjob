@@ -68,7 +68,7 @@ async def get_candidate_applied_jobs(
     """
     
     applied_jobs: list[JobCandidate] = await get_database_records(session, JobCandidate, limit=limit, offset=offset, where=JobCandidate.candidate_id == candidate_id, options=noload(JobCandidate.candidate), 
-                                                                  order=JobCandidate.inscription_date.desc())
+                                                                  order_by=JobCandidate.inscription_date.desc())
     return applied_jobs
 
 @candidate_route.get("/{candidate_id}/", response_model=ReadCandidateComplete, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])

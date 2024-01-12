@@ -143,7 +143,7 @@ async def get_database_records(session: AsyncSession,
                                where: Sequence[bool] | bool = None,
                                group_by: Sequence[ColumnArgument] | ColumnArgument = None,
                                having: Sequence[bool] | bool = None,
-                               order: Sequence[ColumnArgument] | ColumnArgument = None, 
+                               order_by: Sequence[ColumnArgument] | ColumnArgument = None, 
                                **kwargs) -> Sequence[Row[Any]] | Sequence[Any] | Row[Any] | Any | None:
     """
     Obtiene los registros de la base de datos que cumplen con las condiciones indicadas.
@@ -186,7 +186,7 @@ async def get_database_records(session: AsyncSession,
         where = _iterable_param(where)
         group_by = _iterable_param(group_by)
         having = _iterable_param(having)
-        order = _iterable_param(order)
+        order_by = _iterable_param(order_by)
 
         # Se obtienen los kwargs.
         limit = kwargs.get('limit', None)
@@ -238,8 +238,8 @@ async def get_database_records(session: AsyncSession,
             statement = statement.having(*having)
 
         # si se han indicado los campos para ordenar, se añaden a la consulta.
-        if order:
-            statement = statement.order_by(*order)
+        if order_by:
+            statement = statement.order_by(*order_by)
 
         # Se ejecuta la consulta.
         result = await session.execute(statement)

@@ -44,7 +44,7 @@ async def _get_sector_params(only_categories: Annotated[bool | None, ONLY_CATEGO
 
     # Si se especifica el parámetro 'category' se devuelve el nombre de la categoría, si no se devuelve el parámetro 'only_categories'
     if category_name:
-        return {"category_name": category_name}
+        return {"category_name": category_name.lower()}
     return {"only_categories": only_categories}
 
 

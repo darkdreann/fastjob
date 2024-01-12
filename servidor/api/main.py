@@ -4,16 +4,23 @@ from api.routers import *
 from api.models.enums.models import LogLevel
 from api.utils.functions.env_config import CONFIG
 from api.utils.functions.management_utils import print_log
-from api.utils.constants.error_strings import TABLES_AND_FUNCTIONS_FAILED
+from api.utils.constants.error_strings import DATABASE_CREATION_ERROR
 from api.utils.constants.info_strings import SERVER_STARTED, SERVER_STOPPED
-from api.database.connection import create_database_functions, create_tables, close_connection, OperationalError, ArgumentError
+from api.database.connection import create_tables, close_connection, OperationalError, ArgumentError
 from api.utils.functions.exception_handlers import HTTPExceptionWithBackgroundTask, RequestValidationError, DatabaseException, ResourceNotFoundException, RequestContentTypeError
 from api.utils.functions.exception_handlers import http_exception_background_task_handler, request_validation_exception_handler, unknown_exception_handler, database_exception_handler, request_content_type_exception_handler
+from api.database.database_views import create_database_views, refresh_database_views
+from api.database.database_models.view_models import create_all_views_instances
+from api.database.database_functions import create_database_functions
+from api.utils.functions.schedule_tasks import AsyncSchedulerManager
+
+
 
 # si estamos en desarrollo, importamos las funciones de creación de datos de prueba y eliminación de tablas
 if CONFIG.DEVELOPMENT:
     from api.tests.test_utils.db_manage_test import create_test_data
     from api.database.connection import drop_tables
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,13 +38,17 @@ async def lifespan(app: FastAPI):
     - Imprime un mensaje de parada del servidor.
     """
     try:
-        # se intenta crear las funciones de la base de datos y las tablas
+        # se intenta crear las funciones, tablas, vistas y tareas programadas de la base de datos
         await create_database_functions()
         await create_tables()
+        await create_database_views()
+        await create_all_views_instances()
+        AsyncSchedulerManager.add_job(refresh_database_views, 'interval', minutes=CONFIG.SCHEDULER_INTERVAL)
+        AsyncSchedulerManager.start()
 
     except (OperationalError, ArgumentError) as exc:
         # si ocurre un error, se lanza una excepción
-        raise RuntimeError(TABLES_AND_FUNCTIONS_FAILED.format(exc=exc))
+        raise RuntimeError(DATABASE_CREATION_ERROR.format(exc=exc))
     
     # si estamos en desarrollo, se crean datos de prueba
     if CONFIG.DEVELOPMENT:
@@ -52,6 +63,7 @@ async def lifespan(app: FastAPI):
     if CONFIG.DEVELOPMENT:
         await drop_tables()
 
+    AsyncSchedulerManager.shutdown()
     # se cierra la conexión con la base de datos
     await close_connection()
     # se imprime un log de parada del servidor

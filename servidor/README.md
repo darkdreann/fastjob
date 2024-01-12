@@ -84,6 +84,10 @@ Ambos archivos .env requieren las siguientes variables de entorno:
 
 > Estas variables establecen la configuración de la conexión de la API con la base de datos.
 
+- SCHEDULER_INTERVAL: Intervalo temporal entre ejecuciones programadas de tareas, expresado en horas.
+
+> Facilita la selección del intervalo temporal entre ejecuciones programadas de tareas, siendo opcional dado que, por defecto, se establece en 10 horas.
+
 Variables exclusivas del archivo .env:
 
 - GUNICORN_LOG_LEVEL: Nivel de registros (logs) de Gunicorn.
@@ -92,6 +96,10 @@ Variables exclusivas del archivo .env:
 - GUNICORN_ERROR_LOG: Archivo designado para el registro de errores en Gunicorn.
 
 > Estas variables establecen la configuración de registros (logs) de Gunicorn.
+
+- CONTAINER_RETRIES: Número de intentos de reinicio de los contenedores en caso de fallo durante la fase de inicio.
+
+> Facilita la configuración del número de intentos de inicio de los contenedores Docker.
 
 Variables exclusivas del archivo .env.dev:
 
@@ -393,11 +401,15 @@ La estructura del modelo "JobLanguage" es la siguiente:
     - **database**: Módulo encargado de la conexión y los modelos de la base de datos.
         - **connection.py**: Contiene la conexión a la base de datos.
         - **database_functions.py**: Contiene funciones que deben ser creadas por la base de datos.
+        - **database_views.py**: Incluye las vistas que han de ser generadas en la base de datos.
         - **database_models**: Módulo que alberga los modelos de la base de datos.
-        - **metadata**: Módulo que almacena información referente a los modelos.
-            - **constraint_name.py**: Almacena los nombres de las restricciones (constraints) de las tablas.
-            - **string_length.py**: Almacena los valores máximos de las columnas varchar de las tablas.
-            - **table_name.py**: Almacena los nombres de las tablas.
+            - **models.py**: Establece los modelos destinados a la creación de las tablas en la base de datos.
+            - **view_models.py**: Incluye modelos de las vistas que facilitan la ejecución de consultas sobre las mismas.
+            - **metadata**: Módulo que almacena información referente a los modelos.
+                - **constraint_name.py**: Almacena los nombres de las restricciones (constraints) de las tablas.
+                - **string_length.py**: Almacena los valores máximos de las columnas varchar de las tablas.
+                - **table_name.py**: Almacena los nombres de las tablas.
+                - **view_name.py**: Almacena los nombres de las vistas en la base de datos.
 
     - **loggs**: Módulo encargado de los registros (logs) de la API.
         - **load_config.py**: Contiene la lógica para cargar el archivo YAML con la configuración de registro (logging).

@@ -1,6 +1,6 @@
 DATABASE_ERROR = "Error: Algo ha fallado en la base de datos: {exc}."
 
-TABLES_AND_FUNCTIONS_FAILED = "Error: Falló la creación de tablas y funciones\n {exc}"	
+DATABASE_CREATION_ERROR = "Error: Falló la creación de la base de datos.\n {exc}"	
 
 UNKNOWN_QUERY_ERROR = "Error: Algo salió mal en la consulta:\n {exc}"
 
@@ -41,6 +41,8 @@ INVALID_EDUCATION_PARAMS_FOR_JOBS = "Error: No se puede usar el parámetro name 
 INVALID_CONTENT_TYPE = "Error: Tipo de contenido no válido. URL: {url}"
 
 INVALID_FILE_TYPE = "Error: Tipo de archivo no válido. El archivo debe ser un PDF."
+
+SCHEDULER_ERROR = "Error: Algo salió mal en el planificador de tareas:\n {exc}"
 
 # MENSAJES DE MANEJADORES DE EXCEPCIONES
 LOG_INVALID_PARAMS = """

@@ -1,7 +1,7 @@
+from typing import Callable
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.exc import OperationalError, ArgumentError
-from api.database.database_functions import get_database_functions
 from api.database.database_models.models import Base
 from api.utils.constants.error_strings import DATABASE_ERROR
 from api.utils.functions.env_config import CONFIG
@@ -27,17 +27,8 @@ async def drop_tables():
 
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.drop_all)
-
-async def create_database_functions():
-    """Crea las funciones de usuario en PostgreSQL."""
-
-    database_funcs = get_database_functions()
-
-    async with engine.connect() as connection:
-        for func in database_funcs:
-            await connection.execute(text(func))
-        await connection.commit()
         
+
 async def get_session():
     """Obtiene una sesión de la base de datos."""
 
@@ -49,4 +40,17 @@ async def close_connection():
 
     await engine.dispose()
 
+def execute_database(func: Callable) -> Callable:
+    """Crea recursos en la base de datos."""
 
+    async def wrapper(*args, **kwargs):
+        """Función envoltorio."""
+
+        database_resources = func(*args, **kwargs)
+
+        async with engine.connect() as connection:
+            for resource in database_resources:
+                await connection.execute(text(resource))
+            await connection.commit()
+
+    return wrapper

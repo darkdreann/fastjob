@@ -43,7 +43,7 @@ def docker_build() -> None:
     print(DOCKER_BUILD_MSG)
 
     # Se obtiene el tipo de contenedor mientras no sea válido
-    while (tipo_docker := input(INPUT_DOCKER_TYPE)) not in _TYPE:
+    while (tipo_docker := input(INPUT_DOCKER_TYPE).lower()) not in _TYPE:
         print(DOCKER_TYPE_ERROR)
 
     # Se obtiene el nombre del contenedor mientras no sea válido

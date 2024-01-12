@@ -1,0 +1,1 @@
+JOB_KEYWORDS_VIEW_NAME = "job_keywords_view"

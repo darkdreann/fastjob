@@ -60,7 +60,7 @@ async def get_education_levels(*,
         list[EducationLevel]: La lista de niveles de formación.
     """
     
-    education_levels = await get_database_records(session, EducationLevel, limit=limit, offset=offset, order=EducationLevel.value.asc())
+    education_levels = await get_database_records(session, EducationLevel, limit=limit, offset=offset, order_by=EducationLevel.value.asc())
 
     return education_levels
 
@@ -113,7 +113,7 @@ async def get_education_levels(*,
     """
     options = joinedload(EducationLevel.education_list) if get_educations else None
     
-    education_levels = await get_database_records(session, EducationLevel, limit=limit, offset=offset, options=options, order=EducationLevel.value.asc(), unique=True)
+    education_levels = await get_database_records(session, EducationLevel, limit=limit, offset=offset, options=options, order_by=EducationLevel.value.asc(), unique=True)
 
     return education_levels
 
