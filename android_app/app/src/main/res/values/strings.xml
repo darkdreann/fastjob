@@ -1,3 +1,143 @@
 <resources>
     <string name="app_name">fastjob</string>
+
+    <string name="top_bar_icon_desc">Opciones</string>
+    <string name="top_bar_login">login</string>
+    <string name="top_bar_logout">logout</string>
+    <string name="top_bar_register">registrar</string>
+
+    <string name="bottom_bar_search">Buscar</string>
+    <string name="bottom_bar_job_applied">Ofertas aplicadas</string>
+    <string name="bottom_bar_profile">Perfil</string>
+
+    <string name="job_search_placeholder">Busca por palabra clave</string>
+    <string name="job_search_text_icon_desc">Lupa</string>
+    <string name="job_search_button_icon_desc">Filtros</string>
+    <string name="job_search_button_text">Filtros</string>
+    <string name="search_button">Buscar</string>
+
+    <string name="search_textfield_default_placeholder">Buscar</string>
+    <string name="search_textfield_default_icon_description">Icono de busqueda</string>
+
+    <string name="add_icon">add</string>
+    <string name="clear_icon">clear</string>
+    <string name="delete_icon">delete</string>
+
+    <string name="error_icon_description">Icono de error</string>
+
+    <string name="default_error">Error</string>
+    <string name="default_loading">Cargando…</string>
+
+    <!-- Job filter -->
+    <string name="job_filter_sector_category">Categoría</string>
+    <string name="job_filter_sector_subcategory">Subcategoría</string>
+    <string name="job_filter_provincia">Provincia</string>
+    <string name="job_filter_education_name">Título formativo</string>
+    <string name="job_filter_education_level_name">Nivel formación</string>
+    <string name="job_filter_language">Idiomas</string>
+
+    <string name="job_list_screen_float_button_icon_desc">Subir</string>
+
+    <!-- Job list -->
+    <string name="job_list_error">Se ha producido un error inesperado. Por favor, inténtelo nuevamente.</string>
+    <string name="job_not_found">No se ha encontrado ninguna oferta con los filtros actuales.</string>
+    <string name="job_image_desc">Imagen de oferta laboral.</string>
+
+    <!-- map -->
+    <string name="map_error">No se ha podido cargar el mapa.</string>
+    <string name="map_location_not_found">No se ha podido encontrar la dirección:\n{DIR}.</string>
+
+    <!-- Job detail -->
+    <string name="job_experience">Experiencia:</string>
+    <string name="job_sector">Sector:</string>
+    <string name="job_availability">Jornada:</string>
+    <string name="job_experience_years">Años</string>
+    <string name="job_experience_year">Año</string>
+    <string name="job_experience_months">Meses</string>
+    <string name="job_experience_month">Mes</string>
+    <string name="job_experience_none">No requerida</string>
+    <string name="job_education">Formación Requerida:</string>
+    <string name="job_languages">Idiomas Requeridos:</string>
+    <string name="job_skills">Habilidades Requeridas:</string>
+    <string name="job_loading">Cargando oferta…</string>
+    <string name="job_loading_error">Se ha producido un error al cargar la oferta. Por favor, inténtelo nuevamente.</string>
+    <string name="job_loading_not_found">No se ha podido encontrar la oferta.</string>
+    <string name="job_publication_date">Fecha publicación:</string>
+
+    <!-- dialog basic -->
+    <string name="dialog_icon_desc">Icono del dialogo</string>
+    <string name="aceptar_dialog">Aceptar</string>
+
+
+    <!-- Job availability -->
+    <string name="job_availability_full_time">Tiempo completo</string>
+    <string name="job_availability_part_time">Medio tiempo</string>
+    <string name="job_availability_morning">Mañana</string>
+    <string name="job_availability_afternoon">Tarde</string>
+    <string name="job_availability_day">Día</string>
+    <string name="job_availability_night">Noche</string>
+    <string name="job_availability_flextime">Horario flexible</string>
+    <string name="job_availability_remote_work">Trabajo remoto</string>
+    <string name="job_availability_any">Sin horario</string>
+
+    <!-- register dialog -->
+    <string name="register_dialog_title">Registro</string>
+    <string name="register_dialog_text">¿Qué tipo de usuario quieres registrar?</string>
+    <string name="register_dialog_button_candidate">Candidato</string>
+    <string name="register_dialog_button_company">Empresa</string>
+    <string name="register_dialog_icon_desc">Icono de registro</string>
+
+    <!-- register user -->
+    <string name="register_user_phones">Número de teléfono</string>
+    <string name="register_user_email">Correo electrónico</string>
+    <string name="register_user_password">Contraseña</string>
+    <string name="register_user_password_confirmation">Confirmar contraseña</string>
+    <string name="register_user_name">Nombre</string>
+    <string name="register_user_surname">Apellidos</string>
+    <string name="register_user_username">Nombre de usuario</string>
+    <string name="register_user_button_add_tlf">Añadir teléfono</string>
+
+    <!-- register user error -->
+    <string name="register_user_username_error">El nombre de usuario debe ser una cadena entre 4 y 16 caracteres.</string>
+    <string name="register_user_email_error">Debe ser un email válido.</string>
+    <string name="register_user_name_error">El nombre no puede estar vacío.</string>
+    <string name="register_user_surname_error">Los apellidos no pueden estar vacíos</string>
+    <string name="register_user_password_error">La contraseña debe tener mínimo 8 caracteres y estar formada por 1 mayúscula, 1 Minúscula, 1 número y 1 simbolo.</string>
+    <string name="register_user_phone_error">El número de teléfono debe contener 9 números.</string>
+
+    <string name="user_register_button">Registrarse</string>
+
+    <!-- register user address -->
+    <string name="register_user_postal_code">Código Postal</string>
+    <string name="register_user_city">Ciudad</string>
+    <string name="register_user_province">Provincia</string>
+    <string name="register_user_street">Calle</string>
+
+    <!-- register user address error -->
+    <string name="register_user_postal_code_error">El código postal debe ser un número de 5 digitos.</string>
+    <string name="register_user_city_error">La ciudad no puede estar vacía.</string>
+    <string name="register_user_province_error">La provincia no puede estar vacía.</string>
+    <string name="register_user_street_error">La calle no puede estar vacía.</string>
+
+    <!-- password -->
+    <string name="password_show">Mostrar</string>
+    <string name="password_hide">Ocultar</string>
+
+    <!-- candidate register -->
+    <string name="candidate_skill">Habilidad</string>
+    <string name="candidate_skill_add">Añadir Habilidad</string>
+    <string name="candidate_availability">Disponibilidad</string>
+    <string name="candidate_availability_add">Añadir Disponibilidad</string>
+    <string name="candidate_form_title">Registro Candidato</string>
+
+    <!-- candidate register error msg -->
+    <string name="candidate_register_error_title">Error Registro</string>
+    <string name="candidate_register_no_form_valid">Los campos introducidos no son válidos verifica los errores.</string>
+    <string name="candidate_register_error">Se ha producido un error al registrar el candidato. Por favor, inténtelo nuevamente.</string>
+    <string name="candidate_register_error_username">El nombre de usuario ya existe.</string>
+    <string name="candidate_register_error_email">El correo electrónico ya existe.</string>
+
+
+
+
 </resources>
