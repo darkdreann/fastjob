@@ -1,17 +1,15 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.exceptions import RequestValidationError
 from typing import Annotated
 from uuid import UUID
 from api.database.database_models.models import Sector
 from api.database.connection import get_session
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, SECTOR_CATEGORY, ONLY_CATEGORY, SECTOR_EXTRA_FIELD, SECTOR_ID, DEFAULT_LIMIT, DEFAULT_OFFSET
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, SECTOR_EXTRA_FIELD, SECTOR_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, SECTOR_CATEGORY, SECTOR_SUBCATEGORY_KEYWORD, SECTOR_CATEGORY_KEYWORD
 from api.security.permissions import PermissionsManager
-from api.models.read_models import ReadSector, ReadSectorComplete
+from api.models.read_models import ReadSector, ReadSectorComplete, ReadSectorNoCategory
 from api.models.create_models import CreateSector
 from api.models.update_models import UpdateSector
 from api.models.partial_update_models import PartialUpdateSector
-from api.utils.constants.error_strings import SECTOR_GET_PARAMS
 from api.utils.functions.management_utils import endpoint_request_log
 from api.utils.functions.database_utils import secure_commit, get_database_records, get_record_by_id
 from api.utils.functions.models_utils import update_model
@@ -20,84 +18,73 @@ from api.models.enums.endpoints import SectorExtraField
 
 sector_route = APIRouter(prefix="/sectors", tags=["sectors"], dependencies=[Depends(endpoint_request_log)])
 
-
-async def _get_sector_params(only_categories: Annotated[bool | None, ONLY_CATEGORY] = False,
-                             category_name: Annotated[str | None, SECTOR_CATEGORY] = None) -> dict:
-    """
-    Función que valida los parámetros de la ruta /sectors. Si se especifica el parámetro 'only_category' se devolverán solo las categorías de los sectores.
-    Si se especifica el parámetro 'category' se devolverán las subcategorías de ese sector. No se pueden usar ambos parámetros a la vez.
-
-    Args:
-    - only_categories (bool, optional): Si se quiere obtener solo la categoría del sector. Defaults to False.
-    - category_name (str, optional): La categoría del sector. Para obtener todas sus subcategorías. Defaults to None.
-
-    Raises:
-    - RequestValidationError: Si se especifican ambos parámetros a la vez.
-
-    Returns:
-    - dict: Los parámetros de la ruta.
-    """
-
-    # Si se especifican ambos parámetros a la vez se lanza una excepción
-    if category_name and only_categories:
-        raise RequestValidationError([SECTOR_GET_PARAMS])
-
-    # Si se especifica el parámetro 'category' se devuelve el nombre de la categoría, si no se devuelve el parámetro 'only_categories'
-    if category_name:
-        return {"category_name": category_name.lower()}
-    return {"only_categories": only_categories}
-
-
 @sector_route.get("/", response_model=list[ReadSector], response_model_exclude_unset=True, dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_sectors(
         session: Annotated[AsyncSession, Depends(get_session)],
         limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
-        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,
-        extra_params: dict = Depends(_get_sector_params)) -> list[Sector]:
+        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[Sector]:
     """
-    Devuelve todos los sectores o las subcategorías de un sector en específico. Si se especifica el parámetro 'only_category' se devolverán solo las categorías de los sectores.
-    Si se especifica el parámetro 'category' se devolverán las subcategorías de ese sector. No se pueden usar ambos parámetros a la vez.
+    Devuelve todos los sectores.
     Se debe estar logueado para acceder a este endpoint.
 
     Args:
     - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
     - limit (int, optional): Límite de registros devueltos. Defaults to 20.
     - offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to 0.
-    - extra_params (dict, optional): Parámetros adicionales de la ruta.
 
     Returns:
     - list[Sector]: La lista de sectores o subcategorías.
     """
 
-    # creamos los args y kwargs iniciales para la función get_database_records
-    args = [session]
-    kwargs = {
-        "limit": limit,
-        "offset": offset,
-        "scalar": False,
-    }
-
-    # si se especifica el parámetro 'category'
-    if extra_params.get("category_name"):
-        # anadimos los parámetros de la consulta
-        args.extend((Sector.id, Sector.subcategory))
-        kwargs["where"] = Sector.category == extra_params["category_name"]
-
-    # si se especifica el parámetro 'only_category'
-    elif extra_params.get("only_categories"):
-        # anadimos los parámetros de la consulta
-        args.append(Sector.category.distinct().label("category"))
-
-    # si no se especifica ninguno de los dos parámetros
-    else:
-        # anadimos los parámetros de la consulta
-        args.append(Sector)
-        kwargs["scalar"] = True
-
-    sectors = await get_database_records(*args, **kwargs)
-
+    sectors = await get_database_records(session, Sector, limit=limit, offset=offset)
     return sectors
 
+@sector_route.get("/categories/{category_keyword}/", response_model=list[str])
+async def get_sector_categories(        
+        session: Annotated[AsyncSession, Depends(get_session)],
+        category_keyword: Annotated[str, SECTOR_CATEGORY_KEYWORD],
+        limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[str]:
+    """
+    Recibe una palabra y devuelve las categorías de sectores que empiezan por esa palabra.
+
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - category_keyword (str): La palabra clave para buscar en la categoría del sector.
+    - limit (int, optional): Límite de registros devueltos. Defaults to 20.
+    - offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to 0.
+
+    Returns:
+    - list[str]: La lista de categorías de sectores.
+    """
+
+    categories = await get_database_records(session, Sector.category.distinct(), where=Sector.category.startswith(category_keyword), limit=limit, offset=offset, order_by=Sector.category.desc())
+    return categories
+
+@sector_route.get("/{category}/subcategories/{subcategory_keyword}/", response_model=list[ReadSectorNoCategory])
+async def get_sector_subcategories(        
+        session: Annotated[AsyncSession, Depends(get_session)],
+        category: Annotated[str, SECTOR_CATEGORY],
+        subcategory_keyword: Annotated[str, SECTOR_SUBCATEGORY_KEYWORD],
+        limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[ReadSectorNoCategory]:
+    """
+    Recibe una palabra y devuelve las categorías de sectores que empiezan por esa palabra.
+
+    Args:
+    - session (AsyncSession): La sesión de base de datos. Defaults to Depends(get_session).
+    - category (str): La categoría del sector.
+    - subcategory_keyword (str): La palabra clave para buscar en la subcategoría del sector.
+    - limit (int, optional): Límite de registros devueltos. Defaults to 20.
+    - offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to 0.
+
+    Returns:
+    - list[str]: La lista de categorías de sectores.
+    """
+
+    subcategories = await get_database_records(session, Sector, where=(Sector.subcategory.startswith(subcategory_keyword), 
+                                                                    Sector.category == category), limit=limit, offset=offset, order_by=Sector.subcategory.desc())
+    return subcategories
 
 @sector_route.get("/admin/", response_model=list[ReadSectorComplete], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_sectors_complete(

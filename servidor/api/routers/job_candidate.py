@@ -117,6 +117,30 @@ async def get_job_candidate_cv(
     return Response(candidate_cv, media_type='application/pdf')
 
 
+
+@job_candidate_route.get("/{job_id}/is-applied/{candidate_id}/", dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])
+async def is_candidate_applied(
+                            session: Annotated[AsyncSession, Depends(get_session)],
+                            job_id: Annotated[UUID, JOB_ID], 
+                            candidate_id: Annotated[UUID, USER_ID]) -> bool:
+    """
+    Verifica si un candidato ha aplicado a un trabajo específico.
+
+    Args:
+    - session: Sesión de base de datos.
+    - job_id: ID del trabajo.
+    - candidate_id: ID del candidato.
+
+    Returns:
+    - bool: True si el candidato ha aplicado a la oferta, False en caso contrario.
+    """
+    options = (noload(JobCandidate.candidate), noload(JobCandidate.job))
+    where = (JobCandidate.job_id == job_id, JobCandidate.candidate_id == candidate_id)
+    job_candidate = await get_database_records(session, JobCandidate.candidate_id, options=options, where=where, result_list=False)
+
+    return job_candidate is not None
+
+  
 # POST #
 
 @job_candidate_route.post("/{job_id}/apply/{candidate_id}/", status_code=status.HTTP_201_CREATED, response_model=ReadCandidateRelationJob, dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])

@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from typing import Annotated
 from uuid import UUID, uuid4
-from sqlalchemy import func
 from sqlalchemy.orm import noload
 from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.connection import get_session
@@ -45,7 +44,7 @@ async def get_jobs(
     """
     fields = job_params.pop("fields")
 
-    jobs: list[Job] = await get_database_records(session, *fields, **job_params, limit=limit, offset=offset)
+    jobs: list[Job] = await get_database_records(session, *fields, **job_params, limit=limit, offset=offset, order_by=Job.publication_date.desc())
 
     return jobs
 
@@ -69,7 +68,7 @@ async def get_jobs_admin(
     - Lista de ofertas de trabajo.
     """
 
-    jobs: list[Job] = await get_database_records(session, Job, options=[JobExtraField.get_field_value(field) for field in extra_fields], unique=True, limit=limit, offset=offset)
+    jobs: list[Job] = await get_database_records(session, Job, options=[JobExtraField.get_field_value(field) for field in extra_fields], unique=True, limit=limit, offset=offset, order_by=Job.publication_date.desc())
 
     return jobs
 
@@ -347,12 +346,12 @@ async def delete_job_education(
 
     await secure_commit(session)
 
-@job_route.get("/keywords/{keyword}/")
+@job_route.get("/keywords/{keyword}/", response_model=list[str])
 async def get_jobs_keywords(
                             session: Annotated[AsyncSession, Depends(get_session)],
                             keyword: Annotated[str, JOB_KEYWORD],
                             limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
-                            offset: Annotated[int, OFFSET] = DEFAULT_OFFSET):
+                            offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[str]:
     """
     Obtiene una lista de palabras clave relacionadas con ofertas de trabajo que comienzan con la palabra clave dada.
     

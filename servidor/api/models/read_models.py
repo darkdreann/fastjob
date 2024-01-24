@@ -103,8 +103,22 @@ class ReadLanguage(BaseLanguage):
     """
     
     id: UUID = Field(description=LanguageDescription.LANGUAGE_ID)
+
+
+class ReadSectorNoCategory(BaseModel):
+    """
+    Modelo para leer un sector.
+
+    Atributos:
+    - id: Identificador del sector.
+    - subcategory: La subcategoría del sector.
+    """
     
-class ReadSector(BaseModel):
+    id: UUID = Field(description=SectorDescription.SECTOR_ID)
+    subcategory: str = Field(description=SectorDescription.SUBCATEGORY, max_length=SectorValidators.MAX_LENGTH_SUBCATEGORY)
+
+
+class ReadSector(ReadSectorNoCategory):
     """
     Modelo para leer un sector.
 
@@ -114,9 +128,7 @@ class ReadSector(BaseModel):
     - subcategory: La subcategoría del sector.
     """
     
-    id: Optional[UUID] = Field(description=SectorDescription.SECTOR_ID, default=None)
-    category: Optional[str] = Field(description=SectorDescription.CATEGORY, max_length=SectorValidators.MAX_LENGTH_CATEGORY, default=None)
-    subcategory: Optional[str] = Field(description=SectorDescription.SUBCATEGORY, max_length=SectorValidators.MAX_LENGTH_SUBCATEGORY, default=None)
+    category: str = Field(description=SectorDescription.CATEGORY, max_length=SectorValidators.MAX_LENGTH_CATEGORY)
 
 class ReadExperience(BaseExperience):
     """

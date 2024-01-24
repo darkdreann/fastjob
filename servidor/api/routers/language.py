@@ -4,7 +4,7 @@ from uuid import UUID
 from typing import Annotated
 from api.database.database_models.models import Language, LanguageLevel
 from api.database.connection import get_session
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, LANGUAGE_ID, LANGUAGE_LEVEL_ID, LANGUAGE_EXTRA_FIELD, LANGUAGE_LEVEL_EXTRA_FIELD
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, LANGUAGE_ID, LANGUAGE_LEVEL_ID, LANGUAGE_EXTRA_FIELD, LANGUAGE_LEVEL_EXTRA_FIELD, LANGUAGE_NAME_KEYWORD, LANGUAGE_LEVEL_NAME_KEYWORD
 from api.security.permissions import PermissionsManager
 from api.models.read_models import ReadLevel, ReadLevelLanguage, ReadLanguage, ReadLanguageComplete
 from api.models.create_models import CreateLanguage, CreateLevel
@@ -41,18 +41,42 @@ async def get_languages(*,
 
     return languages
 
-@language_route.get("/language-levels/", response_model=list[ReadLevel], dependencies=[Depends(PermissionsManager.is_logged)])
+@language_route.get("/language-name/{name_keyword}/", response_model=list[str])
+async def get_languages(*,
+                        session: AsyncSession = Depends(get_session),
+                        name_keyword: Annotated[str, LANGUAGE_NAME_KEYWORD],
+                        limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[str]:
+    
+    """
+    Obtener todos los nombres de los idiomas que contengan las palabras clave.
+
+    Args:
+    - session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
+    - name_keyword (str): Palabras clave para buscar en el nombre del idioma.
+    - limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
+    - offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
+
+    Returns:
+    - list[Language]: Lista de idiomas
+    """
+
+    languages: list[str] = await get_database_records(session, Language.name, limit=limit, offset=offset, where=Language.name.startswith(name_keyword), order_by=Language.name.desc())
+    return languages
+
+@language_route.get("/language-levels/", response_model=list[ReadLevel])
 async def get_language_levels(*,
                                 session: AsyncSession = Depends(get_session),
+                                language_level_keyword: Annotated[str, LANGUAGE_LEVEL_NAME_KEYWORD] = None,
                                 limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                                 offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[LanguageLevel]:
         
     """
     Obtener todos los niveles de idiomas
-    Solo para usuarios logueados.
 
     Args:
     - session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
+    - language_level_keyword (str, optional): Palabras clave para buscar en el nombre del nivel de idioma. Defaults to None.
     - limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
     - offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
 
@@ -60,7 +84,11 @@ async def get_language_levels(*,
     - list[LanguageLevel]: Lista de niveles de idiomas
     """
 
-    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, limit=limit, offset=offset, order_by=LanguageLevel.value)
+    where = None
+    if language_level_keyword:
+        where = LanguageLevel.name.startswith(language_level_keyword)
+
+    levels: list[LanguageLevel] = await get_database_records(session, LanguageLevel, where=where, limit=limit, offset=offset, order_by=LanguageLevel.value)
 
     return levels
 
@@ -86,7 +114,6 @@ async def get_languages_complete(*,
     """
 
     languages: list[Language] = await get_database_records(session, Language, limit=limit, offset=offset, options=[LanguageExtraField.get_field_value(field) for field in extra_fields], unique=True)
-
     return languages
 
 @language_route.get("/admin/language-levels/", response_model=list[ReadLevelLanguage], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])

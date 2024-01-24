@@ -10,11 +10,13 @@ DEFAULT_OFFSET = 0
 
 USER_ID = Path(description="El ID del usuario.")
 
-SECTOR_CATEGORY = Query(description="La categoría del sector. Para obtener todas sus subcategorías. No se puede usar con el parámetro 'only_category'.")
-
-ONLY_CATEGORY = Query(description="Si se quiere obtener solo las categorías del sector. No se puede usar con el parámetro 'category'.")
-
 SECTOR_ID = Path(description="El ID del sector.")
+
+SECTOR_CATEGORY_KEYWORD = Path(description="Palabras clave para buscar en la categoría del sector.")
+
+SECTOR_CATEGORY = Path(description="Categoria del sector.")
+
+SECTOR_SUBCATEGORY_KEYWORD = Path(description="Palabras clave para buscar en la subcategoría del sector.")
 
 SECTOR_EXTRA_FIELD = Query(description="Campos de las relaciones de la tabla sector que se quieren obtener. Se pueden especificar varios.")
 
@@ -32,9 +34,15 @@ ADDRESS_POSTAL_CODE_QUERY = Query(description=ADDRESS_POSTAL_CODE.description, g
 
 ADDRESS_PROVINCE = Query(description="La provincia de la dirección.")
 
+ADDRESS_PROVINCE_KEYWORD = Path(description="Palabras clave para buscar en la provincia de la dirección.")
+
 ADDRESS_EXTRA_FIELD = Query(description="Campos de las relaciones de la tabla address que se quieren obtener. Se pueden especificar varios.")
 
 EDUCATION_ID = Path(description="El ID de la formación.")
+
+EDUCATION_NAME_KEYWORD = Path(description="Palabras clave para buscar en el nombre de la formación.")
+
+EDUCATION_LEVEL_NAME_KEYWORD = Query(description="Palabras clave para buscar en el nombre del nivel la formación.")
 
 EDUCATION_ID_BODY = Body(description=EDUCATION_ID.description)
 
@@ -42,7 +50,7 @@ COMPLETION_DATE = Body(description="La fecha de finalización de la formación."
 
 EDUCATION_LEVEL_ID = Path(description="El ID del nivel de la formación.")
 
-EDUCATION_LEVEL_ID_PARAM = Query(description=EDUCATION_LEVEL_ID.description)
+EDUCATION_LEVEL_VALUE_PARAM = Query(description="El valor del nivel de la formación. Debe ser un número mayor a 0.", gt=0)
 
 GET_EDUCATION = Query(description="Permite obtener las formaciones del nivel.")
 
@@ -53,6 +61,10 @@ EDUCATION_NAME_PARAM = Query(description="El nombre de la formación.")
 EDUCATION_LEVEL_PARAM = Query(description="El valor del nivel de la formación. Debe ser un número mayor a 0.", gt=0)
 
 LANGUAGE_ID = Path(description="El ID del idioma.")
+
+LANGUAGE_NAME_KEYWORD = Path(description="Palabras clave para buscar en el nombre del idioma.")
+
+LANGUAGE_LEVEL_NAME_KEYWORD = Path(description="Palabras clave para buscar en el nombre del nivel del idioma.")
 
 LANGUAGE_ID_BODY = Body(description=LANGUAGE_ID.description)
 

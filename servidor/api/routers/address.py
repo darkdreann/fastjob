@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 from api.database.database_models.models import Address
 from api.database.connection import get_session
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, ADDRESS_ID, ADDRESS_POSTAL_CODE, ADDRESS_EXTRA_FIELD, DEFAULT_LIMIT, DEFAULT_OFFSET
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, ADDRESS_ID, ADDRESS_POSTAL_CODE, ADDRESS_EXTRA_FIELD, DEFAULT_LIMIT, DEFAULT_OFFSET, ADDRESS_PROVINCE_KEYWORD
 from api.security.permissions import PermissionsManager
 from api.models.read_models import ReadAddress, ReadAddressComplete
 from api.models.create_models import CreateAddress
@@ -37,6 +37,27 @@ async def get_addresses(*,
 
     addresses = await get_database_records(session, Address, limit=limit, offset=offset)
 
+    return addresses
+
+@address_route.get("/province/{province_keyword}/", response_model=list[str])
+async def get_addresses(*,
+                        session: Annotated[AsyncSession, Depends(get_session)],
+                        province_keyword: Annotated[str, ADDRESS_PROVINCE_KEYWORD],
+                        limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[str]:
+    """
+    Obtiene las provincias que empiecen por el keyword especificado.
+    
+    Args:
+    - session (AsyncSession): La sesión de la base de datos.
+    - limit (int): El límite de direcciones a devolver. Por defecto es 20.
+    - offset (int): El número de direcciones a omitir. Por defecto es 0.
+            
+    Returns:
+    - list[Address]: La lista de direcciones.
+    """
+
+    addresses = await get_database_records(session, Address.province, limit=limit, offset=offset, where=Address.province.startswith(province_keyword), order_by=Address.province.desc())
     return addresses
 
 @address_route.get("/admin/", response_model=list[ReadAddressComplete], response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
@@ -86,13 +107,12 @@ async def get_address_admin(*,
     return address
 
 
-@address_route.get("/postal-code/{address_postal_code}/", response_model=ReadAddress, dependencies=[Depends(PermissionsManager.is_logged)])
+@address_route.get("/postal-code/{address_postal_code}/", response_model=ReadAddress)
 async def get_address_by_postal_code(*,
                     session: Annotated[AsyncSession, Depends(get_session)], 
                     address_postal_code: Annotated[int, ADDRESS_POSTAL_CODE]) -> Address:
     """
     Obtiene una dirección por su código postal y la devuelve.
-    Se debe estar logueado para poder acceder a este endpoint.
 
     Args:
     - session (AsyncSession): La sesión de la base de datos.

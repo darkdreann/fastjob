@@ -5,7 +5,7 @@ from typing import Annotated
 from sqlalchemy.orm import joinedload, noload
 from api.database.database_models.models import Education, EducationLevel, SectorEducation
 from api.database.connection import get_session
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, EDUCATION_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, EDUCATION_LEVEL_ID, GET_EDUCATION, EDUCATION_EXTRA_FIELD
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, EDUCATION_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, EDUCATION_LEVEL_ID, GET_EDUCATION, EDUCATION_EXTRA_FIELD, EDUCATION_NAME_KEYWORD, EDUCATION_LEVEL_NAME_KEYWORD
 from api.security.permissions import PermissionsManager
 from api.models.read_models import ReadLevel, ReadLevelEducation, ReadEducationComplete, ReadEducationWithUses
 from api.models.create_models import CreateEducation, CreateLevel
@@ -42,28 +42,55 @@ async def get_educations(*,
 
     return educations
 
-@education_route.get("/education-levels/", response_model=list[ReadLevel], dependencies=[Depends(PermissionsManager.is_logged)])
+
+@education_route.get("/qualification/{qualification_keyword}/", response_model=list[str])
+async def get_educations_qualification(*,
+                        session: Annotated[AsyncSession, Depends(get_session)],
+                        qualification_keyword: Annotated[str, EDUCATION_NAME_KEYWORD],
+                        limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                        offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[str]:
+    
+    """
+    Devuelve una lista de nombres de formaciones que contienen la palabra clave en su nombre.
+
+    Args:
+        session (AsyncSession): La sesión de la base de datos.
+        qualification_keyword (str): La palabra clave para buscar en el nombre de la formación.
+        limit (int, optional): El límite de registros devueltos. Por defecto es DEFAULT_LIMIT.
+        offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Por defecto es DEFAULT_OFFSET.
+        
+    Returns:
+        list[str]: La lista de formaciones.
+    """
+
+    educations = await get_database_records(session, Education.qualification, where=Education.qualification.startswith(qualification_keyword), limit=limit, offset=offset, order_by=Education.qualification.desc())
+    return educations
+
+@education_route.get("/education-levels/", response_model=list[ReadLevel])
 async def get_education_levels(*,
-                            session: Annotated[AsyncSession, Depends(get_session)], 
+                            session: Annotated[AsyncSession, Depends(get_session)],
+                            name_keyword: Annotated[str, EDUCATION_LEVEL_NAME_KEYWORD] = None,
                             limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                             offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[EducationLevel]:
     """
     Obtiene todos los niveles de formación.
-    Se debe estar logueado para poder acceder a este endpoint.
 
     Args:
         session (AsyncSession): La sesión de la base de datos.
+        name_keyword (str, optional): La palabra clave para buscar en el nombre del nivel de formación. Defaults to None.
         limit (int, optional): El límite de registros devueltos. Defaults to DEFAULT_LIMIT.
         offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Defaults to DEFAULT_OFFSET.
 
     Returns:
         list[EducationLevel]: La lista de niveles de formación.
     """
+
+    where = None
+    if name_keyword:
+        where = EducationLevel.name.startswith(name_keyword)
     
-    education_levels = await get_database_records(session, EducationLevel, limit=limit, offset=offset, order_by=EducationLevel.value.asc())
-
+    education_levels = await get_database_records(session, EducationLevel, where=where, limit=limit, offset=offset, order_by=EducationLevel.value.asc())
     return education_levels
-
 
 @education_route.get("/admin/", response_model=list[ReadEducationWithUses], response_model_exclude_none=True, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_admin)])
 async def get_educations_with_candidates(*,
@@ -86,9 +113,7 @@ async def get_educations_with_candidates(*,
         list[Education]: Lista de educaciones con sus candidatos asociados.
     """
 
-
     educations = await get_database_records(session, Education, options=[EducationExtraField.get_field_value(field) for field in extra_fields], limit=limit, offset=offset, unique = True)
-
     return educations
 
 

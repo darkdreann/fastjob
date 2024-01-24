@@ -8,7 +8,7 @@ from api.models.base_models import QueryParams
 from api.database.database_models.models import Job
 from api.database.database_models.models import Address, Sector, Language, Education, EducationLevel, JobLanguage, JobEducation
 from api.utils.constants.error_strings import INVALID_EDUCATION_PARAMS_FOR_JOBS, INVALID_CANDIDATE_SECTOR_PARAMS
-from api.utils.constants.endpoints_params import KEYWORD, LANGUAGE_CANDIDATE, SECTOR_CATEGORY_QUERY, EDUCATION_NAME_PARAM, SECTOR_ID_QUERY, ADDRESS_PROVINCE, EDUCATION_LEVEL_ID_PARAM, JOB_ACTIVE, JOB_MINIMAL_FIELDS
+from api.utils.constants.endpoints_params import KEYWORD, LANGUAGE_CANDIDATE, SECTOR_CATEGORY_QUERY, EDUCATION_NAME_PARAM, SECTOR_ID_QUERY, ADDRESS_PROVINCE, EDUCATION_LEVEL_VALUE_PARAM, JOB_ACTIVE, JOB_MINIMAL_FIELDS
 
 async def _get_sector_params(sector_category: Annotated[str | None, SECTOR_CATEGORY_QUERY] = None,
                              sector_id: Annotated[UUID | None, SECTOR_ID_QUERY] = None) -> str | None:
@@ -69,14 +69,14 @@ async def _get_keyword_param(keyword: Annotated[str | None, KEYWORD] = None) -> 
         return keyword.lower()
     
 async def _get_education_params(education_name: Annotated[str | None, EDUCATION_NAME_PARAM] = None,
-                                education_level_id: Annotated[UUID | None, EDUCATION_LEVEL_ID_PARAM] = None) -> dict | None:
+                                education_level_value: Annotated[int | None, EDUCATION_LEVEL_VALUE_PARAM] = None) -> dict | None:
     """
     Obtiene los parámetros de educación para la consulta.
     No se pueden pasar ambos parámetros.
 
     Args:
     - education_name (str | None, optional): El nombre de la educación. Defaults to None.
-    - education_level_id (UUID | None, optional): El ID del nivel de educación. Defaults to None.
+    - education_level_value (int | None, optional): El valor del nivel de educación. Defaults to None.
 
     Returns:
     - dict | None: Los parámetros de educación para la consulta.
@@ -86,14 +86,14 @@ async def _get_education_params(education_name: Annotated[str | None, EDUCATION_
     """
 
     # Si se pasan ambos parámetros, se lanza una excepción.
-    if education_name and education_level_id: raise RequestValidationError([INVALID_EDUCATION_PARAMS_FOR_JOBS])
+    if education_name and education_level_value: raise RequestValidationError([INVALID_EDUCATION_PARAMS_FOR_JOBS])
     # Si no se pasa ninguno de los dos parámetros, se devuelve None.
-    if not education_name and not education_level_id: return None
+    if not education_name and not education_level_value: return None
 
     # Se pasan los parámetros de educación a un diccionario, convirtiendo el nombre de la educación a minúsculas si se proporciona.
     education_params = {
         "education_name": education_name.lower() if education_name else None,
-        "education_level": education_level_id
+        "education_level": education_level_value
     }
 
     return education_params
@@ -233,9 +233,9 @@ def _set_education_filter_query(query_params: QueryParams, education_params: dic
     if education_name:
         query_params.where.append(Education.qualification.contains(education_name))
     
-    # si se ha pasado el ID del nivel de educación, se anade el filtro de ID del nivel de educación.
+    # si se ha pasado el nivel de educación, se anade el filtro de nivel de educación.
     if education_level:
-        query_params.where.append(EducationLevel.id == education_level)
+        query_params.where.append(EducationLevel.value <= education_level)
 
 def _set_language_filter_query(query_params: QueryParams, language_params: set[str | UUID] | None) -> None:
     """

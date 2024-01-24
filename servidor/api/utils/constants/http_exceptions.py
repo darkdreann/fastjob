@@ -57,7 +57,7 @@ INTEGRATION_EXCEPTION = {
 
     UserConstraint.USER_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de User ya existe."},
     UserConstraint.DUPLICATE_USERNAME: {"status_code": status.HTTP_409_CONFLICT, "detail": "El nombre de usuario ya existe."},
-    UserConstraint.DUPLICATE_EMAIL: {"status_code": status.HTTP_409_CONFLICT, "detail": "El correo electrónico ya existe."},
+    UserConstraint.DUPLICATE_EMAIL: {"status_code": status.HTTP_409_CONFLICT, "detail": "El email ya existe."},
     UserConstraint.ADMIN_HAS_TABLE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario administrador no puede tener una tabla de candidato o empresa."},
     UserConstraint.CANDIDATE_HAS_COMPANY_TABLE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario de empresa no puede tener una tabla de candidato."},
     UserConstraint.COMPANY_HAS_CANDIDATE_TABLE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El usuario de candidato no puede tener una tabla de empresa."},

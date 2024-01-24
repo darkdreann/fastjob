@@ -14,7 +14,7 @@ class UserValidators:
 
 #-------------------CANDIDATE---------------------------------
 class CandidateValidators:
-    MAX_ITEMS_SKILLS = 100
+    MAX_ITEMS_SKILLS = 30
     MAX_ITEMS_AVAILABILITY = len(WorkSchedule)
 
 #-------------------COMPANY---------------------------------
@@ -68,7 +68,7 @@ class ValidatePhoneNumbers:
     ERROR_MSG = f"El número de teléfono debe contener {PHONE_NUMBERS_LENGTH} números."
 
 class ValidateSkills:
-    MAX_LENGTH_SKILLS = 20
+    MAX_LENGTH_SKILLS = 30
     ERROR_MSG = f"La longitud máxima de las habilidades es de {MAX_LENGTH_SKILLS} caracteres."
 
 class ValidateDates:
