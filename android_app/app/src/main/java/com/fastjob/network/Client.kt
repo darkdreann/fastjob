@@ -1,8 +1,10 @@
 package com.fastjob.network
 
 import com.fastjob.models.Availability
+import com.fastjob.models.CandidateExtraFields
 import com.fastjob.models.UserType
 import com.fastjob.models.serializer.AvailabilitySerializer
+import com.fastjob.models.serializer.CandidateExtraFieldsSerializer
 import com.fastjob.models.serializer.LocalDateSerializer
 import com.fastjob.models.serializer.UserTypeSerializer
 import com.google.gson.Gson
@@ -32,6 +34,7 @@ class Client private constructor() {
                             .registerTypeAdapter(Availability::class.java, AvailabilitySerializer())
                             .registerTypeAdapter(LocalDate::class.java, LocalDateSerializer())
                             .registerTypeAdapter(UserType::class.java, UserTypeSerializer())
+                            .registerTypeAdapter(CandidateExtraFieldsSerializer::class.java, CandidateExtraFieldsSerializer())
                             .create()
         val gsonFactory = GsonConverterFactory.create(gson)
         // Creamos el objeto Retrofit

@@ -302,9 +302,9 @@ async def get_job_filter_params(
 
     # Se crean los parámetros de consulta.
     query_params = QueryParams(
-        fields=fields, 
-        scalar= not minimal_fields,
-        unique=not minimal_fields  
+        fields = fields, 
+        scalar = not minimal_fields,
+        unique = not minimal_fields  
     )
 
     # si se piden los campos mínimos, se anade al join la dirección. Ya que se usa la provincia.

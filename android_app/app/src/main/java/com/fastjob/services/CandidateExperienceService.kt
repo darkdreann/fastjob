@@ -17,8 +17,8 @@ import java.util.UUID
 
 interface CandidateExperienceService {
     companion object {
-        private const val ENDPOINT = "/candidates/experiences/{candidate_id}"
-        private const val EXP_BY_ID_ENDPOINT = "${ENDPOINT}{id}"
+        private const val ENDPOINT = "/candidates/experiences/{candidate_id}/"
+        private const val EXP_BY_ID_ENDPOINT = "${ENDPOINT}{id}/"
     }
 
     @GET(ENDPOINT)

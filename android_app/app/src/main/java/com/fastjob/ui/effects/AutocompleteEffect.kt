@@ -1,5 +1,6 @@
 package com.fastjob.ui.effects
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.Dispatchers

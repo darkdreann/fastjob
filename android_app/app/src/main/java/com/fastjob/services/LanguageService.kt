@@ -19,7 +19,8 @@ interface LanguageService {
     suspend fun getLanguages(
         @Header("Authorization") auth: String,
         @Query("limit") limit: Int? = null,
-        @Query("offset") offset: Int? = null
+        @Query("offset") offset: Int? = null,
+        @Query("name_keyword") nameKeyword: String? = null,
     ): Response<List<Language>>
 
     @GET(LANGUAGE_LEVEL_ENDPOINT)

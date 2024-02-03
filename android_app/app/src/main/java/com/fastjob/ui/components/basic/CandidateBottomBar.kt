@@ -50,7 +50,6 @@ fun CandidateBottomBar(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ){
-
             IconButton(
                 modifier = Modifier
                     .fillMaxSize()
@@ -74,14 +73,14 @@ fun CandidateBottomBar(
             Divider(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(1.dp), // Adjust the width as needed
-                color = Color.Gray // You can set the color of the divider
+                    .width(1.dp),
+                color = Color.Gray
             )
             IconButton(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(0.33f),
-                onClick = { /*TODO*/ }
+                onClick = { navController.navigate(AppScreens.CandidateJobAppliedScreen.route) }
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -100,14 +99,16 @@ fun CandidateBottomBar(
             Divider(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .width(1.dp), // Adjust the width as needed
-                color = Color.Gray // You can set the color of the divider
+                    .width(1.dp),
+                color = Color.Gray
             )
             IconButton(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(0.33f),
-                onClick = { /*TODO*/ }
+                onClick = {
+                    navController.navigate(AppScreens.CandidateProfileScreen.route)
+                }
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally

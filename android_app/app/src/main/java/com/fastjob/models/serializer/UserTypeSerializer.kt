@@ -19,7 +19,7 @@ class UserTypeSerializer: JsonDeserializer<UserType>, JsonSerializer<UserType> {
         return try {
             UserType.valueOf(enumString)
         } catch (e: IllegalArgumentException) {
-            Log.d("UserTypeSerializer", "Error serializer: $enumString")
+            Log.e("UserTypeSerializer", "Error serializer: $enumString")
             UserType.CANDIDATE
         }
     }

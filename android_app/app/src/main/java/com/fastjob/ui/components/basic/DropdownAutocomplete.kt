@@ -33,7 +33,7 @@ fun DropdownAutocomplete(
     keywordState: Pair<String, (String) -> Unit>,
     appendWord: Boolean = false,
     autocompleteFunction: (suspend (keyword: String) -> List<String>?)
-    ) {
+) {
     // estados
     val (wordsList, setWordList) = remember { mutableStateOf(listOf<String>()) }
     val (expanded, setExpanded) = remember { mutableStateOf(false) }

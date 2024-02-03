@@ -13,5 +13,6 @@ data class CandidateEducationIN(
 data class CandidateEducationOUT(
     @SerializedName("completion_date")
     val completionDate: LocalDate,
+    @SerializedName("education_id")
     val education: UUID
 )

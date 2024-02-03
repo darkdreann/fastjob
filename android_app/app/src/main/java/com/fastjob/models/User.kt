@@ -34,12 +34,12 @@ data class UserOUT(
 )
 
 data class PartialUserOUT(
-    val username: String?,
-    val email: String?,
-    val name: String?,
-    val surname: String?,
-    val password: String?,
+    val username: String? = null,
+    val email: String? = null,
+    val name: String? = null,
+    val surname: String? = null,
+    val password: String? = null,
     @SerializedName("phone_numbers")
-    val phoneNumbers: List<Int>?,
-    val address: AddressOUT?
+    val phoneNumbers: List<Int>? = null,
+    val address: AddressOUT? = null
 )

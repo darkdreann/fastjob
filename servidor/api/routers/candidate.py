@@ -7,9 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.connection import get_session
 from api.utils.functions.database_utils import secure_commit, get_database_records, get_record_by_id
 from api.security.permissions import PermissionsManager
-from api.database.database_models.models import Candidate, User, JobCandidate
+from api.database.database_models.models import Candidate, User, JobCandidate, Job, Address
 from api.models.enums.models import UserType
-from api.models.read_models import ReadCandidate, ReadCandidateComplete, ReadCandidateRelationJob, ReadCandidateMinimal
+from api.models.read_models import ReadCandidate, ReadCandidateComplete, ReadCandidateMinimal, ReadJobMinimal
 from api.models.create_models import CreateCandidate
 from api.models.update_models import UpdateCandidate
 from api.models.partial_update_models import PartialUpdateCandidate
@@ -47,12 +47,12 @@ async def get_candidates(
     
     return list_candidates
 
-@candidate_route.get("/applied-jobs/{candidate_id}/", response_model=ReadCandidateRelationJob, dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])
+@candidate_route.get("/applied-jobs/{candidate_id}/", response_model=list[ReadJobMinimal], dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])
 async def get_candidate_applied_jobs(
                                     session: Annotated[AsyncSession, Depends(get_session)], 
                                     candidate_id: Annotated[UUID, USER_ID],
                                     limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
-                                    offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,) -> list[JobCandidate]:
+                                    offset: Annotated[int, OFFSET] = DEFAULT_OFFSET,) -> list[tuple]:
     """
     Obtiene los trabajos a los que un candidato ha aplicado.
     Se debe ser el propietario del recurso o un administrador.
@@ -67,8 +67,18 @@ async def get_candidate_applied_jobs(
     - Lista de trabajos a los que el candidato ha aplicado.
     """
     
-    applied_jobs: list[JobCandidate] = await get_database_records(session, JobCandidate, limit=limit, offset=offset, where=JobCandidate.candidate_id == candidate_id, options=noload(JobCandidate.candidate), 
-                                                                  order_by=JobCandidate.inscription_date.desc())
+    applied_jobs: list[tuple] = await get_database_records(session, Job.id, Job.title, Job.description, Address.province, limit=limit, offset=offset, 
+                                                                  joins=(
+                                                                    {
+                                                                        "target": JobCandidate,
+                                                                        "onclause": JobCandidate.job_id == Job.id,
+                                                                    },
+                                                                    {
+                                                                        "target": Address,
+                                                                        "onclause": Address.id == Job.address_id,
+                                                                    }
+                                                                  ),
+                                                                  where=JobCandidate.candidate_id == candidate_id, order_by=JobCandidate.inscription_date.desc(), scalar=False)
     return applied_jobs
 
 @candidate_route.get("/{candidate_id}/", response_model=ReadCandidateComplete, response_model_exclude_defaults=True, dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])

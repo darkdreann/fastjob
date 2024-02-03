@@ -5,7 +5,7 @@ from typing import Annotated
 from sqlalchemy.orm import joinedload, noload
 from api.database.database_models.models import Education, EducationLevel, SectorEducation
 from api.database.connection import get_session
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, EDUCATION_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, EDUCATION_LEVEL_ID, GET_EDUCATION, EDUCATION_EXTRA_FIELD, EDUCATION_NAME_KEYWORD, EDUCATION_LEVEL_NAME_KEYWORD
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, EDUCATION_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, EDUCATION_LEVEL_ID, GET_EDUCATION, EDUCATION_EXTRA_FIELD, EDUCATION_NAME_KEYWORD, EDUCATION_LEVEL_NAME_KEYWORD, EDUCATION_NAME_KEYWORD_QUERY
 from api.security.permissions import PermissionsManager
 from api.models.read_models import ReadLevel, ReadLevelEducation, ReadEducationComplete, ReadEducationWithUses
 from api.models.create_models import CreateEducation, CreateLevel
@@ -22,23 +22,29 @@ education_route = APIRouter(prefix="/educations", tags=["educations"], dependenc
 @education_route.get("/", response_model=list[ReadEducationComplete], response_model_exclude_none=True, dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_educations(*,
                         session: Annotated[AsyncSession, Depends(get_session)],
+                        qualification_keyword: Annotated[str, EDUCATION_NAME_KEYWORD_QUERY] = None,
                         limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                         offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[Education]:
     
     """
     Obtiene todas las formaciones con su nivel de formación y sector si lo tiene.
+    Permite buscar por palabra clave en el nombre de la formación.
     Se debe estar logueado para poder acceder a este endpoint.
     
     Args:
         session (AsyncSession): La sesión de la base de datos.
+        qualification_keyword (str, optional): La palabra clave para buscar en el nombre de la formación. Por defecto es None.
         limit (int, optional): El límite de registros devueltos. Por defecto es DEFAULT_LIMIT.
         offset (int, optional): Permite omitir un número específico de registros en el conjunto de resultados. Por defecto es DEFAULT_OFFSET.
         
     Returns:
         list[Education]: La lista de formaciones.
     """
+    where = None
+    if qualification_keyword:
+        where = Education.qualification.startswith(qualification_keyword)
 
-    educations = await get_database_records(session, Education, limit=limit, offset=offset)
+    educations = await get_database_records(session, Education, limit=limit, offset=offset, where=where)
 
     return educations
 

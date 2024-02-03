@@ -28,7 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.fastjob.R
 import com.fastjob.ui.components.basic.ErrorItem
 import com.fastjob.ui.components.basic.LoadingItem
-import com.fastjob.ui.effects.JobListEffect
+import com.fastjob.ui.effects.JobSearchListEffect
 import com.fastjob.ui.theme.FastjobTheme
 import com.fastjob.ui.viewmodels.search.JobSearchViewModel
 import com.fastjob.ui.viewmodels.search.SearchViewModel.SearchState
@@ -40,7 +40,7 @@ import com.fastjob.ui.viewmodels.search.SearchViewModel.SearchState
  * @param navController Controlador de navegación
  */
 @Composable
-fun JobList(
+fun SearchJobList(
     itemsRefreshOffset: Int = 1,
     jobSearchViewModel: JobSearchViewModel,
     navController: NavController
@@ -62,7 +62,7 @@ fun JobList(
     }
 
     // efecto que se encarga de actualizar la lista de trabajos
-    JobListEffect(
+    JobSearchListEffect(
         searchState = searchState,
         jobSearchViewModel = jobSearchViewModel,
         isItemReachEndScroll = isItemReachEndScroll,
@@ -128,7 +128,7 @@ fun JobList(
                 SearchState.ERROR -> {
                     item {
                         ErrorItem(
-                            text = stringResource(id = R.string.job_list_error)
+                            text = stringResource(id = R.string.list_error)
                         )
                     }
                 }
@@ -143,7 +143,7 @@ fun JobList(
 @Composable
 fun JobListPreview() {
     FastjobTheme {
-        JobList(
+        SearchJobList(
             jobSearchViewModel = JobSearchViewModel(),
             navController = rememberNavController()
         )
@@ -154,7 +154,7 @@ fun JobListPreview() {
 @Composable
 fun JobListPreviewDark() {
     FastjobTheme {
-        JobList(
+        SearchJobList(
             jobSearchViewModel = JobSearchViewModel(),
             navController = rememberNavController()
         )

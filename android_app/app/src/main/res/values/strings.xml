@@ -5,6 +5,7 @@
     <string name="top_bar_login">login</string>
     <string name="top_bar_logout">logout</string>
     <string name="top_bar_register">registrar</string>
+    <string name="top_bar_offers">Buscar ofertas</string>
 
     <string name="bottom_bar_search">Buscar</string>
     <string name="bottom_bar_job_applied">Ofertas aplicadas</string>
@@ -39,7 +40,7 @@
     <string name="job_list_screen_float_button_icon_desc">Subir</string>
 
     <!-- Job list -->
-    <string name="job_list_error">Se ha producido un error inesperado. Por favor, inténtelo nuevamente.</string>
+    <string name="list_error">Se ha producido un error inesperado. Por favor, inténtelo nuevamente.</string>
     <string name="job_not_found">No se ha encontrado ninguna oferta con los filtros actuales.</string>
     <string name="job_image_desc">Imagen de oferta laboral.</string>
 
@@ -63,6 +64,11 @@
     <string name="job_loading_error">Se ha producido un error al cargar la oferta. Por favor, inténtelo nuevamente.</string>
     <string name="job_loading_not_found">No se ha podido encontrar la oferta.</string>
     <string name="job_publication_date">Fecha publicación:</string>
+
+    <!-- Job candidate -->
+    <string name="job_candidate_applied_error">Error cargando la información de usuario.</string>
+    <string name="job_candidate_apply">Aplicar Oferta</string>
+    <string name="job_candidate_remove">Quitar Candidatura</string>
 
     <!-- dialog basic -->
     <string name="dialog_icon_desc">Icono del dialogo</string>
@@ -90,7 +96,6 @@
     <!-- register user -->
     <string name="register_user_phones">Número de teléfono</string>
     <string name="register_user_email">Correo electrónico</string>
-    <string name="register_user_password">Contraseña</string>
     <string name="register_user_password_confirmation">Confirmar contraseña</string>
     <string name="register_user_name">Nombre</string>
     <string name="register_user_surname">Apellidos</string>
@@ -103,25 +108,49 @@
     <string name="register_user_name_error">El nombre no puede estar vacío.</string>
     <string name="register_user_surname_error">Los apellidos no pueden estar vacíos</string>
     <string name="register_user_password_error">La contraseña debe tener mínimo 8 caracteres y estar formada por 1 mayúscula, 1 Minúscula, 1 número y 1 simbolo.</string>
+    <string name="register_user_password_confirm_error">Las contraseñas no coinciden.</string>
     <string name="register_user_phone_error">El número de teléfono debe contener 9 números.</string>
 
     <string name="user_register_button">Registrarse</string>
 
+    <!-- login user -->
+    <string name="login_user_button">Login</string>
+    <string name="login_user_title">Login Usuario</string>
+    <string name="login_user_error_title">Error Autenticación</string>
+    <string name="login_user_error_msg">No se ha podido autenticar el usuario. Compruebe los datos introducidos. Si el problema persiste contacte un administrador.</string>
+    <string name="login_user_error_admin">No se puede utilizar un usuario administrador en la aplicación android. Por favor use la aplicación web.</string>
+
     <!-- register user address -->
     <string name="register_user_postal_code">Código Postal</string>
-    <string name="register_user_city">Ciudad</string>
+    <string name="register_user_city">Población</string>
     <string name="register_user_province">Provincia</string>
     <string name="register_user_street">Calle</string>
+    <string name="update_address">Actualizar Dirección</string>
 
     <!-- register user address error -->
     <string name="register_user_postal_code_error">El código postal debe ser un número de 5 digitos.</string>
     <string name="register_user_city_error">La ciudad no puede estar vacía.</string>
     <string name="register_user_province_error">La provincia no puede estar vacía.</string>
     <string name="register_user_street_error">La calle no puede estar vacía.</string>
+    <string name="user_address_update_error_title">Error actualizando la dirección</string>
+    <string name="user_address_update_error_msg">No se ha podido actualizar la dirección. Compruebe los datos introducidos e intentelo nuevamente.</string>
+
+
+    <string name="update_skill_availabilty">Actualizar Habilidades y Jornadas</string>
+    <!-- update candidate error -->
+    <string name="user_skill_availability_update_error_title">Error actualizando</string>
+    <string name="user_skill_availability_update_error_msg">No se ha podido actualizar correctamente. Intentelo nuevamente.</string>
 
     <!-- password -->
+    <string name="user_password">Contraseña</string>
+    <string name="password_confirmar">Confirmar Contraseña</string>
     <string name="password_show">Mostrar</string>
     <string name="password_hide">Ocultar</string>
+    <string name="update_password">Actualizar Password</string>
+
+    <!-- password update error-->
+    <string name="user_password_update_error_title">Error actualizando contraseña</string>
+    <string name="user_password_update_error_msg">No se ha podido actualizar la contraseña. Compruebe los datos introducidos e intentelo nuevamente.</string>
 
     <!-- candidate register -->
     <string name="candidate_skill">Habilidad</string>
@@ -131,11 +160,79 @@
     <string name="candidate_form_title">Registro Candidato</string>
 
     <!-- candidate register error msg -->
+    <string name="user_image_desc">Imagen de usuario.</string>
     <string name="candidate_register_error_title">Error Registro</string>
     <string name="candidate_register_no_form_valid">Los campos introducidos no son válidos verifica los errores.</string>
     <string name="candidate_register_error">Se ha producido un error al registrar el candidato. Por favor, inténtelo nuevamente.</string>
     <string name="candidate_register_error_username">El nombre de usuario ya existe.</string>
     <string name="candidate_register_error_email">El correo electrónico ya existe.</string>
+
+    <!-- candidate job list -->
+    <string name="candidate_job_list_title">Ofertas Aplicadas</string>
+    <string name="candidate_job_not_found">No has aplicado a ninguna oferta.</string>
+
+    <!-- candidate profile error -->
+    <string name="candidate_profile_error">Error cargando la información de usuario.</string>
+    <string name="candidate_profile_loading">Cargando la información de usuario…</string>
+    <string name="candidate_profile_edit_user_info">Editar información de usuario</string>
+    <string name="candidate_profile_edit_user_password">Editar contraseña</string>
+    <string name="candidate_profile_edit_user_address">Editar dirección</string>
+    <string name="candidate_profile_edit_candidate_skills_availabilities">Editar habilidades y jornadas</string>
+    <string name="candidate_profile_edit_candidate_experiences">Editar experiencias laborales</string>
+    <string name="candidate_profile_edit_candidate_education">Editar formaciones</string>
+    <string name="candidate_profile_edit_candidate_language">Editar idiomas</string>
+
+    <!-- user update error -->
+    <string name="user_update_error_title">Error actualizando la información de usuario.</string>
+    <string name="user_update_error_msg">No se ha podido actualizar la información de usuario. Comprueba la información e intentelo de nuevo.</string>
+    <string name="user_update_form_title">Actualizar Usuario</string>
+
+
+
+    <string name="update_button">Actualizar</string>
+    <string name="save_button">Guardar</string>
+
+    <!-- candidate experience -->
+
+    <string name="candidate_experience_edit">Editar Experiencia</string>
+    <string name="candidate_experience_delete">Eliminar Experiencia</string>
+    <string name="candidate_experience_end_date_default">Actualidad</string>
+    <string name="exp_not_found">No se ha encontrado ninguna experiencia laboral.</string>
+    <string name="candidate_experience_error_title">Error con la Experiencia</string>
+    <string name="candidate_experience_error_msg">No se ha podido guardar correctamente la experiencia. Comprueba la información e intentelo de nuevo.</string>
+    <string name="candidate_experience_job_position">Puesto</string>
+    <string name="candidate_experience_job_position_desc">Descripción Puesto</string>
+    <string name="candidate_experience_company_name">Empresa</string>
+    <string name="candidate_experience_start_date">Fecha Inicio</string>
+    <string name="candidate_experience_end_date">Fecha Fin</string>
+    <string name="candidate_experience_no_end_date">Actualmente en el puesto</string>
+    <string name="candidate_experience_start_date_error">La fecha de inicio no puede ser mayor a la actual ni menor a la fecha de fin.</string>
+    <string name="candidate_experience_end_date_error">La fecha de fin no puede ser mayor a la actual.</string>
+    <string name="candidate_experience_button_create">Crear experiencia</string>
+
+    <!-- candidate education -->
+
+    <string name="candidate_education_completion_date">Fecha Finalización</string>
+
+    <string name="candidate_education_button_create">Crear Formación</string>
+    <string name="candidate_education">Formación</string>
+    <string name="education_not_found">No se ha encontrado ninguna formación.</string>
+    <string name="candidate_education_start_date_error">La fecha de finalización de la formación no puede ser mayor a la actual.</string>
+
+    <string name="candidate_education_error_title">Error con la formación</string>
+    <string name="candidate_education_error_msg">No se ha podido guardar correctamente la formación. Comprueba la información e intentelo de nuevo.</string>
+
+    <!-- candidate language -->
+
+    <string name="candidate_language_edit">Editar Idioma</string>
+    <string name="candidate_language_delete">Eliminar Idioma</string>
+    <string name="candidate_language_button_create">Crear Idioma</string>
+
+    <string name="candidate_language_error_title">Error con el idioma</string>
+    <string name="candidate_language_error_msg">No se ha podido guardar correctamente el idioma. Comprueba la información e intentelo de nuevo.</string>
+
+    <string name="candidate_language">Idioma</string>
+    <string name="candidate_language_level">Nivel de idioma</string>
 
 
 

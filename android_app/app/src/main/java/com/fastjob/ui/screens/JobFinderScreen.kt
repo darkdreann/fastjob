@@ -25,7 +25,7 @@ import com.fastjob.R
 import com.fastjob.auth.AuthAPI
 import com.fastjob.models.UserType
 import com.fastjob.ui.components.basic.CandidateBottomBar
-import com.fastjob.ui.components.job.JobList
+import com.fastjob.ui.components.job.SearchJobList
 import com.fastjob.ui.components.job.JobSearch
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.theme.FastjobTheme
@@ -82,7 +82,7 @@ fun JobFinderScreen(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ){
             JobSearch(viewModel)
-            JobList(
+            SearchJobList(
                 itemsRefreshOffset = 3,
                 jobSearchViewModel = viewModel,
                 navController = navController

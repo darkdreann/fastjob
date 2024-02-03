@@ -4,7 +4,7 @@ from uuid import UUID
 from typing import Annotated
 from api.database.database_models.models import Language, LanguageLevel
 from api.database.connection import get_session
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, LANGUAGE_ID, LANGUAGE_LEVEL_ID, LANGUAGE_EXTRA_FIELD, LANGUAGE_LEVEL_EXTRA_FIELD, LANGUAGE_NAME_KEYWORD, LANGUAGE_LEVEL_NAME_KEYWORD
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, LANGUAGE_ID, LANGUAGE_LEVEL_ID, LANGUAGE_EXTRA_FIELD, LANGUAGE_LEVEL_EXTRA_FIELD, LANGUAGE_NAME_KEYWORD, LANGUAGE_LEVEL_NAME_KEYWORD, LANGUAGE_NAME_KEYWORD_QUERY
 from api.security.permissions import PermissionsManager
 from api.models.read_models import ReadLevel, ReadLevelLanguage, ReadLanguage, ReadLanguageComplete
 from api.models.create_models import CreateLanguage, CreateLevel
@@ -21,6 +21,7 @@ language_route = APIRouter(prefix="/languages", tags=["languages"], dependencies
 @language_route.get("/", response_model=list[ReadLanguage], dependencies=[Depends(PermissionsManager.is_logged)])
 async def get_languages(*,
                         session: AsyncSession = Depends(get_session),
+                        name_keyword: Annotated[str, LANGUAGE_NAME_KEYWORD_QUERY] = None,
                         limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
                         offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[Language]:
     
@@ -30,6 +31,7 @@ async def get_languages(*,
 
     Args:
     - session (AsyncSession, optional): Conexion a la base de datos. Defaults to Depends(get_session).
+    - name_keyword (str, optional): Palabras clave para buscar en el nombre del idioma. Defaults to None.
     - limit (int, optional): Numero de registros a mostrar. Defaults to DEFAULT_LIMIT.
     - offset (int, optional): Numero de registros a saltar. Defaults to DEFAULT_OFFSET.
 
@@ -37,7 +39,11 @@ async def get_languages(*,
     - list[Language]: Lista de idiomas
     """
 
-    languages: list[Language] = await get_database_records(session, Language, limit=limit, offset=offset)
+    where = None
+    if name_keyword:
+        where = Language.name.startswith(name_keyword)
+
+    languages: list[Language] = await get_database_records(session, Language, limit=limit, offset=offset, where=where)
 
     return languages
 

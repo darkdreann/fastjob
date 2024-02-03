@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -34,11 +35,27 @@ import androidx.compose.ui.unit.dp
 import com.fastjob.R
 import kotlinx.coroutines.runBlocking
 
+/**
+ * Componente para crear un TextField con múltiples items
+ * @param modifier modificador del componente
+ * @param label texto del label
+ * @param setError función para establecer el estado de error
+ * @param checkError función para validar el error
+ * @param errorMsg texto del error
+ * @param buttonAddText texto del botón de agregar
+ * @param itemList lista de items
+ * @param setList función para establecer la lista de items
+ * @param keyboardOptions opciones del teclado
+ * @param itemsCheck función para validar los items
+ * @param maxListItems cantidad máxima de items
+ * @param maxHeight altura máxima del componente
+ */
 @Composable
 fun TextFieldMultiple(
     modifier: Modifier = Modifier,
     label: String,
     setError: ((Boolean) -> Unit)? = null,
+    checkError: ((String) -> Boolean)? = null,
     errorMsg: String = "",
     buttonAddText: String,
     itemList: List<String>,
@@ -63,6 +80,7 @@ fun TextFieldMultiple(
         scrollState.animateScrollToItem(items.lastIndex)
     }
 
+    // lazy column con los items
     LazyColumn(
         state = scrollState,
         modifier = Modifier
@@ -71,7 +89,9 @@ fun TextFieldMultiple(
             .then(modifier),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ){
+        // items
         itemsIndexed(items) { index, item ->
+            // text field para cada item
             TextField(
                 singleLine = true,
                 modifier = Modifier
@@ -80,6 +100,7 @@ fun TextFieldMultiple(
                 label = { Text(label) },
                 value = item,
                 onValueChange = { newValue ->
+                    // si hay una función para validar los items, se ejecuta
                     itemsCheck?.let {
                         if (it(newValue)) {
                             items[index] = newValue
@@ -91,11 +112,14 @@ fun TextFieldMultiple(
                         setList(items)
                     }
                     setError?.let {
-                        errors[index] = newValue.isEmpty()
-                        it(newValue.isEmpty())
+                        checkError?.let { check ->
+                            errors[index] = check(newValue)
+                            it(errors[index])
+                        }
                     }
                 },
                 trailingIcon = {
+                    // si hay más de un item, se muestra el botón de eliminar
                     if (items.size > 1) {
                         // botón de eliminar
                         IconButton(
@@ -116,13 +140,16 @@ fun TextFieldMultiple(
                 },
                 keyboardOptions = keyboardOptions,
                 isError = errors[index],
-                supportingText = {
-                    if (errors[index])
-                        Text(errorMsg)
-                }
             )
+            if(errors[index]){
+                Text(
+                    text = errorMsg,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
         }
         item {
+            // animación de visibilidad del botón de agregar
             AnimatedVisibility(
                 visible = items.size <= maxListItems,
                 enter = expandIn(),
@@ -133,6 +160,7 @@ fun TextFieldMultiple(
                         .fillMaxWidth(),
                     contentAlignment = Alignment.CenterEnd
                 ) {
+                    // botón de agregar
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {

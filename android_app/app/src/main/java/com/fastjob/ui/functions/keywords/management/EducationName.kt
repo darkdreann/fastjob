@@ -28,8 +28,6 @@ suspend fun getEducationNameKeyword(keyword: String): List<String>?{
     // obtener las provincias
     val response = educationService.getEducationsQualification(auth = token, limit = limit, offset = offset, qualificationsKeyword = keyword)
 
-    Log.d("getEducationNameKeyword", response.toString())
-
     // si la respuesta es exitosa, obtener la lista de provincias
     if(response.isSuccessful)
         result = response.body()

@@ -6,6 +6,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 
 /**
  * Genera un texto de experiencia a partir de los meses de experiencia
@@ -84,9 +85,31 @@ fun String.isEmail(): Boolean {
 /**
  * Comprueba si una cadena de texto es una contraseña segura.
  * @return true si es una contraseña segura, false en caso contrario
-
  */
 fun String.isPasswordSecure(): Boolean {
-    val passwordRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\$%^&*()-_+=])[A-Za-z\\d!@#\$%^&*()-_+=]{8,}$")
+    val passwordRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\$%^&*()\\-_+=])[A-Za-z\\d!@#\$%^&*()\\-_+=]{8,}\$")
     return passwordRegex.matches(this)
+}
+
+/**
+ * Convierte una cadena de texto a UUID.
+ * @return UUID o null si no se puede convertir
+ */
+fun String.toUUID(): UUID? {
+    return try {
+        UUID.fromString(this)
+    }catch (e: IllegalArgumentException) {
+        null
+    }
+
+}
+
+/**
+ * Convierte un Date a LocalDate.
+ * @return LocalDate
+ */
+fun Date.toLocalDate(): LocalDate {
+    return this.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
 }

@@ -40,6 +40,17 @@ import androidx.compose.ui.unit.dp
 import com.fastjob.R
 import com.fastjob.models.Availability
 
+/**
+ * Componente que permite seleccionar una lista de Availability
+ * @param modifier modificador del componente
+ * @param label etiqueta del TextField
+ * @param buttonAddText texto del botón de agregar
+ * @param itemPossibilities posibilidades de Availability
+ * @param itemList lista de Availability
+ * @param setList función que se ejecuta al cambiar la lista
+ * @param maxListItems cantidad máxima de items
+ * @param maxHeight altura máxima del componente
+ */
 @Composable
 fun SelectableAvailability(
     modifier: Modifier = Modifier,
@@ -68,6 +79,7 @@ fun SelectableAvailability(
         scrollState.animateScrollToItem(items.lastIndex)
     }
 
+    // columna con los items
     LazyColumn(
         state = scrollState,
         modifier = Modifier
@@ -76,7 +88,9 @@ fun SelectableAvailability(
             .then(modifier),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ){
+        // items
         itemsIndexed(items) { index, item ->
+            // campo de texto con el item
             TextField(
                 enabled = false,
                 singleLine = true,
@@ -91,6 +105,7 @@ fun SelectableAvailability(
                 value = stringResource(id = Availability.getDisplayNameByValue(item)),
                 onValueChange = {},
                 trailingIcon = {
+                    // boton de eliminar si hay mas de un item
                     if (items.size > 1) {
                         // botón de eliminar
                         IconButton(
@@ -109,10 +124,10 @@ fun SelectableAvailability(
                         }
                     }
                 },
-                supportingText = {}
             )
         }
         item {
+            // animacion de visibilidad del boton de agregar
             AnimatedVisibility(
                 visible = items.size <= maxListItems,
                 enter = expandIn(),
@@ -123,6 +138,7 @@ fun SelectableAvailability(
                         .fillMaxWidth(),
                     contentAlignment = Alignment.CenterEnd
                 ) {
+                    // boton de agregar
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
@@ -144,11 +160,14 @@ fun SelectableAvailability(
         }
     }
 
+    // menu de opciones
     DropdownMenu(
         expanded = menuVisibility,
         onDismissRequest = { menuVisibility = false }
     ) {
+        // columnas con las opciones
         Column {
+            // recorre las posibilidades y crea un DropdownMenuItem por cada una
             itemPossibilities.forEach { possibility ->
                 if(possibility.value !in items) {
                     DropdownMenuItem(

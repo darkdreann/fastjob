@@ -276,6 +276,14 @@ class AuthAPI private constructor(
     }
 
     /**
+     * Actualiza la contraseña del usuario.
+     * @param password nueva contraseña.
+     */
+    fun updatePassword(password: String) {
+        credentialsManager.updatePassword(password)
+    }
+
+    /**
      * Comprueba si el usuario esta autenticado.
      *
      * @return true si esta autenticado, false si no.

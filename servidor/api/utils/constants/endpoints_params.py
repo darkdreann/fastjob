@@ -40,6 +40,8 @@ ADDRESS_EXTRA_FIELD = Query(description="Campos de las relaciones de la tabla ad
 
 EDUCATION_ID = Path(description="El ID de la formación.")
 
+EDUCATION_NAME_KEYWORD_QUERY = Query(description="Palabras clave para buscar en el nombre de la formación.")
+
 EDUCATION_NAME_KEYWORD = Path(description="Palabras clave para buscar en el nombre de la formación.")
 
 EDUCATION_LEVEL_NAME_KEYWORD = Query(description="Palabras clave para buscar en el nombre del nivel la formación.")
@@ -63,6 +65,8 @@ EDUCATION_LEVEL_PARAM = Query(description="El valor del nivel de la formación. 
 LANGUAGE_ID = Path(description="El ID del idioma.")
 
 LANGUAGE_NAME_KEYWORD = Path(description="Palabras clave para buscar en el nombre del idioma.")
+
+LANGUAGE_NAME_KEYWORD_QUERY = Query(description="Palabras clave para buscar en el nombre del idioma.")
 
 LANGUAGE_LEVEL_NAME_KEYWORD = Path(description="Palabras clave para buscar en el nombre del nivel del idioma.")
 

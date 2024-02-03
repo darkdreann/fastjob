@@ -2,20 +2,23 @@ package com.fastjob.ui.components.form
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +35,11 @@ import com.fastjob.ui.enums.RegisterState
 import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.viewmodels.form.user.CreateCandidateViewModel
 
+/**
+ * Formulario de registro de candidato
+ * @param viewModel ViewModel del formulario
+ * @param navController controlador de navegación
+ */
 @Composable
 fun CreateCandidateForm(
     viewModel: CreateCandidateViewModel,
@@ -45,68 +53,76 @@ fun CreateCandidateForm(
     val candidateData by viewModel.candidateData.collectAsState()
 
     // estado mensajes error
-    val (errorVisibility, setErrorVisibility) = remember { mutableStateOf(false) }
-    
+    val errorVisibility by viewModel.errorVisibility.collectAsState()
+
+    // dialogo de error o navegación a login si el registro es correcto
     when(registerState){
+        // si el registro es correcto, navegar a login
         RegisterState.REGISTERED -> {
             navController.navigate(AppScreens.UserLoginScreen.route)
         }
+        // mostrar dialogo de error si la información del formulario no es válida
         RegisterState.FORM_NOT_VALID -> {
-            setErrorVisibility(true)
             BasicDialog(
                 title = stringResource(id = R.string.candidate_register_error_title),
                 content = stringResource(id = R.string.candidate_register_no_form_valid),
                 icon = painterResource(id = R.drawable.error),
-                visibility = Pair(errorVisibility, setErrorVisibility)
+                visibilityState = Pair(errorVisibility, viewModel::setErrorVisibility)
             )
         }
+        // mostrar dialogo de error si el nombre de usuario ya existe
         RegisterState.DUPLICATED_USERNAME -> {
-            setErrorVisibility(true)
             BasicDialog(
                 title = stringResource(id = R.string.candidate_register_error_title),
                 content = stringResource(id = R.string.candidate_register_error_username),
                 icon = painterResource(id = R.drawable.error),
-                visibility = Pair(errorVisibility, setErrorVisibility)
+                visibilityState = Pair(errorVisibility, viewModel::setErrorVisibility)
             )
         }
+        // mostrar dialogo de error si el email ya existe
         RegisterState.DUPLICATED_EMAIL -> {
-            setErrorVisibility(true)
             BasicDialog(
                 title = stringResource(id = R.string.candidate_register_error_title),
                 content = stringResource(id = R.string.candidate_register_error_email),
                 icon = painterResource(id = R.drawable.error),
-                visibility = Pair(errorVisibility, setErrorVisibility)
+                visibilityState = Pair(errorVisibility, viewModel::setErrorVisibility)
             )
         }
+        // mostrar dialogo de error si ha ocurrido un error desconocido
         RegisterState.UNKNOWN_ERROR -> {
-            setErrorVisibility(true)
             BasicDialog(
                 title = stringResource(id = R.string.candidate_register_error_title),
                 content = stringResource(id = R.string.candidate_register_error),
                 icon = painterResource(id = R.drawable.error),
-                visibility = Pair(errorVisibility, setErrorVisibility)
+                visibilityState = Pair(errorVisibility, viewModel::setErrorVisibility)
             )
         }
         else -> {}
     }
 
 
+    // formulario de registro
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(15.dp),
     ) {
+        // imagen y titulo
         Image(
             painter = painterResource(id = R.drawable.user_img),
-            contentDescription = ""
+            contentDescription = stringResource(id = R.string.user_image_desc)
         )
         Text(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 5.dp),
             text = stringResource(id = R.string.candidate_form_title),
             textAlign = TextAlign.Center,
             fontSize = 30.sp
         )
 
+        // formulario de usuario
         CreateUserForm(
             viewModel = viewModel
         )
@@ -115,6 +131,7 @@ fun CreateCandidateForm(
             modifier = Modifier.imePadding(),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ){
+            // grupo de textfield de habilidades
             TextFieldMultiple(
                 modifier = Modifier.weight(0.4f),
                 label = stringResource(id = R.string.candidate_skill),
@@ -126,6 +143,7 @@ fun CreateCandidateForm(
                 maxHeight = 300
             )
 
+            // grupo de selección de disponibilidad
             SelectableAvailability(
                 modifier = Modifier.weight(0.4f),
                 label = stringResource(id = R.string.candidate_availability),
@@ -140,12 +158,20 @@ fun CreateCandidateForm(
             )
         }
 
-        Button(
-            onClick = {
-                viewModel.registerCandidate()
+        // botón de registro
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            contentAlignment = Alignment.BottomEnd
+        ){
+            TextButton(
+                onClick = {
+                    viewModel.registerCandidate()
+                }
+            ) {
+                Text(text = stringResource(id = R.string.user_register_button))
             }
-        ) {
-            Text(text = stringResource(id = R.string.user_register_button))
         }
 
     }

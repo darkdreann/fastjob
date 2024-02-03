@@ -14,7 +14,7 @@ import com.fastjob.ui.viewmodels.search.SearchViewModel.SearchState
  * @param scrollState estado del scroll
  */
 @Composable
-fun JobListEffect(
+fun JobSearchListEffect(
     searchState: SearchState,
     jobSearchViewModel: JobSearchViewModel,
     isItemReachEndScroll: Boolean,

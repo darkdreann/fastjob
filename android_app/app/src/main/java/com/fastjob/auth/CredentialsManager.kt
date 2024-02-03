@@ -184,6 +184,17 @@ class CredentialsManager(
     }
 
     /**
+     * Actualiza la contraseña de las credenciales guardadas.
+     * @param password Nueva contraseña.
+     */
+    fun updatePassword(password: String){
+        val credentials = getCredentials()
+        if(credentials != null){
+            setCredentials(credentials.username, password)
+        }
+    }
+
+    /**
      * Borra las credenciales guardadas y el archivo de credenciales.
      */
     fun clearCredentials() {

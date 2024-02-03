@@ -16,6 +16,10 @@ import com.fastjob.ui.components.form.CreateCandidateForm
 import com.fastjob.ui.theme.FastjobTheme
 import com.fastjob.ui.viewmodels.form.user.CreateCandidateViewModel
 
+/**
+ * Pantalla de creación de usuario candidato
+ * @param navController controlador de navegación
+ */
 @Composable
 fun UserCandidateRegisterScreen(
     navController: NavController
@@ -28,6 +32,7 @@ fun UserCandidateRegisterScreen(
             TopBar(navController)
         },
     ){
+        // Se muestra el formulario de creación de candidate
         Box(
             modifier = Modifier
                 .padding(it)

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.fastjob.R
 import com.fastjob.auth.AuthAPI
+import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.theme.FastjobTheme
 
 /**
@@ -36,7 +37,8 @@ import com.fastjob.ui.theme.FastjobTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
-    navController: NavController
+    navController: NavController,
+    isLoginScreen: Boolean = false
 ){
     val auth = AuthAPI.getInstance()
 
@@ -66,7 +68,7 @@ fun TopBar(
                     },
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.option),
+                        painter = if(!auth.isAuthenticated()) painterResource(id = R.drawable.user_login) else painterResource(id = R.drawable.user_logout),
                         contentDescription = stringResource(id = R.string.top_bar_icon_desc)
                     )
                 }
@@ -84,7 +86,7 @@ fun TopBar(
                                 )
                             },
                             onClick = {
-
+                                navController.navigate(AppScreens.UserLoginScreen.route)
                             }
                         )
                         DropdownMenuItem(
@@ -101,6 +103,18 @@ fun TopBar(
                             navController = navController,
                             visibilityState = Pair(registerMenuVisibility, setRegisterMenuVisibility)
                         )
+                        if(isLoginScreen){
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        text = stringResource(id = R.string.top_bar_offers),
+                                    )
+                                },
+                                onClick = {
+                                    navController.navigate(AppScreens.JobFinderScreen.route)
+                                }
+                            )
+                        }
                     }else{
                         DropdownMenuItem(
                             text = {
@@ -109,7 +123,15 @@ fun TopBar(
                                 )
                             },
                             onClick = {
-                                auth.logout()
+                                navController.navigate(AppScreens.UserLoginScreen.route){
+                                    navController.graph.startDestinationRoute?.let {
+                                        popUpTo(it) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }.also {
+                                    auth.logout()
+                                }
                             }
                         )
                     }

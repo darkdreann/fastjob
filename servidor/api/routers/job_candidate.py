@@ -10,6 +10,7 @@ from api.utils.functions.database_utils import secure_commit, get_database_recor
 from api.security.permissions import PermissionsManager
 from api.database.database_models.models import Job, JobCandidate, Candidate, User
 from api.models.read_models import ReadCandidateRelationJob, ReadCandidateComplete, ReadCandidateMinimal
+from api.utils.exceptions import DatabaseException
 from api.utils.constants.endpoints_params import LIMIT, OFFSET, USER_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, JOB_ID, CANDIDATE_EXTRA_FIELD
 from api.utils.functions.candidate_filter import get_candidate_applied, JobCandidateExtraField
 
@@ -134,9 +135,12 @@ async def is_candidate_applied(
     Returns:
     - bool: True si el candidato ha aplicado a la oferta, False en caso contrario.
     """
-    options = (noload(JobCandidate.candidate), noload(JobCandidate.job))
+
     where = (JobCandidate.job_id == job_id, JobCandidate.candidate_id == candidate_id)
-    job_candidate = await get_database_records(session, JobCandidate.candidate_id, options=options, where=where, result_list=False)
+    try:
+        job_candidate = await get_database_records(session, JobCandidate.candidate_id, where=where, result_list=False)
+    except DatabaseException:
+        job_candidate = None
 
     return job_candidate is not None
 
@@ -173,7 +177,7 @@ async def apply_to_job(
 
 # DELETE #
 
-@job_candidate_route.delete("/{job_id}/remove/{candidate_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])
+@job_candidate_route.delete("/{job_id}/remove/{candidate_id}/", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(PermissionsManager.is_candidate_resource_owner)])
 async def remove_job_application(
                                 session: Annotated[AsyncSession, Depends(get_session)],
                                 job_id: Annotated[UUID, JOB_ID], 

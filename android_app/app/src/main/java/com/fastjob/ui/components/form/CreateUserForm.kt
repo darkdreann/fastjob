@@ -5,15 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
@@ -22,12 +19,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import com.fastjob.R
-import com.fastjob.ui.components.basic.PasswordField
+import com.fastjob.ui.components.basic.CreatePasswordField
 import com.fastjob.ui.components.basic.TextFieldMultiple
 import com.fastjob.ui.functions.isEmail
 import com.fastjob.ui.theme.FastjobTheme
 import com.fastjob.ui.viewmodels.form.user.CreateUserViewModel
 
+/**
+ * Formulario para crear un usuario
+ * @param viewModel [CreateUserViewModel] ViewModel del formulario
+ */
 @Composable
 fun CreateUserForm(
     viewModel: CreateUserViewModel
@@ -39,18 +40,14 @@ fun CreateUserForm(
     val userDataError by viewModel.userError.collectAsState()
 
 
-    // estados de error de los campos del formulario de usuario
-    var usernameError by remember { mutableStateOf(false) }
-    var emailError by remember { mutableStateOf(false) }
-    var nameError by remember { mutableStateOf(false) }
-    var surnameError by remember { mutableStateOf(false) }
-    var passwordError by remember { mutableStateOf(false) }
 
 
+    // formulario de usuario
     Column(
-        verticalArrangement = Arrangement.spacedBy(7.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
 
+        // campo de username
         TextField(
             singleLine = true,
             modifier = Modifier
@@ -59,18 +56,22 @@ fun CreateUserForm(
             label = { Text(stringResource(id = R.string.register_user_username)) },
             value = userData.username,
             onValueChange = {
+                // si el username tiene menos de 16 caracteres se actualiza el estado
                 if(it.length <= 16)
                     viewModel.setUsername(it)
-                usernameError = it.length < 4
-                viewModel.setErrorUserData(userDataError.copy(username = usernameError))
+                // si el username tiene menos de 4 caracteres se muestra el error
+                viewModel.setErrorUserData(userDataError.copy(username = it.length < 4))
             },
-            isError = usernameError,
-            supportingText = {
-                if (userDataError.username)
-                    Text(stringResource(id = R.string.register_user_username_error))
-            }
+            isError = userDataError.username,
         )
+        if(userDataError.username){
+            Text(
+                text = stringResource(id = R.string.register_user_username_error),
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
 
+        // campo de email
         TextField(
             singleLine = true,
             modifier = Modifier
@@ -80,16 +81,19 @@ fun CreateUserForm(
             value = userData.email,
             onValueChange = {
                 viewModel.setEmail(it)
-                emailError = !it.isEmail()
-                viewModel.setErrorUserData(userDataError.copy(email = emailError))
+                // si el email no es valido se muestra el error
+                viewModel.setErrorUserData(userDataError.copy(email = !it.isEmail()))
             },
-            isError = emailError,
-            supportingText = {
-                if (userDataError.email)
-                    Text(stringResource(id = R.string.register_user_email_error))
-            }
+            isError = userDataError.email,
         )
+        if(userDataError.email){
+            Text(
+                text = stringResource(id = R.string.register_user_email_error),
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
 
+        // campo de nombre
         TextField(
             singleLine = true,
             modifier = Modifier
@@ -98,18 +102,22 @@ fun CreateUserForm(
             label = { Text(stringResource(id = R.string.register_user_name)) },
             value = userData.name,
             onValueChange = {
+                // si el nombre tiene menos de 25 caracteres se actualiza el estado
                 if (it.length <= 25)
                     viewModel.setName(it)
-                nameError = it.isEmpty()
-                viewModel.setErrorUserData(userDataError.copy(name = nameError))
+                // si el nombre esta vacio se muestra el error
+                viewModel.setErrorUserData(userDataError.copy(name = it.isEmpty()))
             },
-            isError = nameError,
-            supportingText = {
-                if (userDataError.name)
-                    Text(stringResource(id = R.string.register_user_name_error))
-            }
+            isError = userDataError.name,
         )
+        if(userDataError.name){
+            Text(
+                text = stringResource(id = R.string.register_user_name_error),
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
 
+        // campo de apellido
         TextField(
             singleLine = true,
             modifier = Modifier
@@ -118,31 +126,33 @@ fun CreateUserForm(
             label = { Text(stringResource(id = R.string.register_user_surname)) },
             value = userData.surname,
             onValueChange = {
+                // si el apellido tiene menos de 25 caracteres se actualiza el estado
                 if (it.length <= 25)
                     viewModel.setSurname(it)
-                surnameError = it.isEmpty()
-                viewModel.setErrorUserData(userDataError.copy(surname = surnameError))
+                // si el apellido esta vacio se muestra el error
+                viewModel.setErrorUserData(userDataError.copy(surname = it.isEmpty()))
             },
-            isError = surnameError,
-            supportingText = {
-                if (userDataError.surname)
-                    Text(stringResource(id = R.string.register_user_surname_error))
-            }
+            isError = userDataError.surname,
         )
+        if(userDataError.surname){
+            Text(
+                text = stringResource(id = R.string.register_user_surname_error),
+                color = MaterialTheme.colorScheme.error,
+            )
+        }
 
-        PasswordField(
-            label = stringResource(id = R.string.register_user_password),
+        // campo de contraseña
+        CreatePasswordField(
             maxLength = 30,
-            errorState = Pair(passwordError){
-                passwordError = it
-                viewModel.setErrorUserData(userDataError.copy(password = passwordError))
-            },
-            passwordState = Pair(userData.password, viewModel::setPassword)
+            errorState = Pair(userDataError.password){ viewModel.setErrorUserData(userDataError.copy(password = it)) },
+            setPassword = viewModel::setPassword
         )
 
+        // campo de los telefonos
         TextFieldMultiple(
             label = stringResource(id = R.string.register_user_phones),
             setError = { viewModel.setErrorUserData(userDataError.copy(phoneNumbers = it)) },
+            checkError = { it.isNotEmpty() && it.length != 9 },
             buttonAddText = stringResource(id = R.string.register_user_button_add_tlf),
             itemList = userData.phoneNumbers.map { if (it > 0) it.toString() else "" },
             setList = viewModel::setPhoneNumbers,
@@ -152,9 +162,10 @@ fun CreateUserForm(
             errorMsg = stringResource(id = R.string.register_user_phone_error),
         )
 
-        CreateAddressForm(
-            setError = { viewModel.setErrorUserData(userDataError.copy(address = it)) },
-            viewModel = viewModel
+        // campo de la direccion
+        AddressForm(
+            viewModel = viewModel,
+            addressErrorState = Pair(userDataError.address){ viewModel.setErrorUserData(userDataError.copy(address = it)) }
         )
 
     }

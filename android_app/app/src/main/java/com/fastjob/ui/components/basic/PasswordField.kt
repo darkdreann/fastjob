@@ -17,11 +17,15 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.fastjob.R
-import com.fastjob.ui.functions.isPasswordSecure
 
+/**
+ * Componente que representa un campo de contraseña
+ * @param maxLength longitud máxima de la contraseña
+ * @param errorState estado del error
+ * @param passwordState estado de la contraseña
+ */
 @Composable
 fun PasswordField(
-    label: String,
     maxLength: Int,
     errorState: Pair<Boolean, (Boolean) -> Unit> = Pair(false) {},
     passwordState: Pair<String, (String) -> Unit>
@@ -35,8 +39,9 @@ fun PasswordField(
     // estado de la visibilidad de la contraseña
     var passwordVisibility by remember { mutableStateOf(false) }
 
+    // campo de contraseña
     TextField(
-        label = { Text(label) },
+        label = { Text(stringResource(id = R.string.user_password)) },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
@@ -45,10 +50,11 @@ fun PasswordField(
         onValueChange = {
             if(it.length <= maxLength)
                 setPassword(it)
-            setError(it.length < 8 || !it.isPasswordSecure())
+            setError(false)
         },
         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
+            // botón para mostrar/ocultar la contraseña
             TextButton(onClick = { passwordVisibility = !passwordVisibility }) {
                 Text(
                     if (passwordVisibility) stringResource(id = R.string.password_hide)
@@ -57,9 +63,5 @@ fun PasswordField(
             }
         },
         isError = isError,
-        supportingText = {
-            if (isError)
-                Text(stringResource(id = R.string.register_user_password_error))
-        }
     )
 }

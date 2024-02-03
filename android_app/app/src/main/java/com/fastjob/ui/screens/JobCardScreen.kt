@@ -1,22 +1,21 @@
 package com.fastjob.ui.screens
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.fastjob.auth.AuthAPI
 import com.fastjob.models.UserType
 import com.fastjob.ui.components.basic.CandidateBottomBar
-import com.fastjob.ui.components.job.JobLoader
 import com.fastjob.ui.components.basic.TopBar
+import com.fastjob.ui.components.job.JobLoader
 import com.fastjob.ui.theme.FastjobTheme
+import com.fastjob.ui.viewmodels.job.JobCardViewModel
 import java.util.UUID
 
 /**
@@ -30,28 +29,25 @@ fun JobCardScreen(
     jobUUID: UUID?,
     navController: NavController
 ){
-    // Se obtiene la instancia de autenticación
-    val auth = AuthAPI.getInstance()
+    // view model
+    val viewModel = viewModel<JobCardViewModel>()
 
     Scaffold(
         topBar = {
             TopBar(navController)
         },
         bottomBar = {
-            if(auth.isAuthenticated()) {
-                // si esta autenticado pero no contiene el tipo de usuario se muestra la barra de candidato por defecto
-                if((auth.getUserType() ?: UserType.CANDIDATE) == (UserType.CANDIDATE)) CandidateBottomBar(navController)
-                else CandidateBottomBar(navController)
-            }
+            if(JobCardViewModel.auth.isAuthenticated())
+                CandidateBottomBar(navController)
         }
     ) {
-        Column(
-            modifier = Modifier.padding(it),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+        Box(
+            modifier = Modifier.padding(it)
         ){
             JobLoader(
                 index = index,
-                jobUUID = jobUUID
+                jobUUID = jobUUID,
+                viewModel = viewModel
             )
         }
     }

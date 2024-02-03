@@ -19,7 +19,8 @@ interface EducationService {
     suspend fun getEducations(
         @Header("Authorization") auth: String,
         @Query("limit") limit: Int? = null,
-        @Query("offset") offset: Int? = null
+        @Query("offset") offset: Int? = null,
+        @Query("qualification_keyword") nameKeyword: String? = null
     ): Response<List<Education>>
 
     @GET(ENDPOINT_GET_QUALIFICATIONS)

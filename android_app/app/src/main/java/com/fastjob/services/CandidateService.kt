@@ -3,6 +3,8 @@ package com.fastjob.services
 import com.fastjob.models.CandidateIN
 import com.fastjob.models.CandidateOUT
 import com.fastjob.models.CandidateExtraFields
+import com.fastjob.models.JobIN
+import com.fastjob.models.MinimalJobIN
 import com.fastjob.models.PartialCandidateOUT
 import retrofit2.Response
 import retrofit2.http.Body
@@ -19,15 +21,25 @@ import java.util.UUID
 interface CandidateService {
     companion object {
         private const val ENDPOINT = "/candidates/"
-        private const val CANDIDATE_BY_ID_ENDPOINT = "${ENDPOINT}{id}"
+        private const val CANDIDATE_BY_ID_ENDPOINT = "${ENDPOINT}{id}/"
+        private const val CANDIDATE_JOBS = "${ENDPOINT}applied-jobs/{id}/"
     }
 
     @GET(CANDIDATE_BY_ID_ENDPOINT)
+    @JvmSuppressWildcards
     suspend fun getCandidate(
         @Header("Authorization") auth: String,
         @Path("id") id: UUID,
         @Query("extra_fields") extraFields: Set<CandidateExtraFields>? = null
     ): Response<CandidateIN>
+
+    @GET(CANDIDATE_JOBS)
+    suspend fun getCandidateJobs(
+        @Header("Authorization") auth: String,
+        @Path("id") id: UUID,
+        @Query("limit") limit: Int? = null,
+        @Query("offset") offset: Int? = null
+    ): Response<List<MinimalJobIN>>
 
     @POST(ENDPOINT)
     suspend fun createCandidate(

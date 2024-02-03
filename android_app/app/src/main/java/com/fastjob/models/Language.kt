@@ -21,7 +21,8 @@ data class LanguageWithLevelIN(
 )
 
 data class LanguageWithLevelOUT(
+    @SerializedName("language_id")
     val language: UUID,
-    @SerializedName("language_level")
+    @SerializedName("level_id")
     val level: UUID
 )

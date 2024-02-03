@@ -53,7 +53,7 @@ fun JobFilterButton(
                 .fillMaxWidth()
                 .height(30.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center.also { Arrangement.spacedBy(4.dp) }
+            horizontalArrangement = Arrangement.Center
         ){
             // icono
             Icon(

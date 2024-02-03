@@ -11,12 +11,13 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
+import java.time.LocalDate
 import java.util.UUID
 
 interface CandidateEducationService {
     companion object {
-        private const val ENDPOINT = "/candidates/educations/{candidate_id}"
-        private const val EDUCATION_BY_ID_ENDPOINT = "${ENDPOINT}{id}"
+        private const val ENDPOINT = "/candidates/educations/{candidate_id}/"
+        private const val EDUCATION_BY_ID_ENDPOINT = "${ENDPOINT}{id}/"
     }
 
     @GET(ENDPOINT)
@@ -47,7 +48,7 @@ interface CandidateEducationService {
         @Header("Authorization") auth: String,
         @Path("candidate_id") candidateId: UUID,
         @Path("id") id: UUID,
-        @Body candidateEducation: UUID
+        @Body candidateEducationCompletionDate: LocalDate
     ): Response<CandidateEducationIN>
 
     @DELETE(EDUCATION_BY_ID_ENDPOINT)

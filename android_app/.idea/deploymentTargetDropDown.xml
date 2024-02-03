@@ -8,20 +8,20 @@
       <entry key="CreateUserPreview (1)">
         <State />
       </entry>
-      <entry key="JobTextFieldPreview">
+      <entry key="DataPickerPreview">
         <State>
-          <runningDeviceTargetSelectedWithDropDown>
+          <targetSelectedWithDropDown>
             <Target>
-              <type value="RUNNING_DEVICE_TARGET" />
+              <type value="QUICK_BOOT_TARGET" />
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\RuiJorge\.android\avd\Pixel_7_Pro_API_26.avd" />
+                  <value value="C:\Users\RuiJorge\.android\avd\Pixel_7_Pro_API_30.avd" />
                 </Key>
               </deviceKey>
             </Target>
-          </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-01-16T19:30:48.121705300Z" />
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-01-31T14:32:45.100074500Z" />
         </State>
       </entry>
       <entry key="LoadingItemPreview">

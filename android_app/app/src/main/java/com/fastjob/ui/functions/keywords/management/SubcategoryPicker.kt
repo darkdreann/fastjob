@@ -1,5 +1,6 @@
 package com.fastjob.ui.functions.keywords.management
 
+import android.util.Log
 import com.fastjob.auth.AuthAPI
 import com.fastjob.models.SectorSubcategory
 import com.fastjob.network.Client
@@ -21,7 +22,7 @@ class SubcategoryPicker {
      * @param keyword palabra clave para filtrar las subcategorías
      * @return lista de nombres de subcategorías
      */
-    suspend fun getSubCategories(keyword: String): List<String>? {
+    suspend fun getSubcategories(keyword: String): List<String>? {
         // limit y offset
         val limit = 10
         val offset = 0
@@ -32,7 +33,6 @@ class SubcategoryPicker {
         val token = auth.getToken()
         // lista de provincias a devolver
         var result: List<String>? = null
-
 
         // si la palabra está vacía, devolver null
         if (keyword.isEmpty() || category.isEmpty())

@@ -22,7 +22,7 @@ class AvailabilitySerializer : JsonDeserializer<Availability>, JsonSerializer<Av
         return try {
             Availability.getByValue(enumString)
         } catch (e: IllegalArgumentException) {
-            Log.d("AvailabilitySerializer", "Error serializer: $enumString")
+            Log.e("AvailabilitySerializer", "Error serializer: $enumString")
             Availability.ANY
         }
     }

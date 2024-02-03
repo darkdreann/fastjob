@@ -36,7 +36,7 @@ async def get_candidate_experiences(
     - list[Experience]: Lista de experiencias del candidato.
     """
     
-    experiences: list[Experience] = await get_database_records(session, Experience, limit=limit, offset=offset, where=Experience.candidate_id == candidate_id, order_by=(Experience.start_date.asc(), Experience.end_date.asc()))
+    experiences: list[Experience] = await get_database_records(session, Experience, limit=limit, offset=offset, where=Experience.candidate_id == candidate_id, order_by=(Experience.start_date.desc(), Experience.end_date.desc()))
 
     return experiences
 

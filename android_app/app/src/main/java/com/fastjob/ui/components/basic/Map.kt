@@ -102,6 +102,8 @@ fun Map(
                     )
                 }
             }
+            // else para acabar el when
+            else -> {}
         }
     }
 }

@@ -43,10 +43,10 @@ data class CandidateOUT(
 )
 
 data class PartialCandidateOUT(
-    val skills: List<String>?,
+    val skills: List<String>? = null,
     @SerializedName("availability")
-    val availabilities: List<Availability>?,
-    val user: PartialUserOUT?
+    val availabilities: List<Availability>? = null,
+    val user: PartialUserOUT? = null
 )
 
 

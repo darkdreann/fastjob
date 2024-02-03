@@ -127,7 +127,7 @@ fun JobFilterMenu(
                     TextFieldPicker(
                         label = stringResource(id = R.string.job_filter_sector_subcategory),
                         setValue = { viewModel.setSectorId(subCategoryPicker.getSectorId(it)) },
-                        autoCompleteFunction = subCategoryPicker::getSubCategories,
+                        autoCompleteFunction = subCategoryPicker::getSubcategories,
                         enabled = filtersState.sectorCategory.isNotEmpty(),
                         textState = Pair(textSubCategory, setTextSubCategory),
                         imeAction = ImeAction.Search,

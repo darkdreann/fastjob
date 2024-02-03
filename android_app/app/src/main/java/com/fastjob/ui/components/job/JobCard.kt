@@ -26,8 +26,15 @@ import com.fastjob.ui.functions.generateExperienceText
 import com.fastjob.ui.functions.localFormat
 import java.util.Locale
 
+/**
+ * Componente de una oferta de trabajo
+ * @param modifier modificador del componente
+ * @param index índice de la oferta
+ * @param job oferta
+ */
 @Composable
 fun JobCard(
+    modifier: Modifier = Modifier,
     index: Int = 0,
     job: JobIN
 ) {
@@ -42,9 +49,9 @@ fun JobCard(
     Column(
         verticalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
-            .verticalScroll(rememberScrollState())
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
+            .then(modifier)
     ) {
         // imagen de job
         Image(
