@@ -184,13 +184,13 @@ async def _get_education_params(education_name: Annotated[str | None, EDUCATION_
     return education_params
 
 async def _get_skills_and_availability_params(skills: Annotated[list[str], SKILLS_PARAM] = None,
-                                              availability: Annotated[list[WorkSchedule], AVAILABILITY_PARAM] = None) -> dict | None:
+                                              availability: Annotated[WorkSchedule, AVAILABILITY_PARAM] = None) -> dict | None:
     """
     Obtiene los parámetros de habilidades y disponibilidad para filtrar candidatos.
 
     Args:
     - skills (list[str], optional): Lista de habilidades. Defaults to None.
-    - availability (list[WorkSchedule], optional): Lista de horarios de disponibilidad. Defaults to None.
+    - availability (WorkSchedule, optional): Horario de disponibilidad. Defaults to None.
 
     Returns:
     - dict | None: Diccionario con los parámetros de habilidades y disponibilidad, o None si no se proporcionan habilidades ni disponibilidad.
@@ -277,10 +277,18 @@ def _set_params_experience(query_params: QueryParams, experience_params: dict | 
             
         # si no se ha proporcionado el número de meses de experiencia, se anade el filtro de sector de experiencia a los parámetros de consulta
         else:
-            query_params.add_join({
+            query_params.add_join_list(
+                (
+                    {
+                            "target": Experience,
+                            "onclause": Experience.candidate_id == Candidate.user_id
+                    },
+                    {
                             "target": Sector,
                             "onclause": Experience.sector_id == Sector.id
-                        })
+                    }
+                )
+            )
             
             query_params.where.append(sector_field == experience_sector)
 
@@ -291,12 +299,10 @@ def _set_params_experience(query_params: QueryParams, experience_params: dict | 
         experience_months_sum = experience_months_sum.alias('experience_sum')
         
         # anadimos la subconsulta a los joins de los parámetros de consulta
-        query_params.add_join_list((
-                    {
-                        "target": experience_months_sum,
-                        "onclause": Candidate.user_id == experience_months_sum.c.candidate_id
-                    }
-        ))
+        query_params.add_join({
+                            "target": experience_months_sum,
+                            "onclause": Candidate.user_id == experience_months_sum.c.candidate_id
+                        })
         
         # anade el filtro de meses de experiencia a los parámetros de consulta
         query_params.where.append(experience_months_sum.c.total_experience >= text(f"interval '{experience_months} months'"))

@@ -28,7 +28,7 @@ import com.fastjob.models.Availability
 import com.fastjob.ui.components.basic.BasicDialog
 import com.fastjob.ui.components.basic.SelectableAvailability
 import com.fastjob.ui.components.basic.TextFieldMultiple
-import com.fastjob.ui.viewmodels.form.candidate.UpdateSkillAvailabilityViewModel
+import com.fastjob.ui.viewmodels.candidate.UpdateSkillAvailabilityViewModel
 
 @Composable
 fun UpdateSkillsAvailabilitiesForm(

@@ -6,7 +6,7 @@ from api.database.database_models.models import Address
 from api.database.connection import get_session
 from api.utils.constants.endpoints_params import LIMIT, OFFSET, ADDRESS_ID, ADDRESS_POSTAL_CODE, ADDRESS_EXTRA_FIELD, DEFAULT_LIMIT, DEFAULT_OFFSET, ADDRESS_PROVINCE_KEYWORD
 from api.security.permissions import PermissionsManager
-from api.models.read_models import ReadAddress, ReadAddressComplete
+from api.models.read_models import ReadAddress, ReadAddressComplete, ReadAddressNoStreet
 from api.models.create_models import CreateAddress
 from api.models.update_models import UpdateAddress
 from api.models.partial_update_models import PartialUpdateAddress
@@ -107,7 +107,7 @@ async def get_address_admin(*,
     return address
 
 
-@address_route.get("/postal-code/{address_postal_code}/", response_model=ReadAddress)
+@address_route.get("/postal-code/{address_postal_code}/", response_model=ReadAddressNoStreet)
 async def get_address_by_postal_code(*,
                     session: Annotated[AsyncSession, Depends(get_session)], 
                     address_postal_code: Annotated[int, ADDRESS_POSTAL_CODE]) -> Address:
@@ -122,7 +122,7 @@ async def get_address_by_postal_code(*,
     - Address: La dirección.
     """
 
-    address: Address = await get_database_records(session, Address, where=Address.postal_code == address_postal_code, result_list=False)
+    address: Address = await get_database_records(session, Address, where=Address.postal_code == address_postal_code, result_list=False, limit=1)
     
     return address
 

@@ -1,5 +1,6 @@
 package com.fastjob.services
 
+import com.fastjob.models.BaseEducation
 import com.fastjob.models.JobIN
 import com.fastjob.models.JobOUT
 import com.fastjob.models.LanguageWithLevelIN
@@ -23,6 +24,8 @@ interface JobService {
     companion object {
         private const val ENDPOINT = "/jobs/"
         private const val JOB_BY_ID = "${ENDPOINT}{id}/"
+        private const val JOB_EDUCATION_BY_ID = "${JOB_BY_ID}education/"
+        private const val JOB_LANGUAGES_BY_ID = "${JOB_BY_ID}languages/"
         private const val GET_JOBS_MINIMAL = "${ENDPOINT}?minimal_fields=true"
         private const val JOB_LANGUAGES = "${JOB_BY_ID}languages/{language_id}/"
         private const val JOB_EDUCATION_REMOVE = "${JOB_BY_ID}education/"
@@ -65,6 +68,27 @@ interface JobService {
         @Path("id") id: UUID
     ): Response<JobIN>
 
+    @GET(JOB_EDUCATION_BY_ID)
+    suspend fun getJobEducation(
+        @Header("Authorization") auth: String? = null,
+        @Path("id") id: UUID
+    ): Response<BaseEducation>
+
+    @GET(JOB_LANGUAGES_BY_ID)
+    suspend fun getJobLanguages(
+        @Header("Authorization") auth: String? = null,
+        @Path("id") id: UUID,
+        @Query("limit") limit: Int? = null,
+        @Query("offset") offset: Int? = null,
+    ): Response<List<LanguageWithLevelIN>>
+
+    @GET(JOB_LANGUAGES)
+    suspend fun getJobLanguage(
+        @Header("Authorization") auth: String? = null,
+        @Path("id") id: UUID,
+        @Path("language_id") languageId: UUID,
+    ): Response<LanguageWithLevelIN>
+
     @GET(GET_KEYWORDS)
     suspend fun getKeywords(
         @Header("Authorization") auth: String? = null,
@@ -106,7 +130,7 @@ interface JobService {
         @Body language: LanguageWithLevelOUT
     ): Response<LanguageWithLevelIN>
 
-    @POST(JOB_LANGUAGES)
+    @PUT(JOB_LANGUAGES)
     suspend fun updateJobLanguage(
         @Header("Authorization") auth: String,
         @Path("id") id: UUID,

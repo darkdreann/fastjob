@@ -11,9 +11,9 @@ import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.ExperienceForm
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.candidate.CandidateExperienceViewModel
-import com.fastjob.ui.viewmodels.form.candidate.CandidateExperienceViewModelFactory
-import com.fastjob.ui.viewmodels.form.candidate.ExperienceListViewModel
+import com.fastjob.ui.viewmodels.candidate.CandidateExperienceViewModel
+import com.fastjob.ui.viewmodels.candidate.CandidateExperienceViewModelFactory
+import com.fastjob.ui.viewmodels.candidate.ExperienceListViewModel
 import java.util.UUID
 
 @Composable

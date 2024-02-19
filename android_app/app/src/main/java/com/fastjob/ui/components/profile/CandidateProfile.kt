@@ -32,8 +32,8 @@ import com.fastjob.ui.components.basic.LoadingItem
 import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.functions.capitalize
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.user.UpdateUserAddressViewModel
-import com.fastjob.ui.viewmodels.form.user.UpdateUserViewModel
+import com.fastjob.ui.viewmodels.user.UpdateUserAddressViewModel
+import com.fastjob.ui.viewmodels.user.UpdateUserViewModel
 import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -65,7 +65,7 @@ fun CandidateProfile(
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                LoadingItem(stringResource(id = R.string.candidate_profile_loading))
+                LoadingItem(stringResource(id = R.string.user_profile_loading))
             }
         }
         LoadState.ERROR -> {
@@ -74,7 +74,7 @@ fun CandidateProfile(
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                ErrorItem(stringResource(id = R.string.candidate_profile_error))
+                ErrorItem(stringResource(id = R.string.user_profile_error))
             }
         }
         LoadState.LOADED -> {
@@ -144,7 +144,7 @@ fun CandidateProfile(
                         }
                     ) {
                         Text(
-                            text = stringResource(id = R.string.candidate_profile_edit_user_info),
+                            text = stringResource(id = R.string.user_profile_edit_user_info),
                             fontSize = 17.sp,
                         )
                     }
@@ -154,7 +154,7 @@ fun CandidateProfile(
                         }
                     ) {
                         Text(
-                            text = stringResource(id = R.string.candidate_profile_edit_user_password),
+                            text = stringResource(id = R.string.user_profile_edit_user_password),
                             fontSize = 17.sp,
                         )
                     }
@@ -171,16 +171,16 @@ fun CandidateProfile(
                         }
                     ) {
                         Text(
-                            text = stringResource(id = R.string.candidate_profile_edit_user_address),
+                            text = stringResource(id = R.string.user_profile_edit_user_address),
                             fontSize = 17.sp,
                         )
                     }
                     TextButton(
                         onClick = {
                             navController.navigate(AppScreens.UpdateCandidateSkillsAvailabilitiesScreen.route + "/${
-                                it.skills.joinToString(separator = ",").ifEmpty { " " }
+                                it.skills?.joinToString(separator = ",")?.ifEmpty { " " }
                             }/${
-                                it.availabilities.joinToString(separator = ",") { availability -> availability.value }.ifEmpty { " " }
+                                it.availabilities?.joinToString(separator = ",") { availability -> availability.value }?.ifEmpty { " " }
                             }")
                         }
                     ) {
@@ -224,7 +224,7 @@ fun CandidateProfile(
                         .fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ){
-                    ErrorItem(stringResource(id = R.string.candidate_profile_error))
+                    ErrorItem(stringResource(id = R.string.user_profile_error))
                 }
             }
         }

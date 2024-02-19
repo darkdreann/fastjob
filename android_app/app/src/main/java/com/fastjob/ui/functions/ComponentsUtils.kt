@@ -2,6 +2,7 @@ package com.fastjob.ui.functions
 
 import android.content.Context
 import android.text.format.DateFormat
+import androidx.core.text.isDigitsOnly
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
@@ -87,7 +88,7 @@ fun String.isEmail(): Boolean {
  * @return true si es una contraseña segura, false en caso contrario
  */
 fun String.isPasswordSecure(): Boolean {
-    val passwordRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\$%^&*()\\-_+=])[A-Za-z\\d!@#\$%^&*()\\-_+=]{8,}\$")
+    val passwordRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[.!@#\$%^&*()\\-_+=])[A-Za-z\\d!@#\$%^&*()\\-_+=]{8,}\$")
     return passwordRegex.matches(this)
 }
 
@@ -102,6 +103,14 @@ fun String.toUUID(): UUID? {
         null
     }
 
+}
+
+/**
+ * Comprueba si una cadena de texto es un numero
+ * @return true si es numero, false en caso contrario
+ */
+fun String.isDigit(): Boolean {
+    return this.isNotEmpty() && this.isDigitsOnly()
 }
 
 /**

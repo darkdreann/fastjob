@@ -97,7 +97,6 @@ INTEGRATION_EXCEPTION = {
 
     AddressConstraint.ADDRESS_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Address ya existe."},
     AddressConstraint.DUPLICATE_ADDRESS: {"status_code": status.HTTP_409_CONFLICT, "detail": "La dirección ya existe."},
-    AddressConstraint.DUPLICATE_POSTAL_CODE: {"status_code": status.HTTP_409_CONFLICT, "detail": "El código postal ya existe."},
 
     JobConstraint.JOB_PK: {"status_code": status.HTTP_409_CONFLICT, "detail": "La clave primaria de Job ya existe."},
     JobConstraint.COMPANY_FK: {"status_code": status.HTTP_409_CONFLICT, "detail": "Se produjo un problema con la clave externa de company."},

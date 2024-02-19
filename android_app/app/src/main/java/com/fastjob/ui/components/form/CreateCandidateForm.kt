@@ -33,7 +33,7 @@ import com.fastjob.ui.components.basic.SelectableAvailability
 import com.fastjob.ui.components.basic.TextFieldMultiple
 import com.fastjob.ui.enums.RegisterState
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.user.CreateCandidateViewModel
+import com.fastjob.ui.viewmodels.user.CreateCandidateViewModel
 
 /**
  * Formulario de registro de candidato

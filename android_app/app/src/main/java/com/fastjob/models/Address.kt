@@ -12,6 +12,14 @@ data class AddressIN(
     val province: String
 )
 
+data class AddressNoStreetIN(
+    val id: UUID,
+    @SerializedName("postal_code")
+    val postalCode: Int,
+    val city: String,
+    val province: String
+)
+
 data class AddressOUT(
     @SerializedName("postal_code")
     val postalCode: Int,

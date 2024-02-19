@@ -31,7 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.fastjob.R
 import com.fastjob.ui.components.basic.BasicDialog
 import com.fastjob.ui.components.basic.CustomDatePicker
@@ -43,7 +45,7 @@ import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.functions.keywords.management.SubcategoryPicker
 import com.fastjob.ui.functions.keywords.management.getSectorCategoryKeyword
 import com.fastjob.ui.functions.toUUID
-import com.fastjob.ui.viewmodels.form.candidate.CandidateExperienceViewModel
+import com.fastjob.ui.viewmodels.candidate.CandidateExperienceViewModel
 import java.time.LocalDate
 
 /**
@@ -110,7 +112,8 @@ fun ExperienceForm(
                 title = stringResource(id = R.string.candidate_experience_error_title),
                 content = stringResource(id = R.string.candidate_experience_error_msg),
                 icon = painterResource(id = R.drawable.error),
-                visibilityState = Pair(errorVisibility, viewModel::setErrorVisibility))
+                visibilityState = Pair(errorVisibility, viewModel::setErrorVisibility)
+            )
 
             Column(
                 modifier = Modifier
@@ -128,6 +131,14 @@ fun ExperienceForm(
                         .fillMaxWidth(),
                     painter = painterResource(id = R.drawable.user_img),
                     contentDescription = stringResource(id = R.string.user_image_desc),
+                )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp, top = 10.dp),
+                    text = stringResource(id = R.string.experience_list_title),
+                    fontSize = 25.sp,
+                    textAlign = TextAlign.Center
                 )
 
                 // campo de puesto
@@ -148,7 +159,6 @@ fun ExperienceForm(
 
                 // campo de descripcion del puesto
                 TextField(
-                    singleLine = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(15.dp)),
@@ -177,7 +187,6 @@ fun ExperienceForm(
                     },
                     isError = experienceError.companyName,
                 )
-
                 // campo de sector
                 // animacion para el campo de categoria
                 AnimatedVisibility(
@@ -219,6 +228,7 @@ fun ExperienceForm(
                         isError = experienceError.sectorId,
                     )
                 }
+
 
                 // campo de fecha de inicio
                 CustomDatePicker(

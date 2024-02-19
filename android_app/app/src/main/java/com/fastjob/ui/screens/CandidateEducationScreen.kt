@@ -18,7 +18,7 @@ import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.candidate.EducationList
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.candidate.EducationListViewModel
+import com.fastjob.ui.viewmodels.candidate.EducationListViewModel
 
 /**
  * Pantalla que muestra la información de una oferta de trabajo.

@@ -11,9 +11,9 @@ import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.CandidateLanguageForm
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.candidate.CandidateEducationViewModel
-import com.fastjob.ui.viewmodels.form.candidate.CandidateLanguageViewModel
-import com.fastjob.ui.viewmodels.form.candidate.CandidateLanguageViewModelFactory
+import com.fastjob.ui.viewmodels.candidate.CandidateEducationViewModel
+import com.fastjob.ui.viewmodels.candidate.CandidateLanguageViewModel
+import com.fastjob.ui.viewmodels.candidate.CandidateLanguageViewModelFactory
 import java.util.UUID
 
 @Composable

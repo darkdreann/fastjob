@@ -6,9 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from api.database.connection import get_session
 from api.utils.functions.database_utils import secure_commit, get_database_records, get_record_by_id
 from api.security.permissions import PermissionsManager
-from api.database.database_models.models import Company, User, Job
+from api.database.database_models.models import Company, User, Job, Address
 from api.models.enums.models import UserType
-from api.models.read_models import ReadCompany, ReadCompanyComplete, ReadJobComplete, ReadJobMinimal
+from api.models.read_models import ReadCompany, ReadCompanyComplete, ReadJobMinimal
 from api.models.create_models import CreateCompany
 from api.models.update_models import UpdateCompany
 from api.models.partial_update_models import PartialUpdateCompany
@@ -189,13 +189,24 @@ async def delete_company(
 
     await secure_commit(session)
 
-@company_route.get("/{company_id}/jobs/", response_model=list[ReadJobComplete|ReadJobMinimal], response_model_exclude_none=True, dependencies=[Depends(PermissionsManager.is_company_resource_owner)])
+@company_route.get("/{company_id}/jobs/", response_model=list[ReadJobMinimal], response_model_exclude_none=True, dependencies=[Depends(PermissionsManager.is_company_resource_owner)])
 async def get_company_jobs(
                             session: Annotated[AsyncSession, Depends(get_session)],
                             company_id: Annotated[UUID, USER_ID],
                             limit: Annotated[int, DEFAULT_LIMIT] = DEFAULT_LIMIT,
                             offset: Annotated[int, DEFAULT_OFFSET] = DEFAULT_OFFSET) -> None:
     
-    jobs: Job = await get_database_records(session, Job, limit=limit, offset=offset, where=Job.company_id == company_id)
 
+    jobs: list[tuple] = await get_database_records(session, Job.id, Job.title, Job.description, Address.province, limit=limit, offset=offset, 
+                                                                  joins=(
+                                                                    {
+                                                                        "target": Company,
+                                                                        "onclause": Company.user_id == Job.company_id,
+                                                                    },
+                                                                    {
+                                                                        "target": Address,
+                                                                        "onclause": Address.id == Job.address_id,
+                                                                    }
+                                                                  ),
+                                                                  where=Job.company_id == company_id, order_by=Job.publication_date.desc(), scalar=False)
     return jobs

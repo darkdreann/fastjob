@@ -1,9 +1,11 @@
 package com.fastjob.ui.components.candidate
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
@@ -17,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,76 +47,86 @@ fun EducationCard(
     // contexto local
     val context = LocalContext.current
 
-    Column(
+    Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
             .clickable {
                 if (edit != null || delete != null) {
                     dropdownVisibility = true
                 }
-            },
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // titulo formacion
-        Text(
-            text = candidateEducation.education.qualification.capitalize(),
-            fontSize = 20.sp
+            }
+    ){
+        Image(
+            modifier = Modifier.weight(0.2f),
+            painter = painterResource(id = R.drawable.education),
+            contentDescription = stringResource(id = R.string.candidate_education_image_desc)
         )
-        // nivel de formacion
-        Text(
-            text = candidateEducation.education.level.name.capitalize(),
-        )
-        // sector de la formacion
-        candidateEducation.education.sector?.let {
-            Text(
-                text = "${it.values.first().category.capitalize()} ${it.values.first().subcategory.capitalize()}",
-
-            )
-        }
-        // nombre de la empresa
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            contentAlignment = Alignment.CenterEnd
-        ){
+                .padding(8.dp)
+                .weight(0.8f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // titulo formacion
             Text(
-                text = candidateEducation.completionDate.localFormat(context),
+                text = candidateEducation.education.qualification.capitalize(),
+                fontSize = 20.sp
             )
-        }
-        if(edit != null || delete != null){
-            DropdownMenu(
-                expanded = dropdownVisibility,
-                onDismissRequest = { dropdownVisibility = false }
+            // nivel de formacion
+            Text(
+                text = candidateEducation.education.level.name.capitalize(),
+            )
+            // sector de la formacion
+            candidateEducation.education.sector?.let {
+                Text(
+                    text = "${it.values.first().category.capitalize()} ${it.values.first().subcategory.capitalize()}",
+
+                    )
+            }
+            // nombre de la empresa
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                contentAlignment = Alignment.CenterEnd
             ) {
-                // opciones de editar
-                edit?.let {
-                    DropdownMenuItem(
-                        onClick = {
-                            dropdownVisibility = false
-                            edit(candidateEducation.education.id)
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(id = R.string.candidate_experience_edit),
-                            )
-                        }
-                    )
-                }
-                // opciones de eliminar
-                delete?.let {
-                    DropdownMenuItem(
-                        onClick = {
-                            dropdownVisibility = false
-                            delete(candidateEducation.education.id)
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(id = R.string.candidate_experience_delete),
-                            )
-                        }
-                    )
+                Text(
+                    text = candidateEducation.completionDate.localFormat(context),
+                )
+            }
+            if (edit != null || delete != null) {
+                DropdownMenu(
+                    expanded = dropdownVisibility,
+                    onDismissRequest = { dropdownVisibility = false }
+                ) {
+                    // opciones de editar
+                    edit?.let {
+                        DropdownMenuItem(
+                            onClick = {
+                                dropdownVisibility = false
+                                edit(candidateEducation.education.id)
+                            },
+                            text = {
+                                Text(
+                                    text = stringResource(id = R.string.candidate_experience_edit),
+                                )
+                            }
+                        )
+                    }
+                    // opciones de eliminar
+                    delete?.let {
+                        DropdownMenuItem(
+                            onClick = {
+                                dropdownVisibility = false
+                                delete(candidateEducation.education.id)
+                            },
+                            text = {
+                                Text(
+                                    text = stringResource(id = R.string.candidate_experience_delete),
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }

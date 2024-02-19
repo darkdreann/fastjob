@@ -14,7 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.CreateCandidateForm
 import com.fastjob.ui.theme.FastjobTheme
-import com.fastjob.ui.viewmodels.form.user.CreateCandidateViewModel
+import com.fastjob.ui.viewmodels.user.CreateCandidateViewModel
 
 /**
  * Pantalla de creación de usuario candidato

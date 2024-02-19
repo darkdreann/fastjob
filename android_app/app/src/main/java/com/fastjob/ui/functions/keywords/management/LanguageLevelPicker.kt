@@ -1,5 +1,6 @@
 package com.fastjob.ui.functions.keywords.management
 
+import android.util.Log
 import com.fastjob.auth.AuthAPI
 import com.fastjob.models.LanguageLevel
 import com.fastjob.network.Client
@@ -38,6 +39,7 @@ class LanguageLevelPicker {
         // si la palabra está vacía, devolver null
         if (keyword.isEmpty())
             return null
+
 
         // obtener los niveles
         val response = languageService.getLanguagesLevel(auth = token!!, limit = limit, offset = offset, levelNameKeyword = keyword)

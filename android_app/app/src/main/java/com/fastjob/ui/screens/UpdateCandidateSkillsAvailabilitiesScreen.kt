@@ -13,8 +13,8 @@ import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.UpdateSkillsAvailabilitiesForm
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.candidate.UpdateSkillAvailabilityViewModel
-import com.fastjob.ui.viewmodels.form.candidate.UpdateSkillAvailabilityViewModelFactory
+import com.fastjob.ui.viewmodels.candidate.UpdateSkillAvailabilityViewModel
+import com.fastjob.ui.viewmodels.candidate.UpdateSkillAvailabilityViewModelFactory
 import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 
 

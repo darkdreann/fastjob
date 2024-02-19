@@ -173,11 +173,9 @@ fun SelectableAvailability(
                     DropdownMenuItem(
                         text = { Text(text = stringResource(id = possibility.displayName)) },
                         onClick = {
-                            //if(possibility !in items) {
                             items[currentIndex] = possibility.value
                             setList(items.map { Availability.getByValue(it) })
                             menuVisibility = false
-                            //}
                         }
                     )
                 }

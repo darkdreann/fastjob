@@ -83,7 +83,6 @@ class LanguageLevelConstraint:
 
 class AddressConstraint:
     ADDRESS_PK = "address_pk"
-    DUPLICATE_POSTAL_CODE = "unique_postal_code"
     DUPLICATE_ADDRESS = "unique_street"
 
 class JobConstraint:

@@ -94,7 +94,7 @@ CANDIDATE_MINIMAL_FIELDS = Query(description="Si se quiere obtener solo los camp
 
 SKILLS_PARAM = Query(description="Las habilidades del candidato que debe tener el candidato. Se pueden especificar varias.")
 
-AVAILABILITY_PARAM = Query(description="La disponibilidad que debe tener el candidato. Se pueden especificar varias.")
+AVAILABILITY_PARAM = Query(description="La disponibilidad que debe tener el candidato.")
 
 CV_PARAM = File(description="El curriculum del candidato.", media_type="application/pdf")
 

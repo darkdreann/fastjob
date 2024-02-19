@@ -18,8 +18,8 @@ import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.candidate.LanguageList
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.candidate.EducationListViewModel
-import com.fastjob.ui.viewmodels.form.candidate.LanguageListViewModel
+import com.fastjob.ui.viewmodels.candidate.EducationListViewModel
+import com.fastjob.ui.viewmodels.candidate.LanguageListViewModel
 
 /**
  * Pantalla que muestra la lista de idiomas del candidato

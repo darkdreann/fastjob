@@ -3,7 +3,7 @@ package com.fastjob.ui.effects
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.fastjob.auth.AuthAPI
-import com.fastjob.models.AddressIN
+import com.fastjob.models.AddressNoStreetIN
 import com.fastjob.models.AddressOUT
 import com.fastjob.network.Client
 import com.fastjob.services.AddressService
@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun AddressByPostalCodeEffect(
     address: AddressOUT,
-    setAddress: (AddressIN) -> Unit
+    setAddress: (AddressNoStreetIN) -> Unit
 ) {
     // obtenemos el servicio de direcciones y la instancia de autenticación
     val addresService = Client.getInstance().getService(AddressService::class.java)
@@ -32,6 +32,7 @@ fun AddressByPostalCodeEffect(
                     auth = auth.getToken(),
                     postalCode = address.postalCode
                 )
+
 
                 // si la respuesta es exitosa, se asigna la dirección
                 if(response.isSuccessful){

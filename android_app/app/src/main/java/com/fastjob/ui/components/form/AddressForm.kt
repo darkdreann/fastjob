@@ -1,5 +1,6 @@
 package com.fastjob.ui.components.form
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -76,10 +77,10 @@ fun AddressForm(
         setAddress = {
             viewModel.setAddressCity(it.city)
             viewModel.setAddressProvince(it.province)
-            viewModel.setAddressStreet(it.street)
             addressChanged = true
         }
     )
+
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -104,7 +105,6 @@ fun AddressForm(
                     addressChanged = false
                     viewModel.setAddressCity("")
                     viewModel.setAddressProvince("")
-                    viewModel.setAddressStreet("")
                 }
                 // si el codigo postal tiene menos de 5 digitos se muestra el error
                 setAddressError(it.length < 5)

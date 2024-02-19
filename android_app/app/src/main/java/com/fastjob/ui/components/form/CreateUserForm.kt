@@ -23,7 +23,7 @@ import com.fastjob.ui.components.basic.CreatePasswordField
 import com.fastjob.ui.components.basic.TextFieldMultiple
 import com.fastjob.ui.functions.isEmail
 import com.fastjob.ui.theme.FastjobTheme
-import com.fastjob.ui.viewmodels.form.user.CreateUserViewModel
+import com.fastjob.ui.viewmodels.user.CreateUserViewModel
 
 /**
  * Formulario para crear un usuario

@@ -144,11 +144,11 @@ class CreateJobLanguage(BaseModel):
 
     Atributos:
     - language_id: ID del idioma.
-    - language_level_id: ID del nivel de idioma.
+    - level_id: ID del nivel de idioma.
     """
 
     language_id: UUID = Field(description=LanguageDescription.LANGUAGE_ID)
-    language_level_id: UUID = Field(description=LevelDescription.LEVEL_ID)
+    level_id: UUID = Field(description=LevelDescription.LEVEL_ID)
 
 
 class CreateJob(BaseJob):

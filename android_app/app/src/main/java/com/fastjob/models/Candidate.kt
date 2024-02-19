@@ -14,16 +14,16 @@ data class MinimalCandidateIN(
     val id: UUID,
     val name: String,
     val surname: String,
-    val skills: List<String>,
+    val skills: List<String>? = null,
     @SerializedName("availability")
-    val availabilities: List<Availability>,
+    val availabilities: List<Availability>? = null,
     val province: String
 )
 
 data class CandidateIN(
-    val skills: List<String>,
+    val skills: List<String>? = null,
     @SerializedName("availability")
-    val availabilities: List<Availability>,
+    val availabilities: List<Availability>? = null,
     val user: UserIN,
     @SerializedName("experience_list")
     val experiences: List<ExperienceIN>? = null,

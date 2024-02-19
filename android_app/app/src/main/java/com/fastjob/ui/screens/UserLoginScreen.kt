@@ -9,7 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.LoginUser
-import com.fastjob.ui.viewmodels.form.login.LoginViewModel
+import com.fastjob.ui.viewmodels.login.LoginViewModel
 
 
 @Composable

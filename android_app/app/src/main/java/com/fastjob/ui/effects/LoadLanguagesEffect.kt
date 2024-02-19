@@ -3,7 +3,7 @@ package com.fastjob.ui.effects
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.fastjob.ui.enums.LoadState
-import com.fastjob.ui.viewmodels.form.candidate.LanguageListViewModel
+import com.fastjob.ui.viewmodels.candidate.LanguageListViewModel
 
 /**
  * Efecto para cargar los idiomas

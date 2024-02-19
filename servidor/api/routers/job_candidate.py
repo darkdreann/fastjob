@@ -8,8 +8,8 @@ from api.database.connection import get_session
 from api.utils.functions.management_utils import endpoint_request_log
 from api.utils.functions.database_utils import secure_commit, get_database_records
 from api.security.permissions import PermissionsManager
-from api.database.database_models.models import Job, JobCandidate, Candidate, User
-from api.models.read_models import ReadCandidateRelationJob, ReadCandidateComplete, ReadCandidateMinimal
+from api.database.database_models.models import Job, JobCandidate, Candidate, User, Experience, CandidateLanguage, CandidateEducation
+from api.models.read_models import ReadCandidateRelationJob, ReadCandidateComplete, ReadCandidateMinimal, ReadExperienceComplete, ReadCandidateRelationLanguage, ReadCandidateRelationEducation
 from api.utils.exceptions import DatabaseException
 from api.utils.constants.endpoints_params import LIMIT, OFFSET, USER_ID, DEFAULT_LIMIT, DEFAULT_OFFSET, JOB_ID, CANDIDATE_EXTRA_FIELD
 from api.utils.functions.candidate_filter import get_candidate_applied, JobCandidateExtraField
@@ -82,6 +82,123 @@ async def get_job_candidate(
     job_candidate = await get_database_records(session, Candidate, joins=joins, options=options, where=where, result_list=False, unique=True)
 
     return job_candidate
+
+@job_candidate_route.get("/{job_id}/{candidate_id}/experiences/", response_model_exclude_defaults=True, response_model=list[ReadExperienceComplete], dependencies=[Depends(PermissionsManager.is_job_resource_owner)])
+async def get_job_candidate(
+                            session: Annotated[AsyncSession, Depends(get_session)],
+                            job: Annotated[Job, Depends(GetJob())], 
+                            candidate_id: Annotated[UUID, USER_ID],
+                            limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                            offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[Experience]:
+    """
+    Obtiene las experiencias laborales de un candidato para una oferta específica.
+
+    Args:
+    - session: Sesión de base de datos.
+    - job: Objeto Job que representa el trabajo específico.
+    - candidate_id: ID del candidato.
+    - limit: Límite de registros a obtener (opcional, valor predeterminado: DEFAULT_LIMIT).
+    - offset: Desplazamiento de registros (opcional, valor predeterminado: DEFAULT_OFFSET).
+
+    Returns:
+    - Lista de objetos Experience que representan las experiencias laborales del candidato.
+    """
+    
+    # hacemos join a la tabla de Candidate para poder filtrar por el candidato
+    joins = (
+        {
+            "target": Candidate,
+            "onclause": Candidate.user_id == Experience.candidate_id,
+        },
+        {
+            "target": JobCandidate,
+            "onclause": JobCandidate.candidate_id == Candidate.user_id,
+        }
+    )
+
+    # añadimos un filtro para que solo se obtengan los registros que coincidan con la oferta y el candidato
+    where = (JobCandidate.job_id == job.id, Candidate.user_id == candidate_id)
+
+    experiences: list[Experience] = await get_database_records(session, Experience, joins=joins, limit=limit, offset=offset, where=where, order_by=(Experience.start_date.desc(), Experience.end_date.desc()))
+    return experiences
+
+@job_candidate_route.get("/{job_id}/{candidate_id}/languages/", response_model_exclude_defaults=True, response_model=list[ReadCandidateRelationLanguage], dependencies=[Depends(PermissionsManager.is_job_resource_owner)])
+async def get_job_candidate(
+                            session: Annotated[AsyncSession, Depends(get_session)],
+                            job: Annotated[Job, Depends(GetJob())], 
+                            candidate_id: Annotated[UUID, USER_ID],
+                            limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                            offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[CandidateLanguage]:
+    """
+    Obtiene los idiomas relacionados con un candidato en una oferta de trabajo específica.
+
+    Args:
+    - session: Sesión de base de datos.
+    - job: Objeto de la oferta de trabajo.
+    - candidate_id: ID del candidato.
+    - limit: Límite de registros a obtener (opcional, valor predeterminado: DEFAULT_LIMIT).
+    - offset: Desplazamiento de registros (opcional, valor predeterminado: DEFAULT_OFFSET).
+
+    Returns:
+    - Lista de objetos CandidateLanguage que representan los idiomas relacionados con el candidato en la oferta de trabajo.
+    """
+    
+    # hacemos join a la tabla de Candidate para poder filtrar por el candidato
+    joins = (
+        {
+            "target": Candidate,
+            "onclause": Candidate.user_id == CandidateLanguage.candidate_id,
+        },
+        {
+            "target": JobCandidate,
+            "onclause": JobCandidate.candidate_id == Candidate.user_id,
+        }
+    )
+
+    # añadimos un filtro para que solo se obtengan los registros que coincidan con la oferta y el candidato
+    where = (JobCandidate.job_id == job.id, Candidate.user_id == candidate_id)
+
+    candidate_languages: list[CandidateLanguage] = await get_database_records(session, CandidateLanguage, joins=joins, limit=limit, offset=offset, where=where)
+    return candidate_languages
+
+@job_candidate_route.get("/{job_id}/{candidate_id}/educations/", response_model_exclude_defaults=True, response_model=list[ReadCandidateRelationEducation], dependencies=[Depends(PermissionsManager.is_job_resource_owner)])
+async def get_job_candidate(
+                            session: Annotated[AsyncSession, Depends(get_session)],
+                            job: Annotated[Job, Depends(GetJob())], 
+                            candidate_id: Annotated[UUID, USER_ID],
+                            limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                            offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[CandidateEducation]:
+    """
+    Obtiene la lista de educaciones de un candidato específico para un trabajo específico.
+
+    Args:
+    - session: Sesión de base de datos (AsyncSession).
+    - job: Objeto Job que representa el trabajo específico (Job).
+    - candidate_id: ID del candidato (UUID).
+    - limit: Límite de registros a obtener (int, opcional).
+    - offset: Desplazamiento de registros a obtener (int, opcional).
+
+    Returns:
+    - Lista de objetos CandidateEducation que representan las educaciones del candidato (list[CandidateEducation]).
+    """
+    
+    # hacemos join a la tabla de Candidate para poder filtrar por el candidato
+    joins = (
+        {
+            "target": Candidate,
+            "onclause": Candidate.user_id == CandidateEducation.candidate_id,
+        },
+        {
+            "target": JobCandidate,
+            "onclause": JobCandidate.candidate_id == Candidate.user_id,
+        }
+    )
+
+    # añadimos un filtro para que solo se obtengan los registros que coincidan con la oferta y el candidato
+    where = (JobCandidate.job_id == job.id, Candidate.user_id == candidate_id)
+
+    candidate_languages: list[CandidateLanguage] = await get_database_records(session, CandidateEducation, joins=joins, limit=limit, offset=offset, where=where)
+    return candidate_languages
 
 @job_candidate_route.get("/{job_id}/{candidate_id}/curriculum/", response_class=Response, dependencies=[Depends(PermissionsManager.is_job_resource_owner_noload)])
 async def get_job_candidate_cv(

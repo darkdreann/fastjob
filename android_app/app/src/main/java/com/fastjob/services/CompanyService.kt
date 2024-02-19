@@ -3,6 +3,7 @@ package com.fastjob.services
 import com.fastjob.models.CompanyIN
 import com.fastjob.models.CompanyOUT
 import com.fastjob.models.JobIN
+import com.fastjob.models.MinimalJobIN
 import com.fastjob.models.PartialCompanyOUT
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -21,7 +22,7 @@ interface CompanyService {
 
     companion object {
         private const val ENDPOINT = "/companies/"
-        private const val COMPANY_BY_ID = "${ENDPOINT}/{id}/"
+        private const val COMPANY_BY_ID = "${ENDPOINT}{id}/"
         private const val GET_JOBS = "${COMPANY_BY_ID}jobs/"
     }
 
@@ -38,7 +39,7 @@ interface CompanyService {
         @Path("id") id: UUID,
         @Query("limit") limit: Int? = null,
         @Query("offset") offset: Int? = null
-    ): Response<List<JobIN>>
+    ): Response<List<MinimalJobIN>>
 
     @POST(ENDPOINT)
     suspend fun createCompany(

@@ -18,8 +18,8 @@ data class CompanyOUT(
 )
 
 data class PartialCompanyOUT(
-    val tin: String?,
+    val tin: String? = null,
     @SerializedName("company_name")
-    val companyName: String?,
-    val user: PartialUserOUT?
+    val companyName: String? = null,
+    val user: PartialUserOUT? = null
 )

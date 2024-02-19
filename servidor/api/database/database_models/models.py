@@ -83,7 +83,7 @@ class CandidateLanguage(Base):
     Campos:
     - candidate_id: Campo que representa la clave foránea de la tabla candidate.
     - language_id: Campo que representa la clave foránea de la tabla language.
-    - language_level_id: Campo que representa la clave foránea de la tabla language_level.
+    - level_id: Campo que representa la clave foránea de la tabla language_level.
 
     Relaciones:
     - candidate: Relación con la tabla candidate.
@@ -95,7 +95,7 @@ class CandidateLanguage(Base):
 
     candidate_id: Mapped[UUID] = mapped_column(ForeignKey(f"{CANDIDATE}.user_id", name=CandidateLanguageConstraint.CANDIDATE_FK, ondelete="CASCADE"))
     language_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE}.id", name=CandidateLanguageConstraint.LANGUAGE_FK))
-    language_level_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE_LEVEL}.id", name=CandidateLanguageConstraint.LANGUAGE_LEVEL_FK))
+    level_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE_LEVEL}.id", name=CandidateLanguageConstraint.LANGUAGE_LEVEL_FK))
 
     candidate: Mapped["Candidate"] = relationship(back_populates="language_list", lazy="joined")
     language: Mapped["Language"] = relationship(back_populates="candidates_list", lazy="joined")
@@ -170,7 +170,7 @@ class JobLanguage(Base):
     Campos:
     - job_id: Campo que representa la clave foránea de la tabla job.
     - language_id: Campo que representa la clave foránea de la tabla language.
-    - language_level_id: Campo que representa la clave foránea de la tabla language_level.
+    - level_id: Campo que representa la clave foránea de la tabla language_level.
     
     Relaciones:
     - job: Relación con la tabla job.
@@ -182,7 +182,7 @@ class JobLanguage(Base):
 
     job_id: Mapped[UUID] = mapped_column(ForeignKey(f"{JOB}.id", name=JobLanguageConstraint.JOB_FK, ondelete="CASCADE"))
     language_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE}.id", name=JobLanguageConstraint.LANGUAGE_FK))
-    language_level_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE_LEVEL}.id", name=JobLanguageConstraint.LANGUAGE_LEVEL_FK))
+    level_id: Mapped[UUID] = mapped_column(ForeignKey(f"{LANGUAGE_LEVEL}.id", name=JobLanguageConstraint.LANGUAGE_LEVEL_FK))
 
     job: Mapped["Job"] = relationship(back_populates="language_list", lazy="joined")
     language: Mapped["Language"] = relationship(back_populates="jobs_list", lazy="joined")
@@ -746,8 +746,7 @@ class Address(Base):
 
     __table_args__ = (
         PrimaryKeyConstraint("id", name=AddressConstraint.ADDRESS_PK),
-        UniqueConstraint(postal_code, name=AddressConstraint.DUPLICATE_POSTAL_CODE),
-        UniqueConstraint(postal_code, "city", "province", name=AddressConstraint.DUPLICATE_ADDRESS)
+        UniqueConstraint(postal_code, "city", "province", "street", name=AddressConstraint.DUPLICATE_ADDRESS)
     )
 
     @hybrid_property

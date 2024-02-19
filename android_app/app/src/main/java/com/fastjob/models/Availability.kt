@@ -2,22 +2,16 @@ package com.fastjob.models
 
 
 import com.fastjob.R
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import com.google.gson.JsonParseException
-import com.google.gson.JsonSerializationContext
-import com.google.gson.JsonSerializer
-import java.lang.reflect.Type
+import com.fastjob.models.interfaces.Selectable
 
 
 /**
  * Enum que representa la disponibilidad laboral
  */
 enum class Availability(
-    val value: String,
-    val displayName: Int
-) {
+    override val value: String,
+    override val displayName: Int
+): Selectable {
     FULL_TIME("FULL-TIME", R.string.job_availability_full_time),
     PART_TIME("PART-TIME", R.string.job_availability_part_time),
     MORNING("MORNING", R.string.job_availability_morning),
@@ -33,6 +27,9 @@ enum class Availability(
             return values().find { it.value == value } ?: ANY
         }
 
+        fun getByValueNullable(value: String): Availability? {
+            return values().find { it.value == value }
+        }
         fun getDisplayNameByValue(value: String): Int {
             return values().find { it.value == value }?.displayName ?: ANY.displayName
         }

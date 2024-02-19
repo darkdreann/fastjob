@@ -131,7 +131,7 @@ fun CandidateBottomBar(
 
 @Preview(showBackground = true)
 @Composable
-fun BottomBarPreview(){
+fun CandidateBottomBarPreview(){
     FastjobTheme {
         CandidateBottomBar(NavController(LocalContext.current))
     }

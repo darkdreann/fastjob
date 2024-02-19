@@ -19,7 +19,7 @@ class CandidateValidators:
 
 #-------------------COMPANY---------------------------------
 class CompanyValidators:
-    REGEX_TIN = r"^[A-Z][0-9]{7}[0-9A-J]$|^[A-Z][0-9]{7}[0-9A-J]$|^[0-9]{8}[A-Z]$"
+    REGEX_TIN = r"(^[A-Z][0-9]{7}[0-9A-J]$)|(^[0-9]{8}[A-Z]$)"
     MAX_LENGTH_COMPANY_NAME = 30
 
 #-------------------LANGUAGE---------------------------------
@@ -59,7 +59,7 @@ class AddressValidators:
 class JobValidators:
     MAX_LENGTH_TITLE = 30
     MAX_LENGTH_DESC = 200
-    MAX_ITEMS_SKILLS = 50
+    MAX_ITEMS_SKILLS = 20
     MIN_REQUIRED_EXP = 0
 
 #-------------------VALIDATE FUNCTIONS--------------------------------------

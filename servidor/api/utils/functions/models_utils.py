@@ -47,7 +47,7 @@ async def get_address_from_db(session: AsyncSession, address: CreateAddress) -> 
     
     try:
         # Se busca la dirección en la base de datos
-        address_from_db = await get_database_records(session, Address, where=Address.postal_code == address.postal_code, result_list=False)
+        address_from_db = await get_database_records(session, Address, where=(Address.postal_code == address.postal_code, Address.street == address.street), result_list=False)
     except ResourceNotFoundException:
         # Si no se encuentra, se crea una nueva dirección con los datos de la dirección pasada por parámetro
         return Address(**address.model_dump())

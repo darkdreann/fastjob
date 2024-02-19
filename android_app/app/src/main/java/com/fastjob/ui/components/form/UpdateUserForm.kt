@@ -32,7 +32,7 @@ import com.fastjob.models.UserType
 import com.fastjob.ui.components.basic.BasicDialog
 import com.fastjob.ui.components.basic.TextFieldMultiple
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.user.UpdateUserViewModel
+import com.fastjob.ui.viewmodels.user.UpdateUserViewModel
 
 @Composable
 fun UpdateUserForm(

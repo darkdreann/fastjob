@@ -23,7 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.fastjob.R
 import com.fastjob.ui.components.basic.BasicDialog
 import com.fastjob.ui.components.basic.CustomDatePicker
@@ -33,7 +35,7 @@ import com.fastjob.ui.components.basic.TextFieldPicker
 import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.functions.keywords.management.EducationPicker
 import com.fastjob.ui.functions.toUUID
-import com.fastjob.ui.viewmodels.form.candidate.CandidateEducationViewModel
+import com.fastjob.ui.viewmodels.candidate.CandidateEducationViewModel
 import java.time.LocalDate
 
 /**
@@ -97,7 +99,8 @@ fun CandidateEducationForm(
                 title = stringResource(id = R.string.candidate_education_error_title),
                 content = stringResource(id = R.string.candidate_education_error_msg),
                 icon = painterResource(id = R.drawable.error),
-                visibilityState = Pair(errorVisibility, viewModel::setErrorVisibility))
+                visibilityState = Pair(errorVisibility, viewModel::setErrorVisibility)
+            )
 
             Column(
                 modifier = Modifier
@@ -115,6 +118,14 @@ fun CandidateEducationForm(
                         .fillMaxWidth(),
                     painter = painterResource(id = R.drawable.user_img),
                     contentDescription = stringResource(id = R.string.user_image_desc),
+                )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp, top = 10.dp),
+                    text = stringResource(id = R.string.education_list_title),
+                    fontSize = 25.sp,
+                    textAlign = TextAlign.Center
                 )
 
                 // campo de formacion

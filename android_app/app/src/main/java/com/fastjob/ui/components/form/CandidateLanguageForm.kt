@@ -22,7 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.fastjob.R
 import com.fastjob.ui.components.basic.BasicDialog
 import com.fastjob.ui.components.basic.ErrorItem
@@ -32,7 +34,7 @@ import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.functions.keywords.management.LanguageLevelPicker
 import com.fastjob.ui.functions.keywords.management.LanguagePicker
 import com.fastjob.ui.functions.toUUID
-import com.fastjob.ui.viewmodels.form.candidate.CandidateLanguageViewModel
+import com.fastjob.ui.viewmodels.candidate.CandidateLanguageViewModel
 
 /**
  * Formulario de idioma del candidato
@@ -116,6 +118,14 @@ fun CandidateLanguageForm(
                         .fillMaxWidth(),
                     painter = painterResource(id = R.drawable.user_img),
                     contentDescription = stringResource(id = R.string.user_image_desc),
+                )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp, top = 10.dp),
+                    text = stringResource(id = R.string.language_list_title),
+                    fontSize = 25.sp,
+                    textAlign = TextAlign.Center
                 )
 
                 // campo de idioma

@@ -6,6 +6,23 @@ from api.models.base_models import *
 from api.models.enums.models import UserType
 from api.models.metadata.constants import DAYS_TO_MONTHS_DIVIDER
 
+class ReadAddressNoStreet(BaseModel):
+    """
+    Modelo para leer una dirección sin la calle.
+    
+    Atributos:
+    - postal_code: Código postal
+    - street: Calle
+    - province: Provincia
+    - city: Ciudad
+    - id: Identificador de la dirección
+    """
+
+    postal_code: int = Field(description=AddressDescription.POSTAL_CODE, ge=AddressValidators.MIN_POSTAL_CODE, le=AddressValidators.MAX_POSTAL_CODE)
+    city: str = Field(description=AddressDescription.CITY, max_length=AddressValidators.MAX_LENGTH_CITY)
+    province: str = Field(description=AddressDescription.PROVINCE, max_length=AddressValidators.MAX_LENGTH_PROVINCE)
+    id: UUID = Field(description=AddressDescription.ID)
+
 class ReadAddress(BaseAddress):
     """
     Modelo para leer una dirección.

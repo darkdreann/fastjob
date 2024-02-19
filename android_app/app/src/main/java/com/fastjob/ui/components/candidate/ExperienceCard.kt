@@ -1,9 +1,11 @@
 package com.fastjob.ui.components.candidate
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DropdownMenu
@@ -17,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,78 +47,92 @@ fun ExperienceCard(
     // contexto local
     val context = LocalContext.current
 
-    Column(
+    Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
             .clickable {
                 if (edit != null || delete != null) {
                     dropdownVisibility = true
                 }
-            },
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // titulo posicion laboral
-        Text(
-            text = experience.jobPosition.uppercase(Locale.getDefault()),
-            fontSize = 20.sp
+            }
+    ){
+        Image(
+            modifier = Modifier.weight(0.2f),
+            painter = painterResource(id = R.drawable.experience),
+            contentDescription = stringResource(id = R.string.candidate_experience_image_desc)
         )
-        // descripcion
-        Text(
-            text = experience.jobPositionDescription.capitalizeParagraph(),
-        )
-        // sector
-        Text(
-            text = "${experience.sector.category.capitalize()} ${experience.sector.subcategory.capitalize()}",
-
-        )
-        // fechas de inicio y fin
-        Text(
-            text = "${experience.startDate.localFormat(context)} - ${experience.endDate?.localFormat(context)?: stringResource(id = R.string.candidate_experience_end_date_default)}",
-        )
-        // nombre de la empresa
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            contentAlignment = Alignment.CenterEnd
-        ){
+                .padding(8.dp)
+                .weight(0.8f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // titulo posicion laboral
             Text(
-                text = experience.companyName.capitalize(),
+                text = experience.jobPosition.uppercase(Locale.getDefault()),
+                fontSize = 20.sp
             )
-        }
-        if(edit != null || delete != null){
-            DropdownMenu(
-                expanded = dropdownVisibility,
-                onDismissRequest = { dropdownVisibility = false }
+            // descripcion
+            Text(
+                text = experience.jobPositionDescription.capitalizeParagraph(),
+            )
+            // sector
+            Text(
+                text = "${experience.sector.category.capitalize()} ${experience.sector.subcategory.capitalize()}",
+
+                )
+            // fechas de inicio y fin
+            Text(
+                text = "${experience.startDate.localFormat(context)} - ${
+                    experience.endDate?.localFormat(
+                        context
+                    ) ?: stringResource(id = R.string.candidate_experience_end_date_default)
+                }",
+            )
+            // nombre de la empresa
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                contentAlignment = Alignment.CenterEnd
             ) {
-                // opciones de editar
-                edit?.let {
-                    DropdownMenuItem(
-                        onClick = {
-                            dropdownVisibility = false
-                            edit(experience.id)
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(id = R.string.candidate_experience_edit),
-                            )
-                        }
-                    )
-                }
-                // opciones de eliminar
-                delete?.let {
-                    DropdownMenuItem(
-                        onClick = {
-                            dropdownVisibility = false
-                            delete(experience.id)
-                        },
-                        text = {
-                            Text(
-                                text = stringResource(id = R.string.candidate_experience_delete),
-                            )
-                        }
-                    )
+                Text(
+                    text = experience.companyName.capitalize(),
+                )
+            }
+            if (edit != null || delete != null) {
+                DropdownMenu(
+                    expanded = dropdownVisibility,
+                    onDismissRequest = { dropdownVisibility = false }
+                ) {
+                    // opciones de editar
+                    edit?.let {
+                        DropdownMenuItem(
+                            onClick = {
+                                dropdownVisibility = false
+                                edit(experience.id)
+                            },
+                            text = {
+                                Text(
+                                    text = stringResource(id = R.string.candidate_experience_edit),
+                                )
+                            }
+                        )
+                    }
+                    // opciones de eliminar
+                    delete?.let {
+                        DropdownMenuItem(
+                            onClick = {
+                                dropdownVisibility = false
+                                delete(experience.id)
+                            },
+                            text = {
+                                Text(
+                                    text = stringResource(id = R.string.candidate_experience_delete),
+                                )
+                            }
+                        )
+                    }
                 }
             }
         }

@@ -4,6 +4,11 @@ import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
 import java.util.UUID
 
+data class BaseEducation(
+    val id: UUID,
+    val qualification: String
+)
+
 data class Education(
     val id: UUID,
     val qualification: String,

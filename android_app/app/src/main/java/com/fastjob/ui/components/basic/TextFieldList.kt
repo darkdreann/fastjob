@@ -51,7 +51,7 @@ fun TextFieldList(
     enabled: Boolean = true,
     label: String? = null,
     textState: Pair<List<String>, (List<String>) -> Unit>,
-    autoCompleteFunction: (suspend (keyword: String) -> List<String>?),
+    autoCompleteFunction: (suspend (keyword: String) -> List<String>?)? = null,
     imeAction: ImeAction = ImeAction.Done,
     keyBoardAction: KeyboardActions = KeyboardActions()
 )
@@ -76,9 +76,9 @@ fun TextFieldList(
             singleLine = true,
             modifier = Modifier
                 .height(52.dp)
-                .clip(RoundedCornerShape(20.dp))
                 .fillMaxWidth()
-                .padding(horizontal = 10.dp),
+                .padding(horizontal = 10.dp)
+                .clip(RoundedCornerShape(20.dp)),
             enabled = enabled,
             label = {
                 label?.let {
@@ -122,18 +122,21 @@ fun TextFieldList(
             keyboardActions = keyBoardAction
         )
 
-        // dropdown autocomplete
-        DropdownAutocomplete(
-            keywordState = Pair(textFieldValue.value.text) {
-                textFieldValue.value = textFieldValue.value.copy(
-                    text = it,
-                    selection = TextRange(it.length)
-                )
-            },
-            autocompleteFunction = autoCompleteFunction,
-            modifier = Modifier
-                .padding(start = 10.dp)
-        )
+        autoCompleteFunction?.let {
+            // dropdown autocomplete
+            DropdownAutocomplete(
+                keywordState = Pair(textFieldValue.value.text) {
+                    textFieldValue.value = textFieldValue.value.copy(
+                        text = it,
+                        selection = TextRange(it.length)
+                    )
+                },
+                autocompleteFunction = autoCompleteFunction,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+            )
+        }
+
         // animación para mostrar la lista de textos
         AnimatedVisibility(textList.isNotEmpty()) {
             // textfield para mostrar la lista de textos

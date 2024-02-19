@@ -1,10 +1,14 @@
 package com.fastjob.ui.components.candidate
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -13,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.fastjob.R
 import com.fastjob.ui.components.basic.ErrorItem
@@ -21,7 +27,7 @@ import com.fastjob.ui.components.basic.LoadingItem
 import com.fastjob.ui.effects.LoadExperiencesEffect
 import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.candidate.ExperienceListViewModel
+import com.fastjob.ui.viewmodels.candidate.ExperienceListViewModel
 
 /**
  * Lista de experiencias del candidato
@@ -57,57 +63,75 @@ fun ExperienceList(
         loadState = loadState
     )
 
-    LazyColumn(
-        state = scrollState,
-        verticalArrangement = experienceList.isEmpty().let {
-            if (it) Arrangement.Center
-            else Arrangement.spacedBy(4.dp)
-        },
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(),
-    ) {
-        // items de la lista
-        itemsIndexed(experienceList) { _, item ->
-            ExperienceCard(
-                experience = item,
-                edit = {
-                    navController.navigate(AppScreens.CandidateEditExperienceScreen.route
-                    + "/${it}")
-                },
-                delete = {
-                    viewModel.deleteExperience(it)
-                }
-            )
-        }
+    Column{
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp, top = 10.dp),
+            text = stringResource(id = R.string.experience_list_title),
+            fontSize = 25.sp,
+            textAlign = TextAlign.Center
+        )
+        LazyColumn(
+            state = scrollState,
+            verticalArrangement = experienceList.isEmpty().let {
+                if (it) Arrangement.Center
+                else Arrangement.spacedBy(4.dp)
+            },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+        ) {
+            // items de la lista
+            itemsIndexed(experienceList) { _, item ->
+                ExperienceCard(
+                    experience = item,
+                    edit = {
+                        navController.navigate(
+                            AppScreens.CandidateEditExperienceScreen.route
+                                    + "/${it}"
+                        )
+                    },
+                    delete = {
+                        viewModel.deleteExperience(it)
+                    }
+                )
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 15.dp),
+                    thickness = 1.dp,
+                )
+            }
 
-        // item de carga y error
-        when (loadState) {
-            // item de carga
-            LoadState.LOADING -> {
-                item {
-                    LoadingItem("")
+            // item de carga y error
+            when (loadState) {
+                // item de carga
+                LoadState.LOADING -> {
+                    item {
+                        LoadingItem("")
+                    }
                 }
-            }
-            // item de error de no se encontraron items
-            LoadState.NOT_FOUND -> {
-                item {
-                    ErrorItem(
-                        text = stringResource(id = R.string.exp_not_found)
-                    )
+                // item de error de no se encontraron items
+                LoadState.NOT_FOUND -> {
+                    item {
+                        ErrorItem(
+                            text = stringResource(id = R.string.exp_not_found)
+                        )
+                    }
                 }
-            }
-            // item de error de carga
-            LoadState.ERROR -> {
-                item {
-                    ErrorItem(
-                        text = stringResource(id = R.string.list_error)
-                    )
+                // item de error de carga
+                LoadState.ERROR -> {
+                    item {
+                        ErrorItem(
+                            text = stringResource(id = R.string.list_error)
+                        )
+                    }
                 }
+                // else para acabar el when
+                else -> {}
             }
-            // else para acabar el when
-            else -> {}
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.fastjob.services
 
-import com.fastjob.models.AddressIN
+import com.fastjob.models.AddressNoStreetIN
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -18,7 +18,7 @@ interface AddressService {
     suspend fun getAddressByPostalCode(
         @Header("Authorization") auth: String? = null,
         @Path("postal_code") postalCode: Int
-    ): Response<AddressIN>
+    ): Response<AddressNoStreetIN>
 
     @GET(ADDRESS_PROVINCES)
     suspend fun getAddressProvinces(

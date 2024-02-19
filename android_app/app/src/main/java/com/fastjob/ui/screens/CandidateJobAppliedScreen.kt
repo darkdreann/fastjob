@@ -18,7 +18,7 @@ import androidx.navigation.NavController
 import com.fastjob.R
 import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.TopBar
-import com.fastjob.ui.components.job.CandidateJobList
+import com.fastjob.ui.components.candidate.CandidateJobList
 import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.viewmodels.job.CandidateJobListViewModel
 import kotlinx.coroutines.launch

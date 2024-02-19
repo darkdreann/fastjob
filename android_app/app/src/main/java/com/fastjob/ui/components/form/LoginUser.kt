@@ -35,7 +35,8 @@ import com.fastjob.ui.components.basic.BasicDialog
 import com.fastjob.ui.components.basic.PasswordField
 import com.fastjob.ui.enums.LoginState
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.form.login.LoginViewModel
+import com.fastjob.ui.viewmodels.login.LoginViewModel
+import kotlin.math.sin
 
 /**
  * Pantalla de login de usuario
@@ -69,7 +70,7 @@ fun LoginUser(
         LoginState.SUCCESS -> {
             when(LoginViewModel.auth.getUserType()){
                 UserType.CANDIDATE -> navController.navigate(AppScreens.JobFinderScreen.route)
-                UserType.COMPANY -> navController.navigate(AppScreens.UserLoginScreen.route) // temp
+                UserType.COMPANY -> navController.navigate(AppScreens.CompanyJobsListScreen.route)
                 else -> {
                     LoginViewModel.auth.logout()
                     BasicDialog(
@@ -121,6 +122,7 @@ fun LoginUser(
         )
         // username
         TextField(
+            singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(15.dp)),

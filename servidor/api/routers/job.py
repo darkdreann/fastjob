@@ -7,12 +7,12 @@ from api.database.connection import get_session
 from api.utils.functions.database_utils import secure_commit, get_database_records
 from api.utils.functions.models_utils import update_model, get_address_from_db
 from api.security.permissions import PermissionsManager
-from api.database.database_models.models import Job, JobEducation, JobLanguage, Address
-from api.models.read_models import ReadJobComplete, ReadJobRelationLanguage, ReadJobCompleteWithUsers, ReadJobMinimal
+from api.database.database_models.models import Job, JobEducation, JobLanguage, Address, Education
+from api.models.read_models import ReadJobComplete, ReadJobRelationLanguage, ReadJobCompleteWithUsers, ReadJobMinimal, ReadEducation
 from api.models.create_models import CreateJob, CreateJobLanguage
 from api.models.update_models import UpdateJob
 from api.models.partial_update_models import PartialUpdateJob
-from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, JOB_EXTRA_FIELD, LANGUAGE_ID, LANGUAGE_LEVEL_ID_BODY, JOB_KEYWORD
+from api.utils.constants.endpoints_params import LIMIT, OFFSET, DEFAULT_LIMIT, DEFAULT_OFFSET, JOB_EXTRA_FIELD, LANGUAGE_ID, LANGUAGE_LEVEL_ID_BODY, JOB_KEYWORD, JOB_ID
 from api.utils.functions.management_utils import endpoint_request_log
 from api.utils.functions.models_utils import GetJob
 from api.models.enums.endpoints import JobExtraField
@@ -88,6 +88,105 @@ async def get_job_by_id(
 
     return job
 
+@job_route.get("/{job_id}/education/", response_model=ReadEducation, response_model_exclude_defaults=True)
+async def get_job_education_by_id(
+                    session: Annotated[AsyncSession, Depends(get_session)], 
+                    job_id: Annotated[UUID, JOB_ID]) -> Education:
+    """
+    Obtiene la formación requerida para una oferta de trabajo por su ID.
+    Se puede usar sin autenticación.
+
+    Args:
+    - session: Sesión de base de datos.
+    - job_id: ID de la oferta de trabajo.
+
+    Return:
+    - La formación requerida.
+    """
+
+    education: Education = await get_database_records(session, Education, 
+                                                                  joins=(
+                                                                    {
+                                                                        "target": JobEducation,
+                                                                        "onclause": JobEducation.education_id == Education.id,
+                                                                    },
+                                                                    {
+                                                                        "target": Job,
+                                                                        "onclause": Job.id == JobEducation.job_id,
+                                                                    }
+                                                                  ),
+                                                                  where=Job.id == job_id, result_list=False)
+    return education
+
+@job_route.get("/{job_id}/languages/", response_model=list[ReadJobRelationLanguage], response_model_exclude_defaults=True)
+async def get_job_languages_by_id(
+                    session: Annotated[AsyncSession, Depends(get_session)], 
+                    job_id: Annotated[UUID, JOB_ID],
+                    limit: Annotated[int, LIMIT] = DEFAULT_LIMIT, 
+                    offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[JobLanguage]:
+    """
+    Obtiene los idiomas requeridos para una oferta de trabajo por su ID.
+    Se puede usar sin autenticación.
+
+    Args:
+    - session: Sesión de base de datos.
+    - job_id: ID de la oferta de trabajo.
+    - limit: Cantidad de registros a obtener.
+    - offset: Cantidad de registros a saltar.
+
+    Return:
+    - Los idiomas requeridos.
+    """
+
+    job_languages: list[JobLanguage] = await get_database_records(session, JobLanguage, limit=limit, offset=offset, where=JobLanguage.job_id == job_id, unique=True)
+    return job_languages
+
+@job_route.get("/{job_id}/languages/{language_id}/", response_model=ReadJobRelationLanguage, response_model_exclude_defaults=True)
+async def get_job_languages_by_id(
+                    session: Annotated[AsyncSession, Depends(get_session)], 
+                    job_id: Annotated[UUID, JOB_ID],
+                    language_id: Annotated[UUID, LANGUAGE_ID]) -> JobLanguage:
+    """
+    Obtiene un idioma requerido para una oferta de trabajo por su ID.
+    Se puede usar sin autenticación.
+
+    Args:
+    - session: Sesión de base de datos.
+    - job_id: ID de la oferta de trabajo.
+    - language_id: ID del idioma requerido.
+
+    Return:
+    - El idioma requerido.
+    """
+
+    job_language: JobLanguage = await get_database_records(session, JobLanguage, where=(JobLanguage.job_id == job_id, JobLanguage.language_id == language_id), result_list=False, unique=True)
+    return job_language
+
+@job_route.get("/keywords/{keyword}/", response_model=list[str])
+async def get_jobs_keywords(
+                            session: Annotated[AsyncSession, Depends(get_session)],
+                            keyword: Annotated[str, JOB_KEYWORD],
+                            limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
+                            offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[str]:
+    """
+    Obtiene una lista de palabras clave relacionadas con ofertas de trabajo que comienzan con la palabra clave dada.
+    
+    Args:
+    - session: Sesión de base de datos.
+    - keyword: Palabra clave para buscar trabajos relacionados.
+    - limit: Límite de resultados a devolver (opcional, valor predeterminado: DEFAULT_LIMIT).
+    - offset: Desplazamiento de resultados (opcional, valor predeterminado: DEFAULT_OFFSET).
+    
+    Return:
+    - Lista de palabras clave relacionadas con trabajos.
+    """
+    
+    view_table = JobKeywordModel.get_view()
+
+    keywords = await get_database_records(session, view_table.c.word, where=view_table.c.word.startswith(keyword), order_by=view_table.c.count.desc(), limit=limit, offset=offset)
+
+    return keywords
+
 # POST #
 
 @job_route.post("/", response_model=ReadJobComplete, response_model_exclude_defaults=True, status_code=status.HTTP_201_CREATED, dependencies=[Depends(PermissionsManager.is_new_job_resource_owner)])
@@ -121,7 +220,7 @@ async def create_job(
     # si se especificaron idiomas requeridos, los anadimos
     if job_languages:
         for language in job_languages:
-            job_language = JobLanguage(job_id=job_db.id, language_id=language.language_id, language_level_id=language.language_level_id)
+            job_language = JobLanguage(job_id=job_db.id, language_id=language.language_id, level_id=language.level_id)
             session.add(job_language)
 
     session.add(job_db)
@@ -207,7 +306,7 @@ async def update_job_language(
                             session: Annotated[AsyncSession, Depends(get_session)],
                             job: Annotated[Job, Depends(GetJob())],
                             language_id: Annotated[UUID, LANGUAGE_ID],
-                            language_level: Annotated[UUID, LANGUAGE_LEVEL_ID_BODY]) -> JobLanguage:
+                            language_level_id: Annotated[UUID, LANGUAGE_LEVEL_ID_BODY]) -> JobLanguage:
     """
     Actualiza un idioma requerido para una oferta de trabajo.
     Se debe ser el propietario del recurso o un administrador.
@@ -224,7 +323,7 @@ async def update_job_language(
 
     job_language_db: JobLanguage = await get_database_records(session, JobLanguage, where=(JobLanguage.job_id == job.id, JobLanguage.language_id == language_id), result_list=False, unique=True)
 
-    job_language_db.language_level_id = language_level
+    job_language_db.level_id = language_level_id
 
     await secure_commit(session)
 
@@ -345,31 +444,3 @@ async def delete_job_education(
     await session.delete(job_education_db)
 
     await secure_commit(session)
-
-@job_route.get("/keywords/{keyword}/", response_model=list[str])
-async def get_jobs_keywords(
-                            session: Annotated[AsyncSession, Depends(get_session)],
-                            keyword: Annotated[str, JOB_KEYWORD],
-                            limit: Annotated[int, LIMIT] = DEFAULT_LIMIT,
-                            offset: Annotated[int, OFFSET] = DEFAULT_OFFSET) -> list[str]:
-    """
-    Obtiene una lista de palabras clave relacionadas con ofertas de trabajo que comienzan con la palabra clave dada.
-    
-    Args:
-    - session: Sesión de base de datos.
-    - keyword: Palabra clave para buscar trabajos relacionados.
-    - limit: Límite de resultados a devolver (opcional, valor predeterminado: DEFAULT_LIMIT).
-    - offset: Desplazamiento de resultados (opcional, valor predeterminado: DEFAULT_OFFSET).
-    
-    Return:
-    - Lista de palabras clave relacionadas con trabajos.
-    """
-    
-    view_table = JobKeywordModel.get_view()
-
-    keywords = await get_database_records(session, view_table.c.word, where=view_table.c.word.startswith(keyword), order_by=view_table.c.count.desc(), limit=limit, offset=offset)
-
-    return keywords
-
-
-    
