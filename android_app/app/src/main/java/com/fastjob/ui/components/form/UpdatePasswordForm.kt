@@ -30,6 +30,10 @@ import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.viewmodels.user.UpdatePasswordViewModel
 import com.fastjob.ui.viewmodels.user.UpdateUserViewModel
 
+/**
+ * Formulario de actualización de contraseña
+ * @param viewModel ViewModel del formulario
+ */
 @Composable
 fun UpdatePasswordForm(
     viewModel: UpdatePasswordViewModel

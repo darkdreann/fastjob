@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * ViewModel del formulario de actualizacion de contrasena
+ * @param navController [NavController] controlador de navegacion
  */
 class UpdatePasswordViewModel(
     val navController: NavController
@@ -152,6 +153,10 @@ class UpdatePasswordViewModel(
 
 }
 
+/**
+ * Factory de [UpdatePasswordViewModel]
+ * @param navController [NavController] controlador de navegacion
+ */
 class UpdatePasswordViewModelFactory(
     private val navController: NavController
 ): ViewModelProvider.Factory {

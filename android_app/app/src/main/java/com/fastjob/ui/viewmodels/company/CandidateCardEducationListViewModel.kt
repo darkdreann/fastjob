@@ -22,7 +22,9 @@ import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 /**
- * ViewModel para la lista de formaciones del candidato de una oferta de trabajo
+ * ViewModel para la lista de formaciones del candidato de una oferta de trabajo.
+ * @param jobId id de la oferta de trabajo
+ * @param candidateId id del candidato
  */
 class CandidateCardEducationListViewModel(
     private val jobId: UUID,

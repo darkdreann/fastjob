@@ -15,6 +15,12 @@ import com.fastjob.ui.viewmodels.company.CompanyLanguageViewModel
 import com.fastjob.ui.viewmodels.company.CompanyLanguageViewModelFactory
 import java.util.UUID
 
+/**
+ * Pantalla de actualización de idioma de un trabajo
+ * @param navController controlador de navegación
+ * @param jobId id del trabajo
+ * @param languageId id del idioma
+ */
 @Composable
 fun CompanyUpdateJobLanguageScreen(
     navController: NavController,

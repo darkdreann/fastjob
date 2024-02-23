@@ -11,7 +11,10 @@ import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.LoginUser
 import com.fastjob.ui.viewmodels.login.LoginViewModel
 
-
+/**
+ * Pantalla de inicio de sesión de usuario
+ * @param navController controlador de navegación
+ */
 @Composable
 fun UserLoginScreen(
     navController: NavController

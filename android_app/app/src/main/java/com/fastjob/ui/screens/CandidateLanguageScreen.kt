@@ -23,6 +23,7 @@ import com.fastjob.ui.viewmodels.candidate.LanguageListViewModel
 
 /**
  * Pantalla que muestra la lista de idiomas del candidato
+ * @param navController controlador de navegación
  */
 @Composable
 fun CandidateLanguageScreen(

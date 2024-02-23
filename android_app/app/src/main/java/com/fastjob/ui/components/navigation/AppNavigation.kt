@@ -13,6 +13,7 @@ import com.fastjob.auth.AuthAPI
 import com.fastjob.models.Availability
 import com.fastjob.models.UserType
 import com.fastjob.ui.navigation.AppScreens
+import com.fastjob.ui.screens.AcercaDeScreen
 import com.fastjob.ui.screens.CandidateCardEducationScreen
 import com.fastjob.ui.screens.CandidateCardExperiencesScreen
 import com.fastjob.ui.screens.CandidateCardLanguageScreen
@@ -567,6 +568,16 @@ fun AppNavigation() {
                     )
                 }
             }
+        }
+        // Pantalla acerca de
+        composable(
+            route = AppScreens.AcercaDeScreen.route,
+            enterTransition = { fadeIn(tween(animationTime)) },
+            exitTransition = { fadeOut(tween(animationTime)) },
+            popEnterTransition = { fadeIn(tween(animationTime)) },
+            popExitTransition = { fadeOut(tween(animationTime)) }
+        ){
+            AcercaDeScreen(navController)
         }
     }
 }

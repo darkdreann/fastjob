@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.fastjob.auth.AuthAPI
 import com.fastjob.models.ExperienceIN
 import com.fastjob.network.Client
-import com.fastjob.services.CandidateExperienceService
 import com.fastjob.services.JobCandidateService
 import com.fastjob.ui.enums.LoadState
 import kotlinx.coroutines.Dispatchers

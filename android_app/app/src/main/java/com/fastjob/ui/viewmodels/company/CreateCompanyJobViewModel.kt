@@ -26,6 +26,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+/**
+ * ViewModel para la creación de una oferta de trabajo
+ * @param navController NavController controlador de navegación
+ */
 class CreateCompanyJobViewModel(
     val navController: NavController
 ) : ViewModel(), JobForm, AddressForm {
@@ -150,6 +154,9 @@ class CreateCompanyJobViewModel(
         _jobLanguages.value = jobLanguages
     }
 
+    /**
+     * Valida los datos de la oferta
+     */
     private fun validateJob(){
         _jobDataError.value = _jobDataError.value.copy(
             title = jobData.value.title.isEmpty(),
@@ -163,6 +170,9 @@ class CreateCompanyJobViewModel(
                                 .or(address.value.street.isEmpty())
     }
 
+    /**
+     * Crea una oferta de trabajo
+     */
     fun createJob(){
         if(!auth.isAuthenticated()) return
 
@@ -205,7 +215,10 @@ class CreateCompanyJobViewModel(
     }
 }
 
-
+/**
+ * Factory para la creación de la instancia de CreateCompanyJobViewModel
+ * @param navController NavController controlador de navegación
+ */
 class CreateCompanyJobViewModelFactory(
     private val navController: NavController
 ): ViewModelProvider.Factory {

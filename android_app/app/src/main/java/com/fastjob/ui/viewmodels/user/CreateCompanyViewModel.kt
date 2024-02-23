@@ -1,6 +1,5 @@
 package com.fastjob.ui.viewmodels.user
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.fastjob.models.CompanyOUT
 import com.fastjob.network.Client
@@ -127,6 +126,11 @@ class CreateCompanyViewModel: CreateUserViewModel() {
         }
     }
 
+    /**
+     * Clase que representa los errores de los datos de la empresa
+     * @property tin Boolean error del CIF
+     * @property companyName Boolean error del nombre de la empresa
+     */
     data class CompanyError(
         val tin: Boolean = false,
         val companyName: Boolean = false

@@ -16,6 +16,11 @@ import com.fastjob.ui.viewmodels.candidate.CandidateExperienceViewModelFactory
 import com.fastjob.ui.viewmodels.candidate.ExperienceListViewModel
 import java.util.UUID
 
+/**
+ * Pantalla para crear o editar la experiencia del candidato
+ * @param navController controlador de navegación
+ * @param experienceId id de la experiencia
+ */
 @Composable
 fun CandidateCreateExperienceScreen(
     navController: NavController,

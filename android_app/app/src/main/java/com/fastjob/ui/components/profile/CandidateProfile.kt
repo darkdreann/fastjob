@@ -31,6 +31,7 @@ import com.fastjob.ui.components.basic.ErrorItem
 import com.fastjob.ui.components.basic.LoadingItem
 import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.functions.capitalize
+import com.fastjob.ui.functions.capitalizeWords
 import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.viewmodels.user.UpdateUserAddressViewModel
 import com.fastjob.ui.viewmodels.user.UpdateUserViewModel
@@ -38,6 +39,11 @@ import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * Pantalla de perfil de candidato
+ * @param navController controlador de navegación
+ * @param viewModel modelo de vista de perfil de candidato
+ */
 @Composable
 fun CandidateProfile(
     navController: NavController,
@@ -116,14 +122,14 @@ fun CandidateProfile(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ){
                             Text(
-                                text = it.user.name.capitalize(),
+                                text = it.user.name.capitalizeWords(),
                                 textAlign = TextAlign.Center,
                                 fontSize = 25.sp,
                                 fontStyle = FontStyle.Italic,
                                 lineHeight = 25.sp
                             )
                             Text(
-                                text = it.user.surname.capitalize(),
+                                text = it.user.surname.capitalizeWords(),
                                 textAlign = TextAlign.Center,
                                 fontSize = 25.sp,
                                 fontStyle = FontStyle.Italic,

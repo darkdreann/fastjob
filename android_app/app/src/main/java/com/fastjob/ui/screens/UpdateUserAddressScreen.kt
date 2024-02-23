@@ -18,6 +18,11 @@ import com.fastjob.ui.viewmodels.user.UpdateUserAddressViewModel
 import com.fastjob.ui.viewmodels.user.UpdateUserAddressViewModelFactory
 import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 
+/**
+ * Pantalla de actualización de dirección de usuario
+ * @param navController controlador de navegación
+ * @param address dirección del usuario
+ */
 @Composable
 fun UpdateUserAddressScreen(
     navController: NavController,

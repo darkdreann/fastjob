@@ -1,6 +1,5 @@
 package com.fastjob.ui.viewmodels.company
 
-import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -11,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.fastjob.auth.AuthAPI
 import com.fastjob.models.LanguageWithLevelIN
 import com.fastjob.network.Client
-import com.fastjob.services.CandidateLanguageService
 import com.fastjob.services.JobCandidateService
 import com.fastjob.ui.enums.LoadState
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +23,8 @@ import java.util.UUID
 
 /**
  * ViewModel para la lista de idiomas del candidato
+ * @param jobId id de la oferta de trabajo
+ * @param candidateId id del candidato
  */
 class CandidateCardLanguageListViewModel(
     private val jobId: UUID,

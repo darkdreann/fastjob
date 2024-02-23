@@ -33,7 +33,6 @@ import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.functions.keywords.management.EducationPicker
 import com.fastjob.ui.functions.toUUID
 import com.fastjob.ui.viewmodels.company.UpdateCompanyJobEducationViewModel
-import com.fastjob.ui.viewmodels.company.UpdateCompanyJobViewModel
 
 /**
  * Formulario básico de oferta de trabajo

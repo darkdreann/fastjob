@@ -79,7 +79,7 @@ async def create_candidate_language(
     - CandidateLanguage: Lenguaje del candidato.
     """
     
-    new_candidate_language = CandidateLanguage(candidate_id=candidate_id, language_id=language_id, language_level_id=level_id)
+    new_candidate_language = CandidateLanguage(candidate_id=candidate_id, language_id=language_id, level_id=level_id)
 
     session.add(new_candidate_language)
 
@@ -112,7 +112,7 @@ async def update_candidate_language(
 
     candidate_language: CandidateLanguage = await get_database_records(session, CandidateLanguage, where=(CandidateLanguage.candidate_id == candidate_id, CandidateLanguage.language_id == language_id), result_list=False)
 
-    candidate_language.language_level_id = level_id
+    candidate_language.level_id = level_id
 
     await secure_commit(session)
 

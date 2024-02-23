@@ -1,6 +1,5 @@
 package com.fastjob.ui.viewmodels.company
 
-import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf

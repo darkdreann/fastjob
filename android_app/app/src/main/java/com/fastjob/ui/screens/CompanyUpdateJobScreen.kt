@@ -15,6 +15,11 @@ import com.fastjob.ui.viewmodels.company.UpdateCompanyJobViewModel
 import com.fastjob.ui.viewmodels.company.UpdateCompanyJobViewModelFactory
 import java.util.UUID
 
+/**
+ * Pantalla de actualización de un trabajo
+ * @param navController controlador de navegación
+ * @param jobId id del trabajo
+ */
 @Composable
 fun CompanyUpdateJobScreen(
     navController: NavController,

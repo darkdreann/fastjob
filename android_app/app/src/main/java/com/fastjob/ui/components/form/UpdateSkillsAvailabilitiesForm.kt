@@ -30,6 +30,10 @@ import com.fastjob.ui.components.basic.SelectableAvailability
 import com.fastjob.ui.components.basic.TextFieldMultiple
 import com.fastjob.ui.viewmodels.candidate.UpdateSkillAvailabilityViewModel
 
+/**
+ * Formulario de actualización de habilidades y disponibilidad de candidato
+ * @param viewModel ViewModel del formulario
+ */
 @Composable
 fun UpdateSkillsAvailabilitiesForm(
     viewModel: UpdateSkillAvailabilityViewModel

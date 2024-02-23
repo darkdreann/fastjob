@@ -16,6 +16,11 @@ import com.fastjob.ui.viewmodels.candidate.CandidateLanguageViewModel
 import com.fastjob.ui.viewmodels.candidate.CandidateLanguageViewModelFactory
 import java.util.UUID
 
+/**
+ * Pantalla para crear o editar el idioma del candidato
+ * @param navController controlador de navegación
+ * @param experienceId id de la experiencia
+ */
 @Composable
 fun CandidateCreateLanguageScreen(
     navController: NavController,

@@ -17,6 +17,11 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.util.UUID
 
+/**
+ * ViewModel para la experiencia del candidato
+ * @param navController controlador de navegacion
+ * @param id id de la experiencia
+ */
 class CandidateExperienceViewModel(
     private val navController: NavController,
     private val id: UUID? = null

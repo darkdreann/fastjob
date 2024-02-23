@@ -14,6 +14,10 @@ import com.fastjob.ui.components.profile.CandidateProfile
 import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 
+/**
+ * Pantalla de perfil del candidato
+ * @param navController Controlador de navegación
+ */
 @Composable
 fun CandidateProfileScreen(
     navController: NavController

@@ -16,8 +16,8 @@ class LanguageStringLen:
     name = 30
 
 class SectorStringLen:
-    category = 30
-    subcategory = 30
+    category = 40
+    subcategory = 40
 
 class ExperienceStringLen:
     company_name = 30
@@ -31,7 +31,7 @@ class EducationLevelStringLen:
     name = 30
 
 class LanguageLevelStringLen:
-    name = 30
+    name = 35
 
 class AddressStringLen:
     street = 50

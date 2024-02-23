@@ -15,6 +15,11 @@ import com.fastjob.ui.viewmodels.company.CompanyLanguageViewModel
 import com.fastjob.ui.viewmodels.company.CompanyLanguageViewModelFactory
 import java.util.UUID
 
+/**
+ * Pantalla de creación de idiomas de una oferta de trabajo
+ * @param navController Controlador de navegación
+ * @param jobId Identificador de la oferta de trabajo
+ */
 @Composable
 fun CompanyCreateJobLanguageScreen(
     navController: NavController,

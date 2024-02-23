@@ -226,7 +226,7 @@
     <string name="company_update_form_title">Actualizar Empresa</string>
     <string name="company_update_error_title">Error actualizando la información de la empresa.</string>
     <string name="company_update_error_msg">No se ha podido actualizar la información de la empresa. Comprueba la información e intentelo de nuevo.</string>
-
-
-
+    <string name="acerca_de">Acerca de</string>
+    <string name="alumno">Alumno: Rui Jorge Goncalves Pinto</string>
+    <string name="centro">Centro: IES Trassierra</string>
 </resources>

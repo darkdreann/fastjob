@@ -74,13 +74,13 @@ fun DropdownAutocomplete(
                     enter = expandVertically(tween(200)),
                     exit = shrinkVertically(tween(200))
                 )
-                .heightIn(0.dp, 140.dp)
+                .heightIn(0.dp, 150.dp)
         ) {
             // crear un dropdown menu item por cada palabra sugerida
             wordsList.forEach { word ->
                 DropdownMenuItem(
                     modifier = Modifier
-                        .height(30.dp)
+                        .heightIn(30.dp, 60.dp)
                         .then(modifier),
                     text = {
                         Text(text = word)

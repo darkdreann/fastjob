@@ -101,6 +101,11 @@ Variables exclusivas del archivo .env:
 
 > Facilita la configuración del número de intentos de inicio de los contenedores Docker.
 
+- VIRTUAL_HOST: Parámetro de configuración para el host de la API.
+- LETSENCRYPT_HOST: Parámetro de configuración para el dominio asociado al certificado SSL.
+
+>  Estos parámetros de entorno posibilitan la configuración del proxy y la gestión del certificado SSL.
+
 Variables exclusivas del archivo .env.dev:
 
 - PGADMIN_DEFAULT_EMAIL: Dirección de correo electrónico para el usuario de PgAdmin.

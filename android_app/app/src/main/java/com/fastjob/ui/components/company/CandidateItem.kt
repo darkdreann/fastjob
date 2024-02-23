@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import com.fastjob.R
 import com.fastjob.models.MinimalCandidateIN
 import com.fastjob.ui.functions.capitalize
+import com.fastjob.ui.functions.capitalizeWords
 import com.fastjob.ui.navigation.AppScreens
 import java.util.UUID
 
@@ -69,7 +70,7 @@ fun CandidateItem(
         )
         // nombre del candidato
         Text(
-            text = "${candidate.name.capitalize()} ${candidate.surname.capitalize()}",
+            text = "${candidate.name.capitalizeWords()} ${candidate.surname.capitalizeWords()}",
             fontSize = 18.sp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,7 +78,7 @@ fun CandidateItem(
         )
         // habilidades del candidato
         Text(
-            text = "${stringResource(id = R.string.candidates_skills)} ${candidate.skills?.joinToString(", ") { it.capitalize() } ?: stringResource(id = R.string.candidates_skills_empty)}",
+            text = "${stringResource(id = R.string.candidates_skills)}: ${candidate.skills?.joinToString(", ") { it.capitalize() } ?: stringResource(id = R.string.candidates_skills_empty)}",
             fontSize = 14.sp,
             maxLines = descriptionMaxLines,
             modifier = Modifier
@@ -87,7 +88,7 @@ fun CandidateItem(
         )
         // habilidades del candidato
         Text(
-            text = "${stringResource(id = R.string.candidates_availabilities)} ${availabilitiesDisplayNames?.joinToString(", ") ?: stringResource(id = R.string.candidates_availabilities_empty)}",
+            text = "${stringResource(id = R.string.candidates_availabilities)}: ${availabilitiesDisplayNames?.joinToString(", ") ?: stringResource(id = R.string.candidates_availabilities_empty)}",
             fontSize = 14.sp,
             maxLines = descriptionMaxLines,
             modifier = Modifier

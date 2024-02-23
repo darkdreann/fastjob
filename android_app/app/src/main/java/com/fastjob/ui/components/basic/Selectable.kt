@@ -24,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.fastjob.R
-import com.fastjob.models.Availability
 import com.fastjob.models.interfaces.Selectable
 
 /**

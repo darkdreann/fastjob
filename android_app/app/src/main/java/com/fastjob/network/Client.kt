@@ -1,7 +1,6 @@
 package com.fastjob.network
 
 import com.fastjob.models.Availability
-import com.fastjob.models.CandidateExtraFields
 import com.fastjob.models.UserType
 import com.fastjob.models.serializer.AvailabilitySerializer
 import com.fastjob.models.serializer.CandidateExtraFieldsSerializer
@@ -15,10 +14,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
+/**
+ * Clase que se encarga de manejar la conexión con el servidor
+ */
 class Client private constructor() {
     // STATIC
     companion object {
-        private const val URL = "http://192.168.1.54:8080/"
+        private const val URL = "https://api.fastjob.site/"
         private val clientInstance: Client by lazy { Client() }
 
         fun getInstance(): Client {

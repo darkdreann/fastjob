@@ -24,6 +24,7 @@ import java.util.UUID
 
 /**
  * ViewModel para la busqueda de candidatos
+ * @param jobId id del trabajo
  */
 class CandidateSearchViewModel(
     private val jobId: UUID

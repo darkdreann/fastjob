@@ -25,7 +25,6 @@ import com.fastjob.ui.components.basic.ErrorItem
 import com.fastjob.ui.components.basic.LoadingItem
 import com.fastjob.ui.components.candidate.EducationCard
 import com.fastjob.ui.effects.CandidateCardLoadEducationEffect
-import com.fastjob.ui.effects.LoadEducationEffect
 import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.viewmodels.company.CandidateCardEducationListViewModel
 

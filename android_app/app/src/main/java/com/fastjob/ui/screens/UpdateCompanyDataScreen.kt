@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.CompanyBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.UpdateCompanyForm

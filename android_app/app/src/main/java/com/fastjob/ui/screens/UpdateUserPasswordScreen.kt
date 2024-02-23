@@ -13,12 +13,15 @@ import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.CompanyBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.UpdatePasswordForm
-import com.fastjob.ui.components.form.UpdateUserForm
 import com.fastjob.ui.navigation.AppScreens
+import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 import com.fastjob.ui.viewmodels.user.UpdatePasswordViewModel
 import com.fastjob.ui.viewmodels.user.UpdatePasswordViewModelFactory
-import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 
+/**
+ * Pantalla de actualización de contraseña de usuario
+ * @param navController controlador de navegación
+ */
 @Composable
 fun UpdateUserPasswordScreen(
     navController: NavController

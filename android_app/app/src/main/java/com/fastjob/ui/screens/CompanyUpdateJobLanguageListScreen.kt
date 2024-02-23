@@ -22,6 +22,11 @@ import com.fastjob.ui.viewmodels.company.JobLanguageListViewModel
 import com.fastjob.ui.viewmodels.company.JobLanguageListViewModelFactory
 import java.util.UUID
 
+/**
+ * Pantalla de lista de idiomas de un trabajo
+ * @param navController controlador de navegación
+ * @param jobId id del trabajo
+ */
 @Composable
 fun CompanyJobLanguageListScreen(
     navController: NavController,

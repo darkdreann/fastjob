@@ -33,6 +33,7 @@ import com.fastjob.ui.theme.FastjobTheme
 /**
  * Barra superior de la aplicación.
  * @param navController controlador de navegación
+ * @param isLoginScreen indica si la barra superior se encuentra en la pantalla de login
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,6 +136,16 @@ fun TopBar(
                             }
                         )
                     }
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = R.string.acerca_de),
+                            )
+                        },
+                        onClick = {
+                            navController.navigate(AppScreens.AcercaDeScreen.route)
+                        }
+                    )
                 }
             }
 

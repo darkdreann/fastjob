@@ -25,10 +25,13 @@ import androidx.compose.ui.unit.sp
 import com.fastjob.R
 import com.fastjob.models.UserType
 import com.fastjob.ui.components.basic.BasicDialog
-import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.viewmodels.user.UpdateUserAddressViewModel
 import com.fastjob.ui.viewmodels.user.UpdateUserViewModel
 
+/**
+ * Formulario de actualización de dirección de usuario
+ * @param viewModel ViewModel del formulario
+ */
 @Composable
 fun UpdateUserAddressForm(
     viewModel: UpdateUserAddressViewModel

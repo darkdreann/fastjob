@@ -34,4 +34,5 @@ sealed class AppScreens(val route: String) {
     object CandidateCardLanguageScreen: AppScreens("candidate_card_language")
     object CompanyProfileScreen: AppScreens("company_profile")
     object UpdateCompanyDataScreen: AppScreens("update_company_data")
+    object AcercaDeScreen: AppScreens("acerca_de")
 }

@@ -22,6 +22,7 @@ import com.fastjob.ui.viewmodels.candidate.EducationListViewModel
 
 /**
  * Pantalla que muestra la información de una oferta de trabajo.
+ * @param navController controlador de navegación.
  */
 @Composable
 fun CandidateEducationScreen(

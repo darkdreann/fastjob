@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.fastjob.models.UserType
 import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.job.JobLoader
@@ -22,6 +21,7 @@ import java.util.UUID
  * Pantalla que muestra la información de una oferta de trabajo.
  * @param index Índice de la posición de la oferta de trabajo en la lista.
  * @param jobUUID UUID de la oferta de trabajo.
+ * @param navController controlador de navegación.
  */
 @Composable
 fun JobCardScreen(

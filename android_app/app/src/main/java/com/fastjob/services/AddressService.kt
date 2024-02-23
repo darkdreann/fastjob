@@ -10,7 +10,7 @@ import retrofit2.http.Query
 interface AddressService {
     companion object {
         private const val ENDPOINT = "/addresses/"
-        private const val ADDRESS_BY_POSTAL_CODE = "${ENDPOINT}postal-code/{postal_code}"
+        private const val ADDRESS_BY_POSTAL_CODE = "${ENDPOINT}postal-code/{postal_code}/"
         private const val ADDRESS_PROVINCES = "${ENDPOINT}province/{province_keyword}/"
     }
 

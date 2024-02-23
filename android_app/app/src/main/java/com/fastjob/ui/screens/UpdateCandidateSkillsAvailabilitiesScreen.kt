@@ -17,7 +17,12 @@ import com.fastjob.ui.viewmodels.candidate.UpdateSkillAvailabilityViewModel
 import com.fastjob.ui.viewmodels.candidate.UpdateSkillAvailabilityViewModelFactory
 import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 
-
+/**
+ * Pantalla de actualización de habilidades y disponibilidad del candidato
+ * @param navController controlador de navegación
+ * @param skills lista de habilidades del candidato
+ * @param availabilities lista de disponibilidades del candidato
+ */
 @Composable
 fun CandidateSkillsAvailabilitiesUpdateScreen(
     navController: NavController,

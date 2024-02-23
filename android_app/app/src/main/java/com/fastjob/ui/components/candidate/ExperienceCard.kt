@@ -34,6 +34,8 @@ import java.util.UUID
 /**
  * Muestra una tarjeta con la informacion de una experiencia laboral
  * @param experience experiencia laboral
+ * @param edit funcion para editar la experiencia
+ * @param delete funcion para eliminar la experiencia
  */
 @Composable
 fun ExperienceCard(

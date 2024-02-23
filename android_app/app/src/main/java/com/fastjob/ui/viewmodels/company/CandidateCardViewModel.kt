@@ -1,17 +1,11 @@
 package com.fastjob.ui.viewmodels.company
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.fastjob.auth.AuthAPI
 import com.fastjob.models.CandidateIN
-import com.fastjob.models.JobIN
-import com.fastjob.network.Client
-import com.fastjob.services.JobCandidateService
 import com.fastjob.ui.enums.LoadState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 /**
  * ViewModel para la pantalla de información de un candidato.

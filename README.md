@@ -11,7 +11,7 @@ En las diversas carpetas se encuentra un README adicional que contiene informaci
 
 ## Estado del proyecto
 
-El proyecto se encuentra actualmente en fase de desarrollo, donde se están implementando y perfeccionando sus componentes para cumplir con los objetivos establecidos.
+El proyecto ha sido finalizado, con todas sus fases de desarrollo completadas y sus componentes implementados y perfeccionados para alcanzar los objetivos establecidos.
 
 ## Licencia
 

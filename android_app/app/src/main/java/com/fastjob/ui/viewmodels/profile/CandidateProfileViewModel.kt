@@ -9,6 +9,9 @@ import com.fastjob.ui.enums.LoadState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
+/**
+ * ViewModel para la pantalla de perfil de candidato
+ */
 class CandidateProfileViewModel: ViewModel() {
     companion object {
         private val candidateService = Client.getInstance().getService(CandidateService::class.java)

@@ -61,6 +61,14 @@ fun String.capitalize(): String {
 }
 
 /**
+ * Capitaliza las palabras de una cadena de texto separadas por espacios.
+ * @return cadena capitalizada
+ */
+fun String.capitalizeWords(): String {
+    return this.split(" ").joinToString(" ") { it.capitalize() }
+}
+
+/**
  * Formatea una fecha con el formato local.
  * @param localContext contexto local
  * @return fecha formateada
@@ -88,7 +96,7 @@ fun String.isEmail(): Boolean {
  * @return true si es una contraseña segura, false en caso contrario
  */
 fun String.isPasswordSecure(): Boolean {
-    val passwordRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[.!@#\$%^&*()\\-_+=])[A-Za-z\\d!@#\$%^&*()\\-_+=]{8,}\$")
+    val passwordRegex = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[.!@#?\$%^&*()\\-_+=])[A-Za-z\\d?.!@#\$%^&*()\\-_+=]{8,}\$")
     return passwordRegex.matches(this)
 }
 

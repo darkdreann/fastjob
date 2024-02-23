@@ -1,6 +1,5 @@
 package com.fastjob.ui.components.form
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically

@@ -31,6 +31,7 @@ import com.fastjob.ui.components.basic.ErrorItem
 import com.fastjob.ui.components.basic.LoadingItem
 import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.functions.capitalize
+import com.fastjob.ui.functions.capitalizeWords
 import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.viewmodels.profile.CompanyProfileViewModel
 import com.fastjob.ui.viewmodels.user.UpdateUserAddressViewModel
@@ -124,14 +125,14 @@ fun CompanyProfile(
                                 horizontalArrangement = Arrangement.spacedBy(3.dp)
                             ){
                                 Text(
-                                    text = it.user.name.capitalize(),
+                                    text = it.user.name.capitalizeWords(),
                                     textAlign = TextAlign.Center,
                                     fontSize = 25.sp,
                                     fontStyle = FontStyle.Italic,
                                     lineHeight = 25.sp
                                 )
                                 Text(
-                                    text = it.user.surname.capitalize(),
+                                    text = it.user.surname.capitalizeWords(),
                                     textAlign = TextAlign.Center,
                                     fontSize = 25.sp,
                                     fontStyle = FontStyle.Italic,

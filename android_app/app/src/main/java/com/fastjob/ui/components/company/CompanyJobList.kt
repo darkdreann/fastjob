@@ -25,7 +25,6 @@ import androidx.navigation.NavController
 import com.fastjob.R
 import com.fastjob.ui.components.basic.ErrorItem
 import com.fastjob.ui.components.basic.LoadingItem
-import com.fastjob.ui.components.job.JobItem
 import com.fastjob.ui.effects.JobCompanyListEffect
 import com.fastjob.ui.enums.LoadState
 import com.fastjob.ui.viewmodels.company.CompanyJobListViewModel

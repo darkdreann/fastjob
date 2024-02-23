@@ -24,12 +24,12 @@ class CompanyValidators:
 
 #-------------------LANGUAGE---------------------------------
 class LanguageValidators:
-    MAX_LENGTH_NAME = 20
+    MAX_LENGTH_NAME = 35
 
 #-------------------SECTOR---------------------------------
 class SectorValidators:
-    MAX_LENGTH_CATEGORY = 25
-    MAX_LENGTH_SUBCATEGORY = 25
+    MAX_LENGTH_CATEGORY = 40
+    MAX_LENGTH_SUBCATEGORY = 40
 
 #-------------------EXPERIENCE---------------------------------
 class ExperienceValidators:

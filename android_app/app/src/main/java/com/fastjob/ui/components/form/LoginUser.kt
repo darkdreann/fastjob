@@ -36,7 +36,6 @@ import com.fastjob.ui.components.basic.PasswordField
 import com.fastjob.ui.enums.LoginState
 import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.viewmodels.login.LoginViewModel
-import kotlin.math.sin
 
 /**
  * Pantalla de login de usuario

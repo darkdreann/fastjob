@@ -1,6 +1,5 @@
 package com.fastjob.ui.viewmodels.user
 
-import android.util.Log
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import com.fastjob.models.AddressOUT

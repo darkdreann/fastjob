@@ -2,10 +2,8 @@ package com.fastjob.ui.viewmodels.profile
 
 import androidx.lifecycle.ViewModel
 import com.fastjob.auth.AuthAPI
-import com.fastjob.models.CandidateIN
 import com.fastjob.models.CompanyIN
 import com.fastjob.network.Client
-import com.fastjob.services.CandidateService
 import com.fastjob.services.CompanyService
 import com.fastjob.ui.enums.LoadState
 import kotlinx.coroutines.flow.MutableStateFlow

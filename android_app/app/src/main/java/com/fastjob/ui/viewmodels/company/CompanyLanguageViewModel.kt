@@ -1,6 +1,5 @@
 package com.fastjob.ui.viewmodels.company
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -21,7 +20,8 @@ import java.util.UUID
 /**
  * ViewModel para el formulario de idioma de la oferta de trabajo
  * @param navController NavController para la navegacion
- * @param id id del idioma
+ * @param jobId id de la oferta de trabajo
+ * @param languageId id del idioma
  */
 class CompanyLanguageViewModel(
     private val navController: NavController,

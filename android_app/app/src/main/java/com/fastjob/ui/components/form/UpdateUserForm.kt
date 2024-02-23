@@ -34,6 +34,10 @@ import com.fastjob.ui.components.basic.TextFieldMultiple
 import com.fastjob.ui.navigation.AppScreens
 import com.fastjob.ui.viewmodels.user.UpdateUserViewModel
 
+/**
+ * Formulario de actualización de usuario
+ * @param viewModel ViewModel del formulario
+ */
 @Composable
 fun UpdateUserForm(
     viewModel: UpdateUserViewModel

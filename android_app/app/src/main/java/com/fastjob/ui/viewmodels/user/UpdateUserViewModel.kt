@@ -1,6 +1,5 @@
 package com.fastjob.ui.viewmodels.user
 
-import android.util.Log
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -233,6 +232,11 @@ class UpdateUserViewModel(
     }
 }
 
+/**
+ * Factoría para crear un UpdateUserViewModel
+ * @param currentUserData datos del usuario
+ * @param navController controlador de navegación
+ */
 class UpdateUserViewModelFactory(
     private val currentUserData: UpdateUserViewModel.UserData,
     private val navController: NavController

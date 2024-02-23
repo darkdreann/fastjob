@@ -33,6 +33,7 @@ import com.fastjob.ui.viewmodels.candidate.ExperienceListViewModel
  * Lista de experiencias del candidato
  * @param itemsRefreshOffset offset de items para refrescar la lista
  * @param viewModel ViewModel de la lista de experiencias
+ * @param navController controlador de navegacion
  */
 @Composable
 fun ExperienceList(

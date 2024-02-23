@@ -12,6 +12,9 @@ import com.fastjob.auth.AuthAPI
 import com.fastjob.ui.components.navigation.AppNavigation
 import com.fastjob.ui.theme.FastjobTheme
 
+/**
+ * Clase principal de la aplicación, inicializa la API de autenticación y el tema de la aplicación.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         // inicializar la API de autenticación con el contexto de la aplicación

@@ -1,6 +1,5 @@
 package com.fastjob.ui.viewmodels.candidate
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -18,6 +17,11 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.util.UUID
 
+/**
+ * ViewModel para la formacion del candidato
+ * @param navController controlador de navegacion
+ * @param id id de la formacion
+ */
 class CandidateEducationViewModel(
     private val navController: NavController,
     private val id: UUID? = null

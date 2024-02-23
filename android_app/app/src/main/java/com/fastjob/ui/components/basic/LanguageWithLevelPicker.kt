@@ -46,6 +46,10 @@ import com.fastjob.ui.functions.toUUID
 import com.fastjob.ui.viewmodels.company.CreateCompanyJobViewModel
 import com.fastjob.ui.viewmodels.interfaces.JobLanguage
 
+/**
+ * Muestra un dialogo con un picker para seleccionar un idioma y un nivel
+ * @param viewModel view model de la vista
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun LanguageWithLevelPicker(

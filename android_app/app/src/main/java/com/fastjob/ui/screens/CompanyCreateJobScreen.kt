@@ -7,16 +7,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.fastjob.ui.components.basic.CandidateBottomBar
 import com.fastjob.ui.components.basic.CompanyBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.CreateJobForm
 import com.fastjob.ui.navigation.AppScreens
-import com.fastjob.ui.viewmodels.candidate.CandidateExperienceViewModel
-import com.fastjob.ui.viewmodels.candidate.CandidateExperienceViewModelFactory
 import com.fastjob.ui.viewmodels.company.CreateCompanyJobViewModel
 import com.fastjob.ui.viewmodels.company.CreateCompanyJobViewModelFactory
 
+/**
+ * Pantalla de creación de una oferta de trabajo
+ * @param navController Controlador de navegación
+ */
 @Composable
 fun CompanyCreateJobScreen(
     navController: NavController

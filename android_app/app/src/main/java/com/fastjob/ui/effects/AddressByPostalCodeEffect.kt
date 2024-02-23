@@ -33,7 +33,6 @@ fun AddressByPostalCodeEffect(
                     postalCode = address.postalCode
                 )
 
-
                 // si la respuesta es exitosa, se asigna la dirección
                 if(response.isSuccessful){
                     response.body()?.let {

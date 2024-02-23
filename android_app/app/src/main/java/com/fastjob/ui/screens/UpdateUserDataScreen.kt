@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.fastjob.models.UserType
@@ -16,10 +14,15 @@ import com.fastjob.ui.components.basic.CompanyBottomBar
 import com.fastjob.ui.components.basic.TopBar
 import com.fastjob.ui.components.form.UpdateUserForm
 import com.fastjob.ui.navigation.AppScreens
+import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 import com.fastjob.ui.viewmodels.user.UpdateUserViewModel
 import com.fastjob.ui.viewmodels.user.UpdateUserViewModelFactory
-import com.fastjob.ui.viewmodels.profile.CandidateProfileViewModel
 
+/**
+ * Pantalla de actualización de datos de usuario
+ * @param currentUserData Datos del usuario actual
+ * @param navController Controlador de navegación
+ */
 @Composable
 fun UpdateUserDataScreen(
     currentUserData: UpdateUserViewModel.UserData,
