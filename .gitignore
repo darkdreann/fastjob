@@ -1,0 +1,9 @@
+.pytest_cache
+__pycache__
+venv
+env
+.env
+*.json
+.env.dev
+docker_database_dev
+.vscode

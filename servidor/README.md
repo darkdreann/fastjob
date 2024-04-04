@@ -349,7 +349,7 @@ La estructura del modelo "CandidateLanguage" es la siguiente:
         {
             "candidate_id":"UUID", // UUID de un candidato creado
             "language_id":"UUID", // UUID de un idioma crado
-            "language_level_id":"UUID" // UUID de un nivel de idioma creado
+            "level_id":"UUID" // UUID de un nivel de idioma creado
         }
     ]
 ```
@@ -392,7 +392,7 @@ La estructura del modelo "JobLanguage" es la siguiente:
         {
             "job_id":"UUID", // UUID de una oferta de trabajo creada
             "language_id":"UUID", // UUID de un idioma creado
-            "language_level_id":"UUID", // UUID de un nivel de idioma creado
+            "level_id":"UUID", // UUID de un nivel de idioma creado
         }
     ]
 ```
@@ -429,7 +429,7 @@ La estructura del modelo "JobLanguage" es la siguiente:
         - **enums**: Módulo que alberga enumeraciones (enums) empleadas en la API.
             - **endpoints.py**: Incluye enumeraciones (enums) que son utilizadas en los puntos finales (endpoints) de la API.
             - **models.py**: Incorpora enumeraciones (enums) que son empleadas en los diversos modelos de la API.
-        - **funtions**: Módulo que incluye funciones utilizadas por los modelos.
+        - **functions**: Módulo que incluye funciones utilizadas por los modelos.
             - **validate_functions.py**: Incorpora funciones de validación utilizadas por los modelos.
         - **metadata**: Módulo que alberga información acerca de los modelos.
             - **constants.py**: Incluye valores constantes destinados a los modelos.

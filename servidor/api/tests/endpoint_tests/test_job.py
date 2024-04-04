@@ -50,7 +50,7 @@ async def test_consts() -> dict:
         "company_id": company_id,
         "education_id": education_id,
         "language_id": language_id,
-        "level_language_id": level_language_id,
+        "level_id": level_language_id,
         "address": address
     }
     return consts
@@ -158,7 +158,7 @@ async def test_create_job(client: AsyncClient, test_consts: dict) -> None:
         "job_languages": [
             {
                 "language_id": test_consts['language_id'],
-                "language_level_id": test_consts['level_language_id']
+                "level_id": test_consts['level_id']
             }
         ]
     }
