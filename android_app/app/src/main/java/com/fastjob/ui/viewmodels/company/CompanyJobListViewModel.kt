@@ -1,5 +1,6 @@
 package com.fastjob.ui.viewmodels.company
 
+import android.util.Log
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.UUID
+
 
 /**
  * ViewModel para la lista de ofertas de trabajo creadas por la empresa
@@ -142,6 +144,7 @@ class CompanyJobListViewModel: ViewModel() {
         updateListJob.value = viewModelScope.launch(Dispatchers.IO) {
 
 
+
             // realiza la carga de mas ofertas de trabajo creadas por la empresa
             val response = companyService.getCompanyJobs(
                 auth.getToken()!!,
@@ -150,12 +153,14 @@ class CompanyJobListViewModel: ViewModel() {
                 lastOffset
             )
 
+
+
             when {
                 // si la respuesta es correcta cambia el estado de la carga a loaded, guarda las ofertas y el offset
                 response.isSuccessful -> {
                     val jobs = response.body()
                     _jobList.value = _jobList.value.plus(jobs?:emptyList())
-                    lastOffset = jobs?.size?:lastOffset
+                    lastOffset = jobs?.size?.let{ lastOffset + it }?:lastOffset
                     _loadState.value = LoadState.LOADED
                 }
                 // si la respuesta es 404 cambia el estado de la carga a end of list

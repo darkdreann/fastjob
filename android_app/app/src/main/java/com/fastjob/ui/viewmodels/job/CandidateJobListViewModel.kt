@@ -133,7 +133,7 @@ class CandidateJobListViewModel: ViewModel() {
                 response.isSuccessful -> {
                     val jobs = response.body()
                     _jobList.value = _jobList.value.plus(jobs?:emptyList())
-                    lastOffset = jobs?.size?:lastOffset
+                    lastOffset = jobs?.size?.let{ lastOffset + it }?:lastOffset
                     _loadState.value = LoadState.LOADED
                 }
                 // si la respuesta es 404 cambia el estado de la carga a end of list

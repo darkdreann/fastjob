@@ -159,7 +159,7 @@ class EducationListViewModel: ViewModel() {
                 response.isSuccessful -> {
                     val educations = response.body()
                     _educationList.value = _educationList.value.plus(educations?:emptyList())
-                    lastOffset = educations?.size?:lastOffset
+                    lastOffset = educations?.size?.let{ lastOffset + it }?:lastOffset
                     _loadState.value = LoadState.LOADED
                 }
                 // si la respuesta es 404 cambia el estado de la carga a end of list

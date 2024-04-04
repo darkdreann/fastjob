@@ -169,7 +169,7 @@ class JobLanguageListViewModel(
                 response.isSuccessful -> {
                     val languages = response.body()
                     _languageList.value = _languageList.value.plus(languages?:emptyList())
-                    lastOffset = languages?.size?:lastOffset
+                    lastOffset = languages?.size?.let{ lastOffset + it }?:lastOffset
                     _loadState.value = LoadState.LOADED
                 }
                 // si la respuesta es 404 cambia el estado de la carga a end of list

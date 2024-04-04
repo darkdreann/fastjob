@@ -144,7 +144,7 @@ class CandidateCardExperienceListViewModel(
                 response.isSuccessful -> {
                     val experiences = response.body()
                     _experienceList.value = _experienceList.value.plus(experiences?:emptyList())
-                    lastOffset = experiences?.size?:lastOffset
+                    lastOffset = experiences?.size?.let{ lastOffset + it }?:lastOffset
                     _loadState.value = LoadState.LOADED
                 }
                 // si la respuesta es 404 cambia el estado de la carga a end of list
